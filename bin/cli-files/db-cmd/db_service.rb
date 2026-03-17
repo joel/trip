@@ -118,7 +118,7 @@ module AppCLI
         return sqlite_notice("SQLite uses local files; no container shell available.") if env_config.sqlite3?
 
         ensure_running!
-        runner.run("docker exec -it #{env_config.db_container} sh")
+        runner.run("docker exec -it #{env_config.db_container} bash")
       end
 
       def exec(command_parts)

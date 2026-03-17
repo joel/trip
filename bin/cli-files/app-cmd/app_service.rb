@@ -102,7 +102,7 @@ module AppCLI
 
       def connect
         ensure_running!
-        runner.run("docker exec -it #{env_config.app_container} sh")
+        runner.run("docker exec -it #{env_config.app_container} bash")
       end
 
       def console
