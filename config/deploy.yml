@@ -7,10 +7,10 @@ image: joelazemar/catalyst
 # Deploy to these servers.
 servers:
   web:
-    - workanywhere.app
+    - workeverywhere.app
   # job:
   #   hosts:
-  #     - workanywhere.app
+  #     - workeverywhere.app
   #   cmd: bin/jobs
 
 # Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
@@ -19,7 +19,7 @@ servers:
 # Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
 proxy:
   ssl: true
-  host: catalyst.workanywhere.app
+  host: catalyst.workeverywhere.app
 
 # Credentials for your image host.
 registry:
@@ -89,4 +89,4 @@ builder:
 
 # Use a different ssh user than root
 ssh:
-  user: root
+  user: deploy

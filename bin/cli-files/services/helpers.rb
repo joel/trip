@@ -11,13 +11,13 @@ module AppCLI
   module Services
     APP_NAME = "catalyst".freeze
     DB_ADAPTER = "sqlite3".freeze
-    DOCKER_NAMESPACE = ENV.fetch("DOCKER_NAMESPACE", "workanywhere").freeze
+    DOCKER_NAMESPACE = ENV.fetch("DOCKER_NAMESPACE", "workeverywhere").freeze
     NETWORK_NAME = "network.docker-shared-services".freeze
     DB_VOLUME_BASE = "#{APP_NAME}-data-volume".freeze
     APP_CONTAINER_BASE = "#{APP_NAME}-app".freeze
     DB_CONTAINER_BASE = "#{APP_NAME}-db".freeze
     APP_IMAGE_BASE = "#{DOCKER_NAMESPACE}/#{APP_NAME}-app".freeze
-    WAIT_IMAGE = "workanywhere/wait:2.12.1".freeze
+    WAIT_IMAGE = "workeverywhere/wait:2.12.1".freeze
     DB_IMAGES = {
       "mysql" => "mysql:latest",
       "postgresql" => "postgres:latest"
@@ -27,8 +27,8 @@ module AppCLI
       "postgresql" => 5432
     }.freeze
     MYSQL_CERT_DIR = File.expand_path("certs/mysql", AppCLI::ROOT)
-    TRAEFIK_ROUTER = "workanywhere".freeze
-    TRAEFIK_DOMAIN = "workanywhere.docker".freeze
+    TRAEFIK_ROUTER = "workeverywhere".freeze
+    TRAEFIK_DOMAIN = "workeverywhere.docker".freeze
     SUPPORTED_ENVS = {
       "dev" => "development",
       "development" => "development",

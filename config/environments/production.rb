@@ -68,8 +68,8 @@ Rails.application.configure do
   config.action_mailer.raise_delivery_errors = true
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "<%= app_name %>.workanywhere.app", protocol: "https" }
-  config.action_mailer.asset_host = "https://<%= app_name %>.workanywhere.app"
+  config.action_mailer.default_url_options = { host: "<%= app_name %>.workeverywhere.app", protocol: "https" }
+  config.action_mailer.asset_host = "https://<%= app_name %>.workeverywhere.app"
 
   # TODO: Find a better way to handle Docker build time vs runtime env vars
   notif_mail_username = if ENV["SECRET_KEY_BASE_DUMMY"]

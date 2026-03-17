@@ -46,9 +46,9 @@ Rails.application.configure do
   # Ensure mailer works in development.
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.raise_delivery_errors = true
-  config.action_mailer.smtp_settings = { address: "mail", port: 1025, domain: "workanywhere.docker" }
-  config.action_mailer.default_url_options = { host: "<%= app_name %>.workanywhere.docker", protocol: "https" }
-  config.action_mailer.asset_host = "https://<%= app_name %>.workanywhere.docker"
+  config.action_mailer.smtp_settings = { address: "mail", port: 1025, domain: "workeverywhere.docker" }
+  config.action_mailer.default_url_options = { host: "<%= app_name %>.workeverywhere.docker", protocol: "https" }
+  config.action_mailer.asset_host = "https://<%= app_name %>.workeverywhere.docker"
 
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false
