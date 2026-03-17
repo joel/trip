@@ -11,7 +11,8 @@ gem "rails", "~> 8.1.1"
 gem "propshaft"
 
 # Use sqlite3 as the database for Active Record
-gem "activerecord-enhancedsqlite3-adapter"
+# gem "activerecord-enhancedsqlite3-adapter"
+gem "sqlite_crypto", github: "joel/sqlite_crypto", branch: "fix/auto-uuid-generation-for-primary-keys"
 
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
