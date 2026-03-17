@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   resources :posts
   resources :users
+  resource :account, only: %i[show edit update destroy]
   get "welcome/home"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -14,4 +15,6 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   root "welcome#home"
+
+  get "test/login" => "test_sessions#show", as: :test_login if Rails.env.test?
 end

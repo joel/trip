@@ -5,6 +5,7 @@ RSpec.describe "posts/show" do
     assign(:post, create(:post,
                          title: "Title",
                          body: "MyText"))
+    controller.define_singleton_method(:current_user) { nil }
   end
 
   it "renders attributes in <p>" do

@@ -15,8 +15,6 @@ RSpec.describe "posts/new" do
       assert_select "input[name=?]", "post[title]"
 
       assert_select "textarea[name=?]", "post[body]"
-
-      assert_select "select[name=?]", "post[user_id]"
     end
   end
 end

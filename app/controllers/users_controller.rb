@@ -2,7 +2,9 @@
 
 # Source: https://github.com/rails/rails/blob/7-1-stable/railties/lib/rails/generators/rails/scaffold_controller/templates/controller.rb.tt
 class UsersController < ApplicationController
+  before_action :require_authenticated_user!
   before_action :set_user, only: %i[show edit update destroy]
+  before_action :authorize_user!
 
   # GET /users
   def index
@@ -53,8 +55,12 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
   end
 
+  def authorize_user!
+    authorize!(@user || User)
+  end
+
   # Only allow a list of trusted parameters through.
   def user_params
-    params.expect(user: [:name])
+    params.expect(user: [:name, :email, { roles: [] }])
   end
 end

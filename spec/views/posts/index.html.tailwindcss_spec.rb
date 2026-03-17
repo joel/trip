@@ -6,6 +6,7 @@ RSpec.describe "posts/index" do
   before do
     assign(:posts, create_list(:post, 2, title: "Title",
                                          body: "MyText"))
+    controller.define_singleton_method(:current_user) { nil }
   end
 
   it "renders a list of posts" do

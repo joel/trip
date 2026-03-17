@@ -1,0 +1,21 @@
+<div class="space-y-8">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ha-muted)]">Account</p>
+      <h1 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">My account</h1>
+      <p class="mt-2 text-sm text-[var(--ha-muted)]">Keep your profile details up to date.</p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <%= link_to "Edit account", edit_account_path, class: "ha-button ha-button-secondary" %>
+      <%= button_to "Delete account", account_path, method: :delete, class: "ha-button ha-button-danger", form: { class: "inline-flex" }, data: { turbo_confirm: "Delete your account permanently?" } %>
+    </div>
+  </div>
+
+  <% if notice.present? %>
+    <p class="ha-card border border-emerald-200 bg-emerald-50/80 px-4 py-3 text-sm font-medium text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200" id="notice">
+      <%= notice %>
+    </p>
+  <% end %>
+
+  <%= render "details", user: @user %>
+</div>

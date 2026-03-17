@@ -1,0 +1,25 @@
+<%= form_with url: rodauth.login_path, method: :post, data: { turbo: false }, class: "space-y-6" do |form| %>
+  <%== rodauth.login_additional_form_tags %>
+  <% if rodauth.skip_login_field_on_login? %>
+    <div>
+      <%= form.label "login", rodauth.login_label, class: "text-sm font-semibold text-[var(--ha-muted)]" %>
+      <%= form.email_field rodauth.login_param, value: params[rodauth.login_param], id: "login", readonly: true, class: "ha-input mt-2 opacity-80" %>
+    </div>
+  <% else %>
+    <div>
+      <%= form.label "login", rodauth.login_label, class: "text-sm font-semibold text-[var(--ha-muted)]" %>
+      <%= form.email_field rodauth.login_param, value: params[rodauth.login_param], id: "login", autocomplete: rodauth.login_field_autocomplete_value, required: true, class: "ha-input mt-2", aria: ({ invalid: true, describedby: "login_error_message" } if rodauth.field_error(rodauth.login_param)) %>
+      <%= content_tag(:span, rodauth.field_error(rodauth.login_param), class: "mt-1 block text-xs text-red-500", id: "login_error_message") if rodauth.field_error(rodauth.login_param) %>
+    </div>
+  <% end %>
+
+  <% unless rodauth.skip_password_field_on_login? %>
+    <div>
+      <%= form.label "password", rodauth.password_label, class: "text-sm font-semibold text-[var(--ha-muted)]" %>
+      <%= form.password_field rodauth.password_param, value: "", id: "password", autocomplete: rodauth.password_field_autocomplete_value, required: true, class: "ha-input mt-2", aria: ({ invalid: true, describedby: "password_error_message" } if rodauth.field_error(rodauth.password_param)) %>
+      <%= content_tag(:span, rodauth.field_error(rodauth.password_param), class: "mt-1 block text-xs text-red-500", id: "password_error_message") if rodauth.field_error(rodauth.password_param) %>
+    </div>
+  <% end %>
+
+  <%= form.submit rodauth.login_button, class: "ha-button ha-button-primary w-full" %>
+<% end %>

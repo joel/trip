@@ -29,3 +29,9 @@
 
 en:
   hello: "Hello world"
+
+accounts:
+  update:
+    notice: "Account was successfully updated."
+  destroy:
+    notice: "Account was successfully deleted."

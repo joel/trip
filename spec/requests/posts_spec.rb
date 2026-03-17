@@ -27,6 +27,8 @@ RSpec.describe "/posts" do
 
   let!(:user) { create(:user) }
 
+  before { stub_current_user(user) }
+
   describe "GET /index" do
     it "renders a successful response" do
       Post.create! valid_attributes

@@ -1,10 +1,9 @@
-
-<%= form_with(model: post, class: "contents") do |form| %>
+<%= form_with(model: post, class: "space-y-6") do |form| %>
   <% if post.errors.any? %>
-    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-3">
-      <h2><%= pluralize(post.errors.count, "error") %> prohibited this post from being saved:</h2>
+    <div id="error_explanation" class="ha-card border border-red-200 bg-red-50/80 px-4 py-3 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">
+      <h2 class="font-semibold"><%= pluralize(post.errors.count, "error") %> prohibited this post from being saved:</h2>
 
-      <ul>
+      <ul class="mt-2 list-disc space-y-1 pl-5">
         <% post.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -12,22 +11,17 @@
     </div>
   <% end %>
 
-  <div class="my-5">
-    <%= form.label :title %>
-    <%= form.text_field :title, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+  <div>
+    <%= form.label :title, class: "text-sm font-semibold text-[var(--ha-muted)]" %>
+    <%= form.text_field :title, class: "ha-input mt-2" %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :body %>
-    <%= form.textarea :body, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+  <div>
+    <%= form.label :body, class: "text-sm font-semibold text-[var(--ha-muted)]" %>
+    <%= form.textarea :body, rows: 6, class: "ha-input mt-2" %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :user_id %>
-    <%= form.select :user_id, User.all.collect { |p| [p.name, p.id] }, { include_blank: false }, { class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" } %>
-  </div>
-
-  <div class="inline">
-    <%= form.submit class: "rounded-lg py-3 px-5 bg-blue-600 text-white inline-block font-medium cursor-pointer" %>
+  <div class="flex flex-wrap gap-2">
+    <%= form.submit class: "ha-button ha-button-primary" %>
   </div>
 <% end %>

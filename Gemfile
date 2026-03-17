@@ -31,6 +31,15 @@ gem "tailwindcss-rails"
 # https://tailwindcss.com/blog/standalone-cli # TL;DR no Node.js or npm required.
 gem "tailwindcss-ruby"
 
+# Authentication (Rodauth + passkeys)
+gem "rodauth-rails"
+gem "sequel-activerecord_connection", require: false
+gem "tilt", require: false
+gem "webauthn"
+
+# Authorization
+gem "action_policy"
+
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
 

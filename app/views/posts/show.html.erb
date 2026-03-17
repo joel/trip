@@ -1,16 +1,26 @@
-
-<div class="mx-auto md:w-2/3 w-full flex">
-  <div class="mx-auto">
-    <% if notice.present? %>
-      <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-lg inline-block" id="notice"><%= notice %></p>
-    <% end %>
-
-    <%= render @post %>
-
-    <%= link_to "Edit this post", edit_post_path(@post), class: "mt-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-    <div class="inline-block ml-2">
-      <%= button_to "Destroy this post", post_path(@post), method: :delete, class: "mt-2 rounded-lg py-3 px-5 bg-gray-100 font-medium" %>
+<div class="space-y-8">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ha-muted)]">Posts</p>
+      <h1 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Post details</h1>
+      <p class="mt-2 text-sm text-[var(--ha-muted)]">Review the post, then make changes or remove it.</p>
     </div>
-    <%= link_to "Back to posts", posts_path, class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+    <div class="flex flex-wrap gap-2">
+      <% if allowed_to?(:edit?, @post) %>
+        <%= link_to "Edit post", edit_post_path(@post), class: "ha-button ha-button-secondary" %>
+      <% end %>
+      <% if allowed_to?(:destroy?, @post) %>
+        <%= button_to "Delete", post_path(@post), method: :delete, class: "ha-button ha-button-danger", form: { class: "inline-flex" } %>
+      <% end %>
+      <%= link_to "Back to posts", posts_path, class: "ha-button ha-button-secondary" %>
+    </div>
   </div>
+
+  <% if notice.present? %>
+    <p class="ha-card border border-emerald-200 bg-emerald-50/80 px-4 py-3 text-sm font-medium text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200" id="notice">
+      <%= notice %>
+    </p>
+  <% end %>
+
+  <%= render @post %>
 </div>

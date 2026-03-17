@@ -1,0 +1,25 @@
+<% cred = rodauth.new_webauthn_credential %>
+
+<div class="space-y-8">
+  <div class="ha-card p-8">
+    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ha-muted)]">Security</p>
+    <h1 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Add a passkey</h1>
+    <p class="mt-3 text-sm text-[var(--ha-muted)]">Register this device to sign in quickly and securely.</p>
+  </div>
+
+  <%= render "flash" %>
+
+  <div class="ha-card p-6 space-y-6">
+    <%= form_with url: rodauth.webauthn_setup_path, method: :post, id: "webauthn-setup-form", data: { credential_options: cred.as_json.to_json, turbo: false }, class: "space-y-6" do |form| %>
+      <%== rodauth.webauthn_setup_additional_form_tags %>
+      <%= form.hidden_field rodauth.webauthn_setup_challenge_param, value: cred.challenge %>
+      <%= form.hidden_field rodauth.webauthn_setup_challenge_hmac_param, value: rodauth.compute_hmac(cred.challenge) %>
+      <%= form.text_field rodauth.webauthn_setup_param, value: "", id: "webauthn-setup", class: "hidden", aria: { hidden: "true" } %>
+      <div id="webauthn-setup-button">
+        <%= form.submit rodauth.webauthn_setup_button, class: "ha-button ha-button-primary w-full" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<%= javascript_include_tag rodauth.webauthn_setup_js_path, extname: false %>

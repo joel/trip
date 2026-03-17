@@ -31,6 +31,10 @@ RSpec.describe PostsController do
   let(:valid_attributes) do
     skip("Add a hash of attributes valid for your model")
   end
+  # This should return the minimal set of values that should be in the session
+  # in order to pass any filters (e.g. authentication) defined in
+  # PostsController. Be sure to keep this updated too.
+  let(:valid_session) { {} }
 
   let(:invalid_attributes) do
     skip("Add a hash of attributes invalid for your model")
@@ -38,10 +42,7 @@ RSpec.describe PostsController do
 
   let!(:user) { create(:user) }
 
-  # This should return the minimal set of values that should be in the session
-  # in order to pass any filters (e.g. authentication) defined in
-  # PostsController. Be sure to keep this updated too.
-  let(:valid_session) { {} }
+  before { stub_current_user(user) }
 
   describe "GET #index" do
     it "returns a success response" do
@@ -137,6 +138,45 @@ RSpec.describe PostsController do
       post = Post.create! valid_attributes
       delete :destroy, params: { id: post.to_param }, session: valid_session
       expect(response).to redirect_to(posts_url)
+    end
+  end
+
+  describe "authorization" do
+    let(:owner) { create(:user) }
+    let(:admin) { create(:user, :admin) }
+    let(:other) { create(:user) }
+    let(:post_record) { create(:post, user: owner) }
+
+    it "allows owners to edit" do
+      stub_current_user(owner)
+      get :edit, params: { id: post_record.to_param }, session: valid_session
+      expect(response).to be_successful
+    end
+
+    it "forbids non-owners from editing" do
+      stub_current_user(other)
+      get :edit, params: { id: post_record.to_param }, session: valid_session
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "allows admins to destroy" do
+      stub_current_user(admin)
+      delete :destroy, params: { id: post_record.to_param }, session: valid_session
+      expect(response).to redirect_to(posts_url)
+    end
+
+    it "forbids non-owners from destroying" do
+      stub_current_user(other)
+      delete :destroy, params: { id: post_record.to_param }, session: valid_session
+      expect(response).to have_http_status(:forbidden)
+    end
+  end
+
+  describe "authentication" do
+    it "returns unauthorized when not signed in" do
+      stub_current_user(nil)
+      get :new, params: {}, session: valid_session
+      expect(response).to have_http_status(:unauthorized)
     end
   end
 end

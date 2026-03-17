@@ -29,17 +29,21 @@ RSpec.describe UsersController do
   # User. As you add validations to User, be sure to
   # adjust the attributes here as well.
   let(:valid_attributes) do
-    skip("Add a hash of attributes valid for your model")
+    { name: "Test User", email: "user#{SecureRandom.hex(4)}@example.com" }
   end
 
   let(:invalid_attributes) do
-    skip("Add a hash of attributes invalid for your model")
+    { name: "Test User", email: nil }
   end
+
+  let!(:admin) { create(:user, :admin) }
 
   # This should return the minimal set of values that should be in the session
   # in order to pass any filters (e.g. authentication) defined in
   # UsersController. Be sure to keep this updated too.
   let(:valid_session) { {} }
+
+  before { stub_current_user(admin) }
 
   describe "GET #index" do
     it "returns a success response" do
@@ -82,7 +86,8 @@ RSpec.describe UsersController do
 
       it "redirects to the created user" do
         post :create, params: { user: valid_attributes }, session: valid_session
-        expect(response).to redirect_to(User.last)
+        created_user = User.find_by!(email: valid_attributes[:email])
+        expect(response).to redirect_to(created_user)
       end
     end
 
@@ -97,14 +102,19 @@ RSpec.describe UsersController do
   describe "PUT #update" do
     context "with valid params" do
       let(:new_attributes) do
-        skip("Add a hash of attributes valid for your model")
+        {
+          name: "Updated User",
+          email: "updated#{SecureRandom.hex(4)}@example.com",
+          roles: [:contributor]
+        }
       end
 
       it "updates the requested user" do
         user = User.create! valid_attributes
         put :update, params: { id: user.to_param, user: new_attributes }, session: valid_session
         user.reload
-        skip("Add assertions for updated state")
+        expect(user.name).to eq("Updated User")
+        expect(user.role?(:contributor)).to be(true)
       end
 
       it "redirects to the user" do
@@ -135,6 +145,22 @@ RSpec.describe UsersController do
       user = User.create! valid_attributes
       delete :destroy, params: { id: user.to_param }, session: valid_session
       expect(response).to redirect_to(users_url)
+    end
+  end
+
+  describe "authorization" do
+    let(:regular) { create(:user) }
+
+    it "forbids non-admins" do
+      stub_current_user(regular)
+      get :index, params: {}, session: valid_session
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "requires authentication" do
+      stub_current_user(nil)
+      get :index, params: {}, session: valid_session
+      expect(response).to have_http_status(:unauthorized)
     end
   end
 end

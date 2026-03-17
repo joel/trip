@@ -1,0 +1,38 @@
+# frozen_string_literal: true
+
+class AccountsController < ApplicationController
+  before_action :require_authenticated_user!
+  before_action :set_user
+
+  # GET /account
+  def show; end
+
+  # GET /account/edit
+  def edit; end
+
+  # PATCH/PUT /account
+  def update
+    if @user.update(account_params)
+      redirect_to account_path, notice: t(".notice")
+    else
+      render :edit, status: :unprocessable_content
+    end
+  end
+
+  # DELETE /account
+  def destroy
+    @user.destroy!
+    reset_session
+    redirect_to root_path, notice: t(".notice")
+  end
+
+  private
+
+  def set_user
+    @user = current_user
+  end
+
+  def account_params
+    params.expect(user: [:name])
+  end
+end

@@ -3,10 +3,12 @@
 # Source: https://github.com/rails/rails/blob/7-1-stable/railties/lib/rails/generators/rails/scaffold_controller/templates/controller.rb.tt
 class PostsController < ApplicationController
   before_action :set_post, only: %i[show edit update destroy]
+  before_action :require_authenticated_user!, only: %i[new create edit update destroy]
+  before_action :authorize_post!, only: %i[edit update destroy]
 
   # GET /posts
   def index
-    @posts = Post.all
+    @posts = Post.includes(:user).all
   end
 
   # GET /posts/1
@@ -14,7 +16,7 @@ class PostsController < ApplicationController
 
   # GET /posts/new
   def new
-    @post = Post.new(title: "A Post", body: "...", user_id: User.first.id)
+    @post = current_user.posts.new(title: "A Post", body: "...")
   end
 
   # GET /posts/1/edit
@@ -22,7 +24,7 @@ class PostsController < ApplicationController
 
   # POST /posts
   def create
-    @post = Post.new(post_params)
+    @post = current_user.posts.new(post_params)
 
     if @post.save
       redirect_to @post, notice: "Post was successfully created."
@@ -53,8 +55,12 @@ class PostsController < ApplicationController
     @post = Post.find(params[:id])
   end
 
+  def authorize_post!
+    authorize! @post, to: :"#{action_name}?"
+  end
+
   # Only allow a list of trusted parameters through.
   def post_params
-    params.expect(post: %i[title body user_id])
+    params.expect(post: %i[title body])
   end
 end

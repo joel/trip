@@ -1,15 +1,24 @@
-
-<div class="w-full">
-  <% if notice.present? %>
-    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-lg inline-block" id="notice"><%= notice %></p>
-  <% end %>
-
-  <div class="flex justify-between items-center">
-    <h1 class="font-bold text-4xl">Posts</h1>
-    <%= link_to "New post", new_post_path, class: "rounded-lg py-3 px-5 bg-blue-600 text-white block font-medium" %>
+<div class="space-y-8">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ha-muted)]">Content</p>
+      <h1 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Posts</h1>
+      <p class="mt-2 text-sm text-[var(--ha-muted)]">Keep updates organized and visible for the whole team.</p>
+    </div>
+    <div class="flex flex-wrap items-center gap-2">
+      <% if allowed_to?(:new?, Post) %>
+        <%= link_to "New post", new_post_path, class: "ha-button ha-button-primary" %>
+      <% end %>
+    </div>
   </div>
 
-  <div id="posts" class="min-w-full">
+  <% if notice.present? %>
+    <p class="ha-card border border-emerald-200 bg-emerald-50/80 px-4 py-3 text-sm font-medium text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200" id="notice">
+      <%= notice %>
+    </p>
+  <% end %>
+
+  <div id="posts" class="grid gap-4">
     <%= render @posts %>
   </div>
 </div>

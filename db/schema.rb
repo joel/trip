@@ -20,11 +20,44 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_04_173742) do
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
+  create_table "user_email_auth_keys", id: uuid, force: :cascade do |t|
+    t.datetime "deadline", null: false
+    t.datetime "email_last_sent", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.string "key", null: false
+  end
+
+  create_table "user_verification_keys", id: uuid, force: :cascade do |t|
+    t.datetime "email_last_sent", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.string "key", null: false
+    t.datetime "requested_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+  end
+
+  create_table "user_webauthn_keys", primary_key: ["user_id", "webauthn_id"], force: :cascade do |t|
+    t.datetime "last_use", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.string "public_key", null: false
+    t.integer "sign_count", null: false
+    t.string "user_id", limit: 36
+    t.string "webauthn_id"
+    t.index ["user_id"], name: "index_user_webauthn_keys_on_user_id"
+  end
+
+  create_table "user_webauthn_user_ids", id: uuid, force: :cascade do |t|
+    t.string "webauthn_id", null: false
+  end
+
   create_table "users", id: uuid, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.string "email", null: false
     t.string "name"
+    t.integer "roles_mask", default: 16, null: false
+    t.integer "status", default: 1, null: false
     t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
   end
 
   add_foreign_key "posts", "users"
+  add_foreign_key "user_email_auth_keys", "users", column: "id"
+  add_foreign_key "user_verification_keys", "users", column: "id"
+  add_foreign_key "user_webauthn_keys", "users"
+  add_foreign_key "user_webauthn_user_ids", "users", column: "id"
 end

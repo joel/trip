@@ -3,8 +3,10 @@ require "rails_helper"
 RSpec.describe "users/new" do
   before do
     assign(:user, User.new(
-                    name: "MyString"
+                    name: "MyString",
+                    email: "new-user@example.com"
                   ))
+    controller.define_singleton_method(:current_user) { User.new(roles: [:admin]) }
   end
 
   it "renders new user form" do
@@ -12,6 +14,8 @@ RSpec.describe "users/new" do
 
     assert_select "form[action=?][method=?]", users_path, "post" do
       assert_select "input[name=?]", "user[name]"
+      assert_select "input[name=?]", "user[email]"
+      assert_select "input[name=?]", "user[roles][]"
     end
   end
 end
