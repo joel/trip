@@ -72,6 +72,8 @@ module AppCLI
           ]
         )
 
+        connect_to_traefik_network
+
         wait_for_app
         runner.run("docker logs #{env_config.app_container}", allow_failure: true, quiet: true)
       end
@@ -241,8 +243,15 @@ module AppCLI
           "--label traefik.http.routers.#{env_config.traefik_router}.entrypoints=websecure",
           "--label traefik.http.routers.#{env_config.traefik_router}.tls=true",
           "--label traefik.http.services.#{env_config.traefik_service}.loadbalancer.server.port=9292",
-          "--label traefik.docker.network=#{env_config.network_name}"
+          "--label traefik.docker.network=#{Services::NETWORK_NAME}"
         ]
+      end
+
+      def connect_to_traefik_network
+        return if env_config.network_name == Services::NETWORK_NAME
+
+        runner.ensure_network(Services::NETWORK_NAME)
+        runner.run("docker network connect #{Services::NETWORK_NAME} #{env_config.app_container}")
       end
 
       def copy_schema_from_container(container_name)
