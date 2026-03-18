@@ -195,7 +195,9 @@ module AppCLI
           "--env RAILS_ENV=#{env_config.env}",
           "--env RAILS_LOG_TO_STDOUT=true",
           "--env RAILS_SERVE_STATIC_FILES=true",
-          "--env RAILS_ALLOW_ALL_HOSTS=true"
+          "--env RAILS_ALLOW_ALL_HOSTS=true",
+          "--env NOTIF_MAIL_USERNAME=dummy@example.com",
+          "--env NOTIF_MAIL_PASSWORD=XXXX-REPLACE-THIS-XXXX"
         ]
 
         flags << "--env BUNDLE_WITHOUT=production" if env_config.short == "dev"
