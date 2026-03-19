@@ -36,10 +36,10 @@ jobs:
           bin/rails assets:precompile
       -
         name: "Test / Unit Tests (controllers, models, helpers, mailers, jobs, lib, requests)"
-        run: bin/bundle exec rspec spec --exclude-pattern "spec/system/**/*_spec.rb"
+        run: bundle exec rspec spec --exclude-pattern "spec/system/**/*_spec.rb"
       -
         name: "Test / System Tests"
-        run: TEST_BROWSER=rack_test bin/bundle exec rspec spec/system
+        run: TEST_BROWSER=rack_test bundle exec rspec spec/system
 
   lint:
 
