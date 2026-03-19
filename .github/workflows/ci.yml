@@ -21,10 +21,10 @@ jobs:
         with:
           fetch-depth: '1'
       -
-        name: Install ruby 3.3.6
+        name: Install ruby 4.0.1
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.3.6
+          ruby-version: 4.0.1
       -
         name: "Install Dependencies"
         run: bundle install --jobs 4 --retry 3
@@ -52,23 +52,15 @@ jobs:
         with:
           fetch-depth: '1'
       -
-        name: Install ruby 3.3.6
+        name: Install ruby 4.0.1
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.3.6
+          ruby-version: 4.0.1
           bundler-cache: true
       -
         name: "Lint / rubocop"
         run: |
-          gem install rubocop
-          gem install rubocop-performance
-          gem install rubocop-rake
-          gem install rubocop-rspec
-          gem install rubocop-rspec_rails
-          gem install rubocop-rails
-          gem install rubocop-capybara
-          gem install rubocop-factory_bot
-          rubocop --parallel
+          bundle exec rubocop --parallel --format simple
       -
         name: "Lint / erb_lint"
         run: bin/erb_lint --lint-all
