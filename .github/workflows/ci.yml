@@ -12,63 +12,22 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    needs: lint
-
     steps:
       -
         name: Checkout Source Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: '1'
       -
-        name: Install ruby 3.3.6
+        name: Install ruby 4.0.1
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.3.6
-      -
-        name: "Install Dependencies"
-        run: bundle install --jobs 4 --retry 3
-      -
-        name: "Prepare Tests"
-        run: |
-          bin/rails db:environment:set RAILS_ENV=test
-          bin/rails db:drop db:create db:schema:load
-          bin/rails assets:precompile
-      -
-        name: "Test / Unit Tests (controllers, models, helpers, mailers, jobs, lib, requests)"
-        run: bin/bundle exec rspec spec --exclude-pattern "spec/system/**/*_spec.rb"
-      -
-        name: "Test / System Tests"
-        run: TEST_BROWSER=rack_test bin/bundle exec rspec spec/system
-
-  lint:
-
-    runs-on: ubuntu-latest
-
-    steps:
-      -
-        name: Checkout Source Code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: '1'
-      -
-        name: Install ruby 3.3.6
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.3.6
+          ruby-version: 4.0.1
           bundler-cache: true
       -
         name: "Lint / rubocop"
         run: |
-          gem install rubocop
-          gem install rubocop-performance
-          gem install rubocop-rake
-          gem install rubocop-rspec
-          gem install rubocop-rspec_rails
-          gem install rubocop-rails
-          gem install rubocop-capybara
-          gem install rubocop-factory_bot
-          rubocop --parallel
+          bundle exec rubocop --parallel --format simple
       -
         name: "Lint / erb_lint"
         run: bin/erb_lint --lint-all
@@ -82,3 +41,16 @@ jobs:
         run: |
           gem install bundle-audit
           bundle-audit check --update -v
+      -
+        name: "Prepare Tests"
+        run: |
+          bin/rails db:environment:set RAILS_ENV=test
+          bin/rails db:drop db:create db:schema:load
+          bin/rails assets:precompile
+      -
+        name: "Test / Unit Tests (controllers, models, helpers, mailers, jobs, lib, requests)"
+        run: bundle exec rspec spec --exclude-pattern "spec/system/**/*_spec.rb"
+      -
+        name: "Test / System Tests"
+        run: TEST_BROWSER=rack_test bundle exec rspec spec/system
+
