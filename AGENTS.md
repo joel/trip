@@ -66,3 +66,17 @@ The project uses `overcommit`. Commits will fail if the following hooks are not 
 2. **Kanban Management:** You are responsible for moving issues across the [Trip Kanban Board](https://github.com/users/joel/projects/2/views/1) (e.g., _To Do_ -> _In Progress_ -> _Done_).
 
 3. **Repository:** All code must be pushed to the [GitHub Trip Repository](https://github.com/joel/trip).
+
+### Workflow Steps
+
+1. Read `AGENTS.md` / `CLAUDE.md` to understand current project rules.
+2. Create an issue on [GitHub Trip Issues](https://github.com/joel/trip/issues) with a detailed plan, then move it to **Backlog** on the [Trip Kanban Board](https://github.com/users/joel/projects/2/views/1).
+3. Add the appropriate label (e.g., `cleanup`, `feature`, `fix`) to the issue.
+4. Before starting work, assign yourself to the issue and move it to **Ready**.
+5. Once you start working, move the issue to **In Progress**.
+6. Pre-commit validation must include **both** `bundle exec rake project:tests` **and** `bundle exec rake project:system-tests`.
+7. When all tests pass and browser verification succeeds, push the branch, create the PR with a description, and move the issue to **In Review**.
+
+### Workflow Rules
+
+- **Never disable overcommit entirely** (`OVERCOMMIT_DISABLE=1`). When a hook indicates a false positive, skip **only** the specific hook: `SKIP=<HookName> git commit ...` (e.g., `SKIP=RailsSchemaUpToDate`). Always add a footnote in the commit message body explaining which hook was skipped and why, for audit trail purposes.
