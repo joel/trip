@@ -15,17 +15,30 @@ module AppCLI
       true
     end
 
-    desc "app SUBCOMMAND ...ARGS", "Application commands"
+    desc "app ACTION [ENV]", "Manage the application container"
+    long_desc "Actions: start, stop, build, logs, status, connect, console, exec, migrate, " \
+              "schema_dump, setup, prepare, teardown, rebuild, restart"
     subcommand "app", Services::AppCommands
 
-    desc "db SUBCOMMAND ...ARGS", "Database commands"
+    desc "db ACTION [ENV]", "Manage the database container"
+    long_desc "Actions: start, stop, build, logs, status, connect, console, exec, setup, " \
+              "prepare, teardown, rebuild, restart, reset"
     subcommand "db", Services::DbCommands
 
-    desc "mail SUBCOMMAND ...ARGS", "Local mail service commands"
+    desc "mail ACTION", "Manage the local mail service"
+    long_desc "Actions: start, stop, logs, status"
     subcommand "mail", Services::MailCommands
 
-    desc "services SUBCOMMAND ...ARGS", "Service orchestration commands"
+    desc "services ACTION [ENV]", "Orchestrate all services together"
+    long_desc "Actions: list, start, stop, build, setup, status, teardown, restart"
     subcommand "services", Services::ServicesCommands
+
+    def self.help(shell, subcommand = false) # rubocop:disable Style/OptionalBooleanParameter
+      super
+      shell.say ""
+      shell.say "ACTION: (start, stop, build, logs, connect, console, reset, ...)"
+      shell.say "ENV: dev|development (default), prod|production"
+    end
   end
 end
 

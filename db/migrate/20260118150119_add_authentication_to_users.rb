@@ -1,6 +1,6 @@
 class AddAuthenticationToUsers < ActiveRecord::Migration[8.1]
   def change
-    Post.destroy_all
+    execute "DELETE FROM posts" if table_exists?(:posts)
     User.destroy_all
 
     add_column :users, :status, :integer, null: false, default: 1

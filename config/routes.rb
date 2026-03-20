@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  resources :posts
   resources :users
   resource :account, only: %i[show edit update destroy]
   get "welcome/home"
