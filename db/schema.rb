@@ -10,16 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_04_173742) do
-  create_table "posts", id: uuid, force: :cascade do |t|
-    t.text "body"
-    t.datetime "created_at", null: false
-    t.string "title"
-    t.datetime "updated_at", null: false
-    t.string "user_id", limit: 36, null: false
-    t.index ["user_id"], name: "index_posts_on_user_id"
-  end
-
+ActiveRecord::Schema[8.1].define(version: 2026_03_20_125552) do
   create_table "user_email_auth_keys", id: uuid, force: :cascade do |t|
     t.datetime "deadline", null: false
     t.datetime "email_last_sent", default: -> { "CURRENT_TIMESTAMP" }, null: false
@@ -55,7 +46,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_04_173742) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
-  add_foreign_key "posts", "users"
   add_foreign_key "user_email_auth_keys", "users", column: "id"
   add_foreign_key "user_verification_keys", "users", column: "id"
   add_foreign_key "user_webauthn_keys", "users"
