@@ -8,7 +8,7 @@ This document provides instructions and protocols for AI Agents interacting with
 
 - **Live Testing:** Use the `agent-browser` tool to verify changes visually or functionally.
 
-- **Local URL:** `https://catalyst.workeverywhere.docker`
+    - **Local URL:** `https://catalyst.workeverywhere.docker`
 
 ---
 
