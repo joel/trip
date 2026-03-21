@@ -80,3 +80,55 @@ The project uses `overcommit`. Commits will fail if the following hooks are not 
 ### Workflow Rules
 
 - **Never disable overcommit entirely** (`OVERCOMMIT_DISABLE=1`). When a hook indicates a false positive, skip **only** the specific hook: `SKIP=<HookName> git commit ...` (e.g., `SKIP=RailsSchemaUpToDate`). Always add a footnote in the commit message body explaining which hook was skipped and why, for audit trail purposes.
+
+---
+
+## 5. Runtime Test Workflow (Mandatory)
+
+After all code changes are committed and tests pass, you **must** perform a live runtime verification before pushing the branch or creating a PR.
+
+### Steps
+
+1. **Rebuild the app:**
+   ```
+   bin/cli app rebuild
+   ```
+
+2. **Restart the app:**
+   ```
+   bin/cli app restart
+   ```
+
+3. **Start the mail service:**
+   ```
+   bin/cli mail start
+   ```
+
+4. **Verify email delivery** at `https://mail.workeverywhere.docker/` using `agent-browser`.
+
+5. **Visually verify the app** at `https://catalyst.workeverywhere.docker/` using `agent-browser`:
+   - Home page renders correctly (logged out and logged in states).
+   - Authentication flows work (create account, verify email, sign in, sign out).
+   - All CRUD pages render and function (e.g., Users index, show, new, edit).
+   - Account management pages render (show, edit).
+   - Dark mode toggle works.
+   - Flash messages (toasts) appear and dismiss.
+   - Sidebar navigation links and active states are correct.
+
+6. **Fix any runtime errors** found during live testing, commit the fix, and re-run the full test suite before pushing.
+
+### Checklist
+
+This checklist must be satisfied before pushing:
+
+- [ ] `bin/cli app rebuild` succeeds
+- [ ] `bin/cli app restart` health check passes
+- [ ] `bin/cli mail start` is running
+- [ ] Home page renders (logged out)
+- [ ] Create account + email verification flow works
+- [ ] Home page renders (logged in, with auth nav)
+- [ ] Users CRUD pages render correctly
+- [ ] Account page renders correctly
+- [ ] Login page renders correctly
+- [ ] Dark mode toggle works
+- [ ] No runtime errors in any page
