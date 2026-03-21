@@ -3,7 +3,7 @@
 require "rails_helper"
 
 RSpec.describe "Users" do
-  let(:admin) { create(:user, :admin) }
+  let(:admin) { create(:user, :superadmin) }
 
   before { login_as(user: admin) }
 

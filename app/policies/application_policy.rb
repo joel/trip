@@ -5,7 +5,7 @@ class ApplicationPolicy < ActionPolicy::Base
 
   private
 
-  def admin?
-    user&.role?(:admin) || user&.role?(:superadmin)
+  def superadmin?
+    user&.role?(:superadmin)
   end
 end

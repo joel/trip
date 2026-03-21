@@ -3,7 +3,7 @@
 require "rails_helper"
 
 RSpec.describe Views::Users::Edit, type: :request do
-  let(:admin) { User.create!(name: "Admin", email: "admin@example.com", roles: [:admin]) }
+  let(:admin) { User.create!(name: "Admin", email: "admin@example.com", roles: [:superadmin]) }
   let(:user) { User.create!(name: "EditUser", email: "edit-user@example.com") }
 
   before { stub_current_user(admin) }

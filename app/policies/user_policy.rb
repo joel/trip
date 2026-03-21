@@ -2,30 +2,30 @@
 
 class UserPolicy < ApplicationPolicy
   def index?
-    admin?
+    superadmin?
   end
 
   def show?
-    admin?
+    superadmin?
   end
 
   def new?
-    admin?
+    superadmin?
   end
 
   def create?
-    admin?
+    superadmin?
   end
 
   def edit?
-    admin?
+    superadmin?
   end
 
   def update?
-    admin?
+    superadmin?
   end
 
   def destroy?
-    admin?
+    superadmin?
   end
 end
