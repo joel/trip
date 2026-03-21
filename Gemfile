@@ -40,6 +40,9 @@ gem "webauthn"
 # Authorization
 gem "action_policy"
 
+# View components
+gem "phlex-rails", "~> 2.0"
+
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
 
@@ -122,6 +125,7 @@ end
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
+  gem "phlex-testing-capybara", require: false
   gem "rspec-rails"
   gem "selenium-webdriver"
 end

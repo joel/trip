@@ -36,6 +36,21 @@ module Catalyst
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
+    # Configure Zeitwerk namespaces for Phlex components and views
+    module ::Components; end
+    module ::Views; end
+
+    initializer "phlex.autoloader", before: :set_autoload_paths do
+      autoloader = Rails.autoloaders.main
+
+      # Remove default root-namespace mappings
+      autoloader.dirs.delete(Rails.root.join("app/components").to_s)
+
+      # Re-add with explicit namespace
+      autoloader.push_dir(Rails.root.join("app/components"), namespace: Components)
+      autoloader.push_dir(Rails.root.join("app/views"), namespace: Views)
+    end
+
     # Don't generate system test files.
     # config.generators.system_tests = nil
 
