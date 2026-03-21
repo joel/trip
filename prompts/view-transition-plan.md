@@ -4,6 +4,10 @@ Plan: Migrate ERB Views to Phlex Views
 ~/.claude/plans/dynamic-bouncing-sparrow.md
 ```
 
+```
+claude --dangerously-skip-permissions --resume "migrate-erb-to-phlex"
+```
+
 Context
 
 The Catalyst app (Rails 8.1.2, Ruby 4.0.1) uses 32 ERB view files across layout, welcome, users, accounts, shared, and rodauth directories. The goal is to migrate all views (except mailers and PWA
