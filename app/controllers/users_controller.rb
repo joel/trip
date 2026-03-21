@@ -9,18 +9,24 @@ class UsersController < ApplicationController
   # GET /users
   def index
     @users = User.all
+    render Views::Users::Index.new(users: @users)
   end
 
   # GET /users/1
-  def show; end
+  def show
+    render Views::Users::Show.new(user: @user)
+  end
 
   # GET /users/new
   def new
     @user = User.new
+    render Views::Users::New.new(user: @user)
   end
 
   # GET /users/1/edit
-  def edit; end
+  def edit
+    render Views::Users::Edit.new(user: @user)
+  end
 
   # POST /users
   def create
@@ -29,7 +35,8 @@ class UsersController < ApplicationController
     if @user.save
       redirect_to @user, notice: "User was successfully created."
     else
-      render :new, status: :unprocessable_content
+      render Views::Users::New.new(user: @user),
+             status: :unprocessable_content
     end
   end
 
@@ -38,7 +45,8 @@ class UsersController < ApplicationController
     if @user.update(user_params)
       redirect_to @user, notice: "User was successfully updated.", status: :see_other
     else
-      render :edit, status: :unprocessable_content
+      render Views::Users::Edit.new(user: @user),
+             status: :unprocessable_content
     end
   end
 

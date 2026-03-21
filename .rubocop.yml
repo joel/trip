@@ -53,6 +53,8 @@ Metrics/BlockLength:
   Exclude:
     - config/**/*
     - spec/**/*
+    - app/components/**/*
+    - app/views/**/*.rb
 
 Metrics/ClassLength:
   Exclude:
@@ -62,6 +64,13 @@ Metrics/MethodLength:
   Exclude:
     - db/migrate/*
     - spec/**/*
+    - app/components/**/*
+    - app/views/**/*.rb
+
+Metrics/AbcSize:
+  Exclude:
+    - app/components/**/*
+    - app/views/**/*.rb
 
 Metrics/ModuleLength:
   Exclude:
@@ -73,3 +82,15 @@ Rails/ApplicationRecord:
 
 Style/Documentation:
   Enabled: false
+
+# Phlex components don't call super in initialize
+Lint/MissingSuper:
+  Exclude:
+    - app/components/**/*
+    - app/views/**/*.rb
+
+# Phlex uses safe() for trusted Rodauth-generated HTML (CSRF tokens)
+Rails/OutputSafety:
+  Exclude:
+    - app/components/**/*
+    - app/views/**/*.rb

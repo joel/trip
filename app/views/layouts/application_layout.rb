@@ -1,0 +1,70 @@
+# frozen_string_literal: true
+
+module Views
+  module Layouts
+    class ApplicationLayout < Components::Base
+      include Phlex::Rails::Layout
+      include Phlex::Rails::Helpers::CSRFMetaTags
+      include Phlex::Rails::Helpers::CSPMetaTag
+      include Phlex::Rails::Helpers::StyleSheetLinkTag
+      include Phlex::Rails::Helpers::JavaScriptImportmapTags
+      include Phlex::Rails::Helpers::ContentFor
+      include Phlex::Rails::Helpers::Flash
+
+      def view_template(&)
+        doctype
+        html do
+          render_head
+          body(
+            class: "min-h-screen bg-[var(--ha-bg)] text-[var(--ha-text)] antialiased",
+            data: { controller: "theme" }
+          ) do
+            render Components::FlashToasts.new
+            div(class: "flex min-h-screen") do
+              render Components::Sidebar.new
+              render_main(&)
+            end
+          end
+        end
+      end
+
+      private
+
+      def render_head
+        head do
+          title { content_for(:title) || "Catalyst" }
+          meta(name: "viewport", content: "width=device-width,initial-scale=1")
+          meta(name: "apple-mobile-web-app-capable", content: "yes")
+          meta(name: "application-name", content: "Catalyst")
+          meta(name: "mobile-web-app-capable", content: "yes")
+          csrf_meta_tags
+          csp_meta_tag
+          yield(:head) if content_for?(:head)
+          link(rel: "icon", href: "/icon.png", type: "image/png")
+          link(rel: "icon", href: "/icon.svg", type: "image/svg+xml")
+          link(rel: "apple-touch-icon", href: "/icon.png")
+          stylesheet_link_tag(:app, data: { turbo_track: "reload" })
+          javascript_importmap_tags
+        end
+      end
+
+      def render_main(&)
+        main(class: "relative flex-1 overflow-hidden") do
+          render_background_decorations
+          div(class: "relative px-6 py-8 sm:px-10") do
+            div(class: "mx-auto max-w-5xl ha-fade-in", &)
+          end
+        end
+      end
+
+      def render_background_decorations
+        div(class: "pointer-events-none absolute inset-0") do
+          div(class: "absolute -right-32 -top-32 h-80 w-80 rounded-full " \
+                     "bg-[var(--ha-accent)] opacity-20 blur-3xl")
+          div(class: "absolute -bottom-20 left-12 h-72 w-72 rounded-full " \
+                     "bg-[var(--ha-accent-2)] opacity-10 blur-3xl")
+        end
+      end
+    end
+  end
+end

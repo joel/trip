@@ -3,6 +3,8 @@
 class ApplicationController < ActionController::Base
   include ActionPolicy::Controller
 
+  layout -> { Views::Layouts::ApplicationLayout }
+
   authorize :user, through: :current_user
 
   rescue_from ActionPolicy::Unauthorized do
@@ -31,7 +33,7 @@ class ApplicationController < ActionController::Base
     respond_to do |format|
       format.html do
         flash.now[:alert] = message
-        render "shared/unauthorized", status: :unauthorized
+        render Views::Shared::Unauthorized.new, status: :unauthorized
       end
       format.any { head :unauthorized }
     end

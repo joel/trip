@@ -1,13 +1,1 @@
-<div class="ha-card p-6 space-y-6">
-  <div>
-    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ha-muted)]">Email link</p>
-    <h2 class="mt-2 text-lg font-semibold">Send a sign-in link</h2>
-    <p class="mt-2 text-sm text-[var(--ha-muted)]">Receive a one-time link to finish signing in.</p>
-  </div>
-
-  <%= form_with url: rodauth.email_auth_request_path, method: :post, data: { turbo: false }, class: "space-y-6" do |form| %>
-    <%== rodauth.email_auth_request_additional_form_tags %>
-    <%= form.hidden_field rodauth.login_param, value: params[rodauth.login_param] %>
-    <%= form.submit rodauth.email_auth_request_button, class: "ha-button ha-button-primary w-full" %>
-  <% end %>
-</div>
+<%= render Components::RodauthEmailAuthRequestForm.new %>
