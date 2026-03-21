@@ -25,3 +25,12 @@ local:
 #   service: Mirror
 #   primary: local
 #   mirrors: [ amazon, google, microsoft ]
+
+seaweedfs:
+  service: S3
+  endpoint: <%= ENV.fetch("SEAWEEDFS_ENDPOINT", "http://localhost:8333") %>
+  access_key_id: <%= ENV.fetch("SEAWEEDFS_ACCESS_KEY_ID", "any") %>
+  secret_access_key: <%= ENV.fetch("SEAWEEDFS_SECRET_ACCESS_KEY", "any") %>
+  bucket: <%= ENV.fetch("SEAWEEDFS_BUCKET", "catalyst") %>
+  region: us-east-1
+  force_path_style: true

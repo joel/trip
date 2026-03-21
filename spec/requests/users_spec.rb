@@ -25,7 +25,7 @@ RSpec.describe "/users" do
     { name: "Test User", email: nil }
   end
 
-  let!(:admin) { create(:user, :admin) }
+  let!(:admin) { create(:user, :superadmin) }
 
   before { stub_current_user(admin) }
 

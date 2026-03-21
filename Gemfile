@@ -40,6 +40,12 @@ gem "webauthn"
 # Authorization
 gem "action_policy"
 
+# Business logic
+gem "dry-monads", "~> 1.6"
+
+# Export
+gem "gepub"
+
 # View components
 gem "phlex-rails", "~> 2.0"
 

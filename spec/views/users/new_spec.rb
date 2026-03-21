@@ -3,7 +3,7 @@
 require "rails_helper"
 
 RSpec.describe Views::Users::New, type: :request do
-  let(:admin) { User.create!(name: "Admin", email: "admin@example.com", roles: [:admin]) }
+  let(:admin) { User.create!(name: "Admin", email: "admin@example.com", roles: [:superadmin]) }
 
   before { stub_current_user(admin) }
 

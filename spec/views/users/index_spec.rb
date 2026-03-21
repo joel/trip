@@ -3,7 +3,7 @@
 require "rails_helper"
 
 RSpec.describe Views::Users::Index, type: :request do
-  let(:admin) { User.create!(name: "Admin", email: "admin@example.com", roles: [:admin]) }
+  let(:admin) { User.create!(name: "Admin", email: "admin@example.com", roles: [:superadmin]) }
 
   before do
     User.create!(name: "Name", email: "user-one@example.com")

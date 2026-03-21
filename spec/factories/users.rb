@@ -1,4 +1,5 @@
-# Source: https://github.com/thoughtbot/factory_bot_rails/blob/v6.4.2/lib/generators/factory_bot/model/templates/factories.erb
+# frozen_string_literal: true
+
 FactoryBot.define do
   sequence(:email) { |n| "user#{n}@example.com" }
 
@@ -6,9 +7,16 @@ FactoryBot.define do
     name { "MyString" }
     email { generate(:email) }
 
-    trait :admin do
-      roles { [:admin] }
+    trait :superadmin do
+      roles { [:superadmin] }
+    end
+
+    trait :contributor do
+      roles { [:contributor] }
+    end
+
+    trait :viewer do
+      roles { [:viewer] }
     end
   end
-  # Here !!!
 end

@@ -1,4 +1,5 @@
-# Source: https://github.com/rspec/rspec-rails/blob/6-1-maintenance/lib/generators/rspec/model/templates/model_spec.rb
+# frozen_string_literal: true
+
 require "rails_helper"
 
 RSpec.describe User do
@@ -11,21 +12,30 @@ RSpec.describe User do
     end
 
     it "assigns roles via roles=" do
-      user = described_class.new(name: "Admin User", email: "admin@example.com")
+      user = described_class.new(name: "Contributor User", email: "contrib@example.com")
 
-      user.roles = %i[admin member]
+      user.roles = %i[superadmin contributor]
 
-      expect(user.roles).to contain_exactly(:admin, :member)
-      expect(user.role?(:admin)).to be(true)
+      expect(user.roles).to contain_exactly(:superadmin, :contributor)
+      expect(user.role?(:superadmin)).to be(true)
       expect(user.role?(:guest)).to be(false)
     end
 
     it "ignores unknown roles" do
       user = described_class.new(name: "Mixed User", email: "mixed@example.com")
 
-      user.roles = %i[admin unknown]
+      user.roles = %i[superadmin unknown]
 
-      expect(user.roles).to eq([:admin])
+      expect(user.roles).to eq([:superadmin])
+    end
+
+    it "supports viewer role" do
+      user = described_class.new(name: "Viewer User", email: "viewer@example.com")
+
+      user.roles = [:viewer]
+
+      expect(user.role?(:viewer)).to be(true)
+      expect(user.role?(:contributor)).to be(false)
     end
   end
 end

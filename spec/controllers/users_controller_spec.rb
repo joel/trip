@@ -36,7 +36,7 @@ RSpec.describe UsersController do
     { name: "Test User", email: nil }
   end
 
-  let!(:admin) { create(:user, :admin) }
+  let!(:admin) { create(:user, :superadmin) }
 
   # This should return the minimal set of values that should be in the session
   # in order to pass any filters (e.g. authentication) defined in

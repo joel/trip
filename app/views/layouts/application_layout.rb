@@ -43,6 +43,7 @@ module Views
           link(rel: "icon", href: "/icon.png", type: "image/png")
           link(rel: "icon", href: "/icon.svg", type: "image/svg+xml")
           link(rel: "apple-touch-icon", href: "/icon.png")
+          link(rel: "manifest", href: "/manifest.json")
           stylesheet_link_tag(:app, data: { turbo_track: "reload" })
           javascript_importmap_tags
         end
