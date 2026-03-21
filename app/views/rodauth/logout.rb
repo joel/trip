@@ -28,7 +28,7 @@ module Views
               data: { turbo: false },
               class: "space-y-6"
             ) do |form|
-              raw safe(view_context.rodauth.logout_additional_form_tags)
+              raw safe(view_context.rodauth.logout_additional_form_tags.to_s)
 
               if view_context.rodauth.features.include?(:active_sessions)
                 label(

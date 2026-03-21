@@ -29,10 +29,10 @@ module Views
               data: { turbo: false },
               class: "space-y-6"
             ) do |form|
-              raw safe(view_context.rodauth.verify_account_resend_additional_form_tags)
+              raw safe(view_context.rodauth.verify_account_resend_additional_form_tags.to_s)
 
               div(class: "text-sm text-[var(--ha-muted)]") do
-                raw safe(view_context.rodauth.verify_account_resend_explanatory_text)
+                raw safe(view_context.rodauth.verify_account_resend_explanatory_text.to_s)
               end
 
               if view_context.params[view_context.rodauth.login_param]

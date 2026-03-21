@@ -12,7 +12,7 @@ module Components
         data: { turbo: false },
         class: "space-y-6"
       ) do |form|
-        raw safe(view_context.rodauth.login_additional_form_tags)
+        raw safe(view_context.rodauth.login_additional_form_tags.to_s)
 
         if view_context.rodauth.skip_login_field_on_login?
           render_readonly_login_field(form)

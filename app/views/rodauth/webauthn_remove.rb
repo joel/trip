@@ -30,7 +30,7 @@ module Views
               data: { turbo: false },
               class: "space-y-6"
             ) do |form|
-              raw safe(view_context.rodauth.webauthn_remove_additional_form_tags)
+              raw safe(view_context.rodauth.webauthn_remove_additional_form_tags.to_s)
 
               div(class: "flex flex-col gap-3") do
                 view_context.rodauth.account_webauthn_usage.each do |id, last_use|

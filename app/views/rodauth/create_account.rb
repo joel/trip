@@ -29,7 +29,7 @@ module Views
               data: { turbo: false },
               class: "space-y-6"
             ) do |form|
-              raw safe(view_context.rodauth.create_account_additional_form_tags)
+              raw safe(view_context.rodauth.create_account_additional_form_tags.to_s)
 
               render_login_field(form)
               render_login_confirm_field(form) if view_context.rodauth.require_login_confirmation?

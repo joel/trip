@@ -26,7 +26,7 @@ module Views
           render Components::RodauthFlash.new
 
           div(class: "grid gap-4 md:grid-cols-2") do
-            raw safe(view_context.rodauth.render_multi_phase_login_forms)
+            raw safe(view_context.rodauth.render_multi_phase_login_forms.to_s)
           end
 
           div(

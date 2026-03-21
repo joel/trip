@@ -27,7 +27,7 @@ module Views
               method: :post,
               data: { turbo: false }
             ) do |form|
-              raw safe(view_context.rodauth.email_auth_additional_form_tags)
+              raw safe(view_context.rodauth.email_auth_additional_form_tags.to_s)
 
               form.submit(
                 view_context.rodauth.login_button,

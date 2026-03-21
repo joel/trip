@@ -29,7 +29,7 @@ module Views
               data: { turbo: false },
               class: "space-y-6"
             ) do |form|
-              raw safe(view_context.rodauth.verify_account_additional_form_tags)
+              raw safe(view_context.rodauth.verify_account_additional_form_tags.to_s)
 
               if view_context.rodauth.verify_account_set_password?
                 render_password_field(form)

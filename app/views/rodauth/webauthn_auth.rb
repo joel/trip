@@ -27,7 +27,7 @@ module Views
             data: { credential_options: cred.as_json.to_json, turbo: false },
             class: "space-y-6"
           ) do |form|
-            raw safe(view_context.rodauth.webauthn_auth_additional_form_tags)
+            raw safe(view_context.rodauth.webauthn_auth_additional_form_tags.to_s)
 
             form.hidden_field(
               view_context.rodauth.webauthn_auth_challenge_param,

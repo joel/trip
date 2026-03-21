@@ -22,7 +22,7 @@ module Components
           data: { turbo: false },
           class: "space-y-6"
         ) do |form|
-          raw safe(view_context.rodauth.email_auth_request_additional_form_tags)
+          raw safe(view_context.rodauth.email_auth_request_additional_form_tags.to_s)
           form.hidden_field(
             view_context.rodauth.login_param,
             value: view_context.params[view_context.rodauth.login_param]
