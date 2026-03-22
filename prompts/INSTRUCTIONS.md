@@ -11,10 +11,11 @@ Steps:
 - Read `PRPs/trip-journal.md`
 - Read CLAUDE.md
 - Use the project skill /github-workflow to execute the PLAN `prompts/Phase X.md`
-- Test with the project skill /runtime-test
-- Run the project skill /qa-review
-- Run the project skill /security-review │ Security audit — auth, input validation, data exposure
-- Run the project skill /ux-review       │ UX review — flow, accessibility, responsive checks
+- Write the Steps taken in `prompts/Phase X - Steps.md` for trail and audit
+- QA at runtime is everything works, use the project skill /runtime-test
+- Run the project skill /qa-review, write the report in `prompts/Phase X - QA Review.md` for trail and audit
+- Run the project skill /security-review, write the report in `prompts/Phase X - Security Review.md` for trail and audit
+- Run the project skill /ux-review, write the report in `prompts/Phase X - UX Review.md` for trail and audit
 
 # After completion
 
