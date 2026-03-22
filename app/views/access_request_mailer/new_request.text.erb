@@ -1,0 +1,7 @@
+A new access request has been submitted.
+
+Email: <%= @access_request.email %>
+Submitted: <%= @access_request.created_at.strftime("%B %d, %Y at %H:%M UTC") %>
+
+Review access requests at:
+<%= access_requests_url %>

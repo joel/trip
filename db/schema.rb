@@ -10,7 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_21_162145) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_22_093252) do
+  create_table "access_requests", id: uuid, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "email", null: false
+    t.datetime "reviewed_at"
+    t.string "reviewed_by_id", limit: 36
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_access_requests_on_email"
+    t.index ["reviewed_by_id"], name: "index_access_requests_on_reviewed_by_id"
+  end
+
   create_table "action_text_rich_texts", id: uuid, force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -49,6 +60,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_21_162145) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "invitations", id: uuid, force: :cascade do |t|
+    t.datetime "accepted_at"
+    t.datetime "created_at", null: false
+    t.string "email", null: false
+    t.datetime "expires_at", null: false
+    t.string "inviter_id", limit: 36, null: false
+    t.integer "status", default: 0, null: false
+    t.string "token", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_invitations_on_email"
+    t.index ["inviter_id"], name: "index_invitations_on_inviter_id"
+    t.index ["token"], name: "index_invitations_on_token", unique: true
+  end
+
   create_table "user_email_auth_keys", id: uuid, force: :cascade do |t|
     t.datetime "deadline", null: false
     t.datetime "email_last_sent", default: -> { "CURRENT_TIMESTAMP" }, null: false
@@ -84,8 +109,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_21_162145) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "access_requests", "users", column: "reviewed_by_id"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "invitations", "users", column: "inviter_id"
   add_foreign_key "user_email_auth_keys", "users", column: "id"
   add_foreign_key "user_verification_keys", "users", column: "id"
   add_foreign_key "user_webauthn_keys", "users"

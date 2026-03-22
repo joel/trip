@@ -83,6 +83,15 @@ class RodauthMain < Rodauth::Rails::Auth
       webauthn_rp_name { ENV.fetch("WEBAUTHN_RP_NAME", "Catalyst") }
       webauthn_user_verification "preferred"
 
+      after_create_account do
+        token = param_or_nil("invitation_token")
+        if token
+          result = ::Invitations::Accept.new.call(token: token)
+          # Log failure but don't block account creation
+          Rails.logger.warn("Invitation accept failed: #{result}") if result.failure?
+        end
+      end
+
       logout_redirect "/"
       verify_account_redirect { login_redirect }
     end

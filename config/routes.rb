@@ -2,6 +2,17 @@ Rails.application.routes.draw do
   resources :users
   resource :account, only: %i[show edit update destroy]
   get "welcome/home"
+
+  # Access & onboarding
+  get "request-access", to: "access_requests#new", as: :new_access_request
+  post "request-access", to: "access_requests#create", as: :submit_access_request
+  resources :access_requests, only: [:index] do
+    member do
+      patch :approve
+      patch :reject
+    end
+  end
+  resources :invitations, only: %i[index new create]
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
