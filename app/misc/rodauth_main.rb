@@ -38,10 +38,20 @@ class RodauthMain < Rodauth::Rails::Auth
 
         def before_create_account
           super
+          validate_invitation_token
           account[:id] ||= SecureRandom.uuid
           timestamp = Time.current
           account[:created_at] ||= timestamp
           account[:updated_at] ||= timestamp
+        end
+
+        def validate_invitation_token
+          token = param_or_nil("invitation_token")
+          invitation = token && ::Invitation.valid_tokens.find_by(token: token)
+          return if invitation
+
+          set_redirect_error_flash "A valid invitation is required to create an account."
+          redirect create_account_path
         end
 
         def verify_account_view
@@ -85,11 +95,9 @@ class RodauthMain < Rodauth::Rails::Auth
 
       after_create_account do
         token = param_or_nil("invitation_token")
-        if token
-          result = ::Invitations::Accept.new.call(token: token)
-          # Log failure but don't block account creation
-          Rails.logger.warn("Invitation accept failed: #{result}") if result.failure?
-        end
+        return unless token
+
+        ::Invitations::Accept.new.call(token: token)
       end
 
       logout_redirect "/"
