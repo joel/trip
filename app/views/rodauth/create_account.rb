@@ -54,6 +54,8 @@ module Views
       def render_login_field(form)
         login_error = view_context.rodauth.field_error(view_context.rodauth.login_param)
         aria_attrs = login_error ? { invalid: true, describedby: "login_error_message" } : {}
+        invited_email = invitation_email
+        field_value = invited_email || view_context.params[view_context.rodauth.login_param]
 
         div do
           form.label(
@@ -63,13 +65,19 @@ module Views
           )
           form.email_field(
             view_context.rodauth.login_param,
-            value: view_context.params[view_context.rodauth.login_param],
+            value: field_value,
             id: "login",
             autocomplete: "email",
             required: true,
+            readonly: invited_email.present?,
             class: "ha-input mt-2",
             aria: aria_attrs
           )
+          if invited_email
+            p(class: "mt-1 text-xs text-[var(--ha-muted)]") do
+              plain "This email is linked to your invitation and cannot be changed."
+            end
+          end
           if login_error
             span(
               class: "mt-1 block text-xs text-red-500",
@@ -150,6 +158,13 @@ module Views
         return unless token
 
         form.hidden_field(:invitation_token, value: token)
+      end
+
+      def invitation_email
+        token = view_context.params[:invitation_token]
+        return unless token
+
+        Invitation.valid_tokens.find_by(token: token)&.email
       end
 
       def render_password_confirm_field(form)
