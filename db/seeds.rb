@@ -13,3 +13,23 @@ admin.roles = [:superadmin]
 admin.save!
 
 puts "Seeded superadmin: #{admin.email} (id: #{admin.id})"
+
+# Seed sample trip
+trip = Trip.find_or_create_by!(name: "Sample Trip") do |t|
+  t.created_by = admin
+  t.description = "A sample trip to demonstrate the journal."
+  t.state = :planning
+end
+
+TripMembership.find_or_create_by!(trip: trip, user: admin) do |tm|
+  tm.role = :contributor
+end
+
+JournalEntry.find_or_create_by!(trip: trip, name: "Arrival Day") do |je|
+  je.author = admin
+  je.entry_date = Date.current
+  je.location_name = "Sample Location"
+  je.description = "First day of our sample trip."
+end
+
+puts "Seeded sample trip: #{trip.name} (id: #{trip.id})"

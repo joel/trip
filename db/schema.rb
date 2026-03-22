@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_22_093252) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_22_200003) do
   create_table "access_requests", id: uuid, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -74,6 +74,51 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_22_093252) do
     t.index ["token"], name: "index_invitations_on_token", unique: true
   end
 
+  create_table "journal_entries", id: uuid, force: :cascade do |t|
+    t.string "actor_id"
+    t.string "actor_type"
+    t.string "author_id", limit: 36, null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.date "entry_date", null: false
+    t.decimal "latitude", precision: 10, scale: 7
+    t.string "location_name"
+    t.decimal "longitude", precision: 10, scale: 7
+    t.string "name", null: false
+    t.string "telegram_chat_id"
+    t.string "telegram_message_id"
+    t.string "trip_id", limit: 36, null: false
+    t.datetime "updated_at", null: false
+    t.index ["author_id"], name: "index_journal_entries_on_author_id"
+    t.index ["telegram_message_id"], name: "index_journal_entries_on_telegram_message_id"
+    t.index ["trip_id", "entry_date", "created_at", "id"], name: "idx_journal_entries_chronological"
+    t.index ["trip_id"], name: "index_journal_entries_on_trip_id"
+  end
+
+  create_table "trip_memberships", id: uuid, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "role", default: 0, null: false
+    t.string "trip_id", limit: 36, null: false
+    t.datetime "updated_at", null: false
+    t.string "user_id", limit: 36, null: false
+    t.index ["trip_id", "user_id"], name: "index_trip_memberships_on_trip_id_and_user_id", unique: true
+    t.index ["trip_id"], name: "index_trip_memberships_on_trip_id"
+    t.index ["user_id"], name: "index_trip_memberships_on_user_id"
+  end
+
+  create_table "trips", id: uuid, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "created_by_id", limit: 36, null: false
+    t.text "description"
+    t.date "end_date"
+    t.json "metadata", default: {}, null: false
+    t.string "name", null: false
+    t.date "start_date"
+    t.integer "state", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_by_id"], name: "index_trips_on_created_by_id"
+  end
+
   create_table "user_email_auth_keys", id: uuid, force: :cascade do |t|
     t.datetime "deadline", null: false
     t.datetime "email_last_sent", default: -> { "CURRENT_TIMESTAMP" }, null: false
@@ -113,6 +158,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_22_093252) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "invitations", "users", column: "inviter_id"
+  add_foreign_key "journal_entries", "trips"
+  add_foreign_key "journal_entries", "users", column: "author_id"
+  add_foreign_key "trip_memberships", "trips"
+  add_foreign_key "trip_memberships", "users"
+  add_foreign_key "trips", "users", column: "created_by_id"
   add_foreign_key "user_email_auth_keys", "users", column: "id"
   add_foreign_key "user_verification_keys", "users", column: "id"
   add_foreign_key "user_webauthn_keys", "users"

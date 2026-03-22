@@ -13,6 +13,16 @@ Rails.application.routes.draw do
     end
   end
   resources :invitations, only: %i[index new create]
+
+  # Core domain
+  resources :trips do
+    resources :journal_entries, except: [:index]
+    resources :trip_memberships, only: %i[index new create destroy],
+                                 path: "members"
+    member do
+      patch :transition
+    end
+  end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
