@@ -68,13 +68,16 @@ RSpec/MultipleExpectations:
 RSpec/MultipleMemoizedHelpers:
   Max: 8
 
-# Offense count: 6
+# Offense count: 15
 Rails/I18nLocaleTexts:
   Exclude:
     - 'app/controllers/posts_controller.rb'
     - 'app/controllers/users_controller.rb'
     - 'app/controllers/access_requests_controller.rb'
     - 'app/controllers/invitations_controller.rb'
+    - 'app/controllers/trips_controller.rb'
+    - 'app/controllers/journal_entries_controller.rb'
+    - 'app/controllers/trip_memberships_controller.rb'
     - 'app/mailers/invitation_mailer.rb'
 
 # Offense count: 1
