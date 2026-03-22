@@ -47,8 +47,9 @@ class RodauthMain < Rodauth::Rails::Auth
 
         def validate_invitation_token
           token = param_or_nil("invitation_token")
+          email = param(login_param)
           invitation = token && ::Invitation.valid_tokens.find_by(token: token)
-          return if invitation
+          return if invitation && invitation.email.downcase == email.to_s.downcase
 
           set_redirect_error_flash "A valid invitation is required to create an account."
           redirect create_account_path
@@ -97,7 +98,7 @@ class RodauthMain < Rodauth::Rails::Auth
         token = param_or_nil("invitation_token")
         return unless token
 
-        ::Invitations::Accept.new.call(token: token)
+        ::Invitations::Accept.new.call(token: token, email: account[login_column])
       end
 
       logout_redirect "/"
