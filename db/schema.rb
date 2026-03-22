@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_22_200003) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_22_200008) do
   create_table "access_requests", id: uuid, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -60,6 +60,45 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_22_200003) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "checklist_items", id: uuid, force: :cascade do |t|
+    t.string "checklist_section_id", limit: 36, null: false
+    t.boolean "completed", default: false, null: false
+    t.string "content", null: false
+    t.datetime "created_at", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["checklist_section_id"], name: "index_checklist_items_on_checklist_section_id"
+  end
+
+  create_table "checklist_sections", id: uuid, force: :cascade do |t|
+    t.string "checklist_id", limit: 36, null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["checklist_id"], name: "index_checklist_sections_on_checklist_id"
+  end
+
+  create_table "checklists", id: uuid, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.integer "position", default: 0, null: false
+    t.string "trip_id", limit: 36, null: false
+    t.datetime "updated_at", null: false
+    t.index ["trip_id"], name: "index_checklists_on_trip_id"
+  end
+
+  create_table "comments", id: uuid, force: :cascade do |t|
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.string "journal_entry_id", limit: 36, null: false
+    t.datetime "updated_at", null: false
+    t.string "user_id", limit: 36, null: false
+    t.index ["journal_entry_id", "created_at"], name: "index_comments_on_journal_entry_id_and_created_at"
+    t.index ["journal_entry_id"], name: "index_comments_on_journal_entry_id"
+    t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
   create_table "invitations", id: uuid, force: :cascade do |t|
     t.datetime "accepted_at"
     t.datetime "created_at", null: false
@@ -93,6 +132,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_22_200003) do
     t.index ["telegram_message_id"], name: "index_journal_entries_on_telegram_message_id"
     t.index ["trip_id", "entry_date", "created_at", "id"], name: "idx_journal_entries_chronological"
     t.index ["trip_id"], name: "index_journal_entries_on_trip_id"
+  end
+
+  create_table "reactions", id: uuid, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "emoji", null: false
+    t.string "reactable_id", limit: 36, null: false
+    t.string "reactable_type", null: false
+    t.string "user_id", limit: 36, null: false
+    t.index ["reactable_type", "reactable_id", "user_id", "emoji"], name: "idx_reactions_uniqueness", unique: true
+    t.index ["reactable_type", "reactable_id"], name: "index_reactions_on_reactable_type_and_reactable_id"
+    t.index ["user_id"], name: "index_reactions_on_user_id"
   end
 
   create_table "trip_memberships", id: uuid, force: :cascade do |t|
@@ -157,9 +207,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_22_200003) do
   add_foreign_key "access_requests", "users", column: "reviewed_by_id"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "checklist_items", "checklist_sections"
+  add_foreign_key "checklist_sections", "checklists"
+  add_foreign_key "checklists", "trips"
+  add_foreign_key "comments", "journal_entries"
+  add_foreign_key "comments", "users"
   add_foreign_key "invitations", "users", column: "inviter_id"
   add_foreign_key "journal_entries", "trips"
   add_foreign_key "journal_entries", "users", column: "author_id"
+  add_foreign_key "reactions", "users"
   add_foreign_key "trip_memberships", "trips"
   add_foreign_key "trip_memberships", "users"
   add_foreign_key "trips", "users", column: "created_by_id"

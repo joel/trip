@@ -130,6 +130,28 @@ RSpec.describe Trip do
     end
   end
 
+  describe "#commentable?" do
+    it "returns true for planning" do
+      expect(build(:trip, state: :planning)).to be_commentable
+    end
+
+    it "returns true for started" do
+      expect(build(:trip, state: :started)).to be_commentable
+    end
+
+    it "returns true for finished" do
+      expect(build(:trip, state: :finished)).to be_commentable
+    end
+
+    it "returns false for cancelled" do
+      expect(build(:trip, state: :cancelled)).not_to be_commentable
+    end
+
+    it "returns false for archived" do
+      expect(build(:trip, state: :archived)).not_to be_commentable
+    end
+  end
+
   describe "derived dates" do
     let(:trip) { create(:trip) }
 

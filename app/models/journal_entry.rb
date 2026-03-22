@@ -6,6 +6,8 @@ class JournalEntry < ApplicationRecord
 
   has_rich_text :body
   has_many_attached :images
+  has_many :comments, dependent: :destroy
+  has_many :reactions, as: :reactable, dependent: :destroy
 
   validates :name, presence: true
   validates :entry_date, presence: true

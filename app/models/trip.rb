@@ -19,6 +19,8 @@ class Trip < ApplicationRecord
   has_many :trip_memberships, dependent: :destroy
   has_many :members, through: :trip_memberships, source: :user
   has_many :journal_entries, dependent: :destroy
+  has_many :checklists, dependent: :destroy
+  has_many :reactions, as: :reactable, dependent: :destroy
 
   validates :name, presence: true
 
@@ -37,6 +39,10 @@ class Trip < ApplicationRecord
 
   def writable?
     planning? || started?
+  end
+
+  def commentable?
+    planning? || started? || finished?
   end
 
   def effective_start_date
