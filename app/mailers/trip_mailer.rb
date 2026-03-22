@@ -2,7 +2,9 @@
 
 class TripMailer < ApplicationMailer
   def member_added(trip_membership_id)
-    @membership = TripMembership.find(trip_membership_id)
+    @membership = TripMembership.find_by(id: trip_membership_id)
+    return unless @membership
+
     @trip = @membership.trip
     @user = @membership.user
 

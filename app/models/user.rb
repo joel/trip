@@ -8,10 +8,10 @@ class User < ApplicationRecord
   has_many :trips, through: :trip_memberships
   has_many :created_trips, class_name: "Trip",
                            foreign_key: :created_by_id,
-                           dependent: :nullify,
+                           dependent: :restrict_with_error,
                            inverse_of: :created_by
   has_many :journal_entries, foreign_key: :author_id,
-                             dependent: :nullify,
+                             dependent: :restrict_with_error,
                              inverse_of: :author
 
   validates :email, presence: true, uniqueness: { case_sensitive: false }
