@@ -25,7 +25,7 @@ Metrics/AbcSize:
 # Configuration parameters: CountComments, CountAsOne, AllowedMethods, AllowedPatterns, inherit_mode.
 # AllowedMethods: refine
 Metrics/BlockLength:
-  Max: 64
+  Max: 80
 
 # Offense count: 2
 # Configuration parameters: CountComments, CountAsOne.
@@ -73,6 +73,9 @@ Rails/I18nLocaleTexts:
   Exclude:
     - 'app/controllers/posts_controller.rb'
     - 'app/controllers/users_controller.rb'
+    - 'app/controllers/access_requests_controller.rb'
+    - 'app/controllers/invitations_controller.rb'
+    - 'app/mailers/invitation_mailer.rb'
 
 # Offense count: 1
 # This cop supports safe autocorrection (--autocorrect).

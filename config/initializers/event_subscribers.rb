@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 # Event subscriber registry for Rails.event structured events.
-# Subscribers will be registered here as domain features are implemented.
-#
-# Example:
-#   Rails.event.subscribe("trip.created", TripSubscriber)
+
+Rails.application.config.after_initialize do
+  Rails.event.subscribe(AccessRequestSubscriber.new) { |e| e[:name].start_with?("access_request.") }
+  Rails.event.subscribe(InvitationSubscriber.new) { |e| e[:name] == "invitation.sent" }
+  Rails.event.subscribe(OnboardingSubscriber.new) { |e| e[:name] == "invitation.accepted" }
+end

@@ -83,13 +83,14 @@ module Views
       def render_signin_card
         div(class: "ha-card p-6 ha-rise", style: "animation-delay: 240ms;") do
           p(class: "text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ha-muted)]") { "Access" }
-          h2(class: "mt-2 text-2xl font-semibold") { "Sign in faster" }
+          h2(class: "mt-2 text-2xl font-semibold") { "Private application" }
           p(class: "mt-3 text-sm text-[var(--ha-muted)]") do
-            plain "Use a one-time email link or a passkey to access your workspace."
+            plain "This is an invite-only app. Request access or sign in if you already have an account."
           end
           div(class: "mt-5 flex flex-wrap gap-2") do
-            link_to("Sign in", view_context.rodauth.login_path, class: "ha-button ha-button-primary")
-            link_to("Create account", view_context.rodauth.create_account_path,
+            link_to("Request Access", view_context.new_access_request_path,
+                    class: "ha-button ha-button-primary")
+            link_to("Sign in", view_context.rodauth.login_path,
                     class: "ha-button ha-button-secondary")
           end
         end

@@ -61,6 +61,22 @@ module Components
               delay: "120ms"
             )
           end
+          if view_context.allowed_to?(:index?, AccessRequest)
+            render Components::NavItem.new(
+              path: view_context.access_requests_path,
+              label: "Requests",
+              icon: Components::Icons::Plus.new,
+              active: view_context.controller_name == "access_requests",
+              delay: "160ms"
+            )
+            render Components::NavItem.new(
+              path: view_context.invitations_path,
+              label: "Invitations",
+              icon: Components::Icons::CreateAccount.new,
+              active: view_context.controller_name == "invitations",
+              delay: "200ms"
+            )
+          end
         end
       end
     end
