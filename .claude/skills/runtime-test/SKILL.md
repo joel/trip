@@ -154,6 +154,54 @@ Verify: dark background, light text, theme persists across elements.
 agent-browser close
 ```
 
+## Step 11: Verify User Journeys (Critical)
+
+Page rendering alone does not guarantee correctness. You MUST test multi-step user journeys end-to-end, including downstream effects like emails and database state changes.
+
+### Access & Onboarding Journey
+
+```bash
+# 1. Submit access request (logged out)
+agent-browser open https://catalyst.workeverywhere.docker/request-access
+# Fill email, submit, verify flash toast
+
+# 2. Check admin notification email
+curl -sk https://mail.workeverywhere.docker/messages | python3 -c "import json,sys; [print(m['id'],m['subject'],m['recipients']) for m in json.load(sys.stdin)]"
+
+# 3. Log in as admin, approve the request
+agent-browser open https://catalyst.workeverywhere.docker/access_requests
+# Click Approve
+
+# 4. Verify invitation email was AUTO-SENT to the requester
+curl -sk https://mail.workeverywhere.docker/messages | python3 -c "import json,sys; [print(m['id'],m['subject'],m['recipients']) for m in json.load(sys.stdin)]"
+# Must see "You've been invited to Trip Journal" to the requester's email
+
+# 5. Extract invitation token and sign up
+curl -sk https://mail.workeverywhere.docker/messages/<N>.plain
+# Navigate to the invitation URL, fill matching email, create account
+
+# 6. Verify account via email link
+# Check for "Verify Account" email, navigate to verify URL
+
+# 7. Confirm user is logged in after verification
+```
+
+If any step produces no email, no redirect, or an error — the flow is broken and must be fixed before pushing.
+
+### Shell Tips for Runtime Testing
+
+- **Checking emails:** `curl -sk https://mail.workeverywhere.docker/messages` returns JSON array
+- **Reading email body:** `curl -sk https://mail.workeverywhere.docker/messages/<ID>.plain`
+- **Clearing emails:** `curl -sk -X DELETE https://mail.workeverywhere.docker/messages`
+- **Running Rails code in container:** Use heredoc to avoid shell escaping issues with `!`:
+  ```bash
+  cat > /tmp/script.rb <<'RUBY'
+  user = User.find_by(email: "test@example.com")
+  user.save!
+  RUBY
+  docker exec -i catalyst-app-dev bin/rails runner - < /tmp/script.rb
+  ```
+
 ## Handling Failures
 
 If any page shows an error:
@@ -165,6 +213,13 @@ If any page shows an error:
 5. Commit the fix
 6. Restart the app with `bin/cli app restart`
 7. Re-verify the failing page
+
+If a multi-step journey fails silently (no error, but expected side-effect missing):
+
+1. Check the Rails logs: `docker logs catalyst-app-dev --tail 50`
+2. Check if the event was emitted and subscriber dispatched the job
+3. Check if the mailer was called (look for email in MailCatcher)
+4. Fix the gap in the event/subscriber/job chain
 
 ## Checklist
 
@@ -187,4 +242,6 @@ Report results using this checklist:
 - [ ] Login page renders correctly
 - [ ] Dark mode toggle works
 - [ ] No runtime errors on any page
+- [ ] Access request → approval → invitation email journey works
+- [ ] Invitation → signup → verification journey works
 ```
