@@ -2,8 +2,9 @@
 
 module Invitations
   class Accept < BaseAction
-    def call(token:)
+    def call(token:, email: nil)
       invitation = yield find_invitation(token)
+      yield verify_email(invitation, email) if email
       yield accept_invitation(invitation)
       yield emit_event(invitation)
       Success(invitation)
@@ -16,6 +17,12 @@ module Invitations
       return Failure(:not_found) unless invitation
 
       Success(invitation)
+    end
+
+    def verify_email(invitation, email)
+      return Success() if invitation.email.downcase == email.downcase
+
+      Failure(:email_mismatch)
     end
 
     def accept_invitation(invitation)

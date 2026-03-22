@@ -3,15 +3,35 @@
 require "rails_helper"
 
 RSpec.describe Invitations::Accept do
-  let(:invitation) { create(:invitation) }
+  let(:invitation) { create(:invitation, email: "invited@example.com") }
 
   describe "#call" do
-    it "accepts a valid invitation" do
+    it "accepts a valid invitation without email check" do
       result = described_class.new.call(token: invitation.token)
 
       expect(result).to be_success
       expect(invitation.reload).to be_accepted
       expect(invitation.accepted_at).to be_present
+    end
+
+    it "accepts when email matches invitation" do
+      result = described_class.new.call(token: invitation.token, email: "invited@example.com")
+
+      expect(result).to be_success
+      expect(invitation.reload).to be_accepted
+    end
+
+    it "accepts with case-insensitive email match" do
+      result = described_class.new.call(token: invitation.token, email: "Invited@Example.COM")
+
+      expect(result).to be_success
+    end
+
+    it "returns failure when email does not match" do
+      result = described_class.new.call(token: invitation.token, email: "other@example.com")
+
+      expect(result).to be_failure
+      expect(result.failure).to eq(:email_mismatch)
     end
 
     it "returns failure for unknown token" do
