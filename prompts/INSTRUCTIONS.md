@@ -10,20 +10,24 @@ Use the project skill /runtime-test and check that everything is working as expe
 
 # When finished
 
-The PR has been merged. Please check the base branch, pull the latest changes, draft the next phase PLAN, and wait for my approval before starting any work.
-
-Follow these steps:
-- Write the plan in `prompts/Phase 3.md`
-- Clear the context before implementing.
-- Read CLAUDE.md and use the project skill /github-workflow to execute the Phase.
-- Bypass permissions
+The PR has been merged:
+- Check the base branch
+- Pull the latest changes
+- Draft the next phase PLAN.
+- Wait for my approval before starting any work.
 
 # New Phase
 
+Follow these steps:
+- Write the plan in `prompts/Phase X.md`
+
+/clear # Clear the context to start a new cone
+
+# Execution
+
 Steps:
 - Read `PRPs/trip-journal.md`
-- Execute the plan in `prompts/Phase 3.md`
 - Read CLAUDE.md
-- Use the project skill /github-workflow to execute the PLAN.
+- Use the project skill /github-workflow to execute the PLAN `prompts/Phase X.md`
 - Test with the project skill /runtime-test
 
