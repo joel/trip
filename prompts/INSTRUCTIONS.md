@@ -1,5 +1,7 @@
 # After completion
 
+Write the Steps taken in `prompts/Phase X - Steps.md` for trail and audit
+
 Please go through the PR comments and share your thoughts.
 
 Fix one by one (commit) the comments
