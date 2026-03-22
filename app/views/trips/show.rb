@@ -50,6 +50,11 @@ module Views
           view_context.trip_trip_memberships_path(@trip),
           class: "ha-button ha-button-secondary"
         )
+        link_to(
+          "Checklists",
+          view_context.trip_checklists_path(@trip),
+          class: "ha-button ha-button-secondary"
+        )
         if view_context.allowed_to?(:destroy?, @trip)
           button_to(
             "Delete", view_context.trip_path(@trip),

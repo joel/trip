@@ -30,6 +30,8 @@ module Views
           render_entry_details
           render_body if @entry.body.present?
           render_images if @entry.images.attached?
+          render_reactions
+          render_comments
         end
       end
 
@@ -90,6 +92,48 @@ module Views
             )
           end
         end
+      end
+
+      def render_reactions
+        div(class: "ha-card p-4") do
+          render Components::ReactionSummary.new(
+            trip: @trip, journal_entry: @entry
+          )
+        end
+      end
+
+      def render_comments
+        div(class: "space-y-4") do
+          h3(class: "text-lg font-semibold " \
+                    "text-[var(--ha-text)]") do
+            plain "Comments"
+          end
+
+          comments = @entry.comments.chronological
+                           .includes(:user)
+          comments.each do |comment|
+            render Components::CommentCard.new(
+              trip: @trip, journal_entry: @entry,
+              comment: comment
+            )
+          end
+
+          render_comment_form
+        end
+      end
+
+      def render_comment_form
+        new_comment = @entry.comments.new(
+          user: view_context.current_user
+        )
+        return unless view_context.allowed_to?(
+          :create?, new_comment
+        )
+
+        render Components::CommentForm.new(
+          trip: @trip, journal_entry: @entry,
+          comment: Comment.new
+        )
       end
     end
   end
