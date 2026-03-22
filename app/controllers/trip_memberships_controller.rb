@@ -3,6 +3,8 @@
 class TripMembershipsController < ApplicationController
   before_action :require_authenticated_user!
   before_action :set_trip
+  before_action :set_membership, only: [:destroy]
+  before_action :authorize_membership!
 
   def index
     @memberships = @trip.trip_memberships.includes(:user)
@@ -38,8 +40,7 @@ class TripMembershipsController < ApplicationController
   end
 
   def destroy
-    membership = @trip.trip_memberships.find(params[:id])
-    TripMemberships::Remove.new.call(membership: membership)
+    TripMemberships::Remove.new.call(membership: @membership)
     redirect_to trip_trip_memberships_path(@trip),
                 notice: "Member removed.", status: :see_other
   end
@@ -48,6 +49,14 @@ class TripMembershipsController < ApplicationController
 
   def set_trip
     @trip = Trip.find(params[:trip_id])
+  end
+
+  def set_membership
+    @membership = @trip.trip_memberships.find(params[:id])
+  end
+
+  def authorize_membership!
+    authorize!(@membership || @trip.trip_memberships.new)
   end
 
   def membership_params

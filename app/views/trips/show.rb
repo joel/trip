@@ -41,19 +41,23 @@ module Views
       private
 
       def render_header_actions
-        link_to("Edit", view_context.edit_trip_path(@trip),
-                class: "ha-button ha-button-secondary")
+        if view_context.allowed_to?(:edit?, @trip)
+          link_to("Edit", view_context.edit_trip_path(@trip),
+                  class: "ha-button ha-button-secondary")
+        end
         link_to(
           "Members",
           view_context.trip_trip_memberships_path(@trip),
           class: "ha-button ha-button-secondary"
         )
-        button_to(
-          "Delete", view_context.trip_path(@trip),
-          method: :delete,
-          class: "ha-button ha-button-danger",
-          form: { class: "inline-flex" }
-        )
+        if view_context.allowed_to?(:destroy?, @trip)
+          button_to(
+            "Delete", view_context.trip_path(@trip),
+            method: :delete,
+            class: "ha-button ha-button-danger",
+            form: { class: "inline-flex" }
+          )
+        end
         link_to("Back to trips", view_context.trips_path,
                 class: "ha-button ha-button-secondary")
       end
@@ -91,6 +95,8 @@ module Views
       end
 
       def render_state_transitions
+        return unless view_context.allowed_to?(:transition?, @trip)
+
         transitions = Trip::VALID_TRANSITIONS[@trip.state.to_sym]
         return if transitions.blank?
 
@@ -126,7 +132,9 @@ module Views
                       "text-[var(--ha-text)]") do
               plain "Journal Entries"
             end
-            if @trip.writable?
+            if view_context.allowed_to?(
+              :create?, @trip.journal_entries.new
+            )
               link_to(
                 "New entry",
                 view_context.new_trip_journal_entry_path(@trip),

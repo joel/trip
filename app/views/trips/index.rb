@@ -16,7 +16,7 @@ module Views
             title: "My Trips",
             subtitle: "Your travel journal collection."
           ) do
-            if view_context.current_user&.role?(:superadmin)
+            if view_context.allowed_to?(:create?, Trip)
               link_to(
                 "New trip", view_context.new_trip_path,
                 class: "ha-button ha-button-primary"

@@ -17,11 +17,15 @@ module Views
             title: "Trip Members",
             subtitle: "Manage who can contribute to this trip."
           ) do
-            link_to(
-              "Add member",
-              view_context.new_trip_trip_membership_path(@trip),
-              class: "ha-button ha-button-primary"
+            if view_context.allowed_to?(
+              :create?, @trip.trip_memberships.new
             )
+              link_to(
+                "Add member",
+                view_context.new_trip_trip_membership_path(@trip),
+                class: "ha-button ha-button-primary"
+              )
+            end
           end
 
           if view_context.notice.present?

@@ -4,6 +4,7 @@ class JournalEntriesController < ApplicationController
   before_action :require_authenticated_user!
   before_action :set_trip
   before_action :set_journal_entry, only: %i[show edit update destroy]
+  before_action :authorize_journal_entry!
 
   def show
     render Views::JournalEntries::Show.new(
@@ -70,6 +71,10 @@ class JournalEntriesController < ApplicationController
 
   def set_journal_entry
     @journal_entry = @trip.journal_entries.find(params[:id])
+  end
+
+  def authorize_journal_entry!
+    authorize!(@journal_entry || @trip.journal_entries.new)
   end
 
   def journal_entry_params
