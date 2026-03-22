@@ -9,4 +9,7 @@ Rails.application.config.after_initialize do
   Rails.event.subscribe(TripSubscriber.new) { |e| e[:name].start_with?("trip.") }
   Rails.event.subscribe(JournalEntrySubscriber.new) { |e| e[:name].start_with?("journal_entry.") }
   Rails.event.subscribe(TripMembershipSubscriber.new) { |e| e[:name].start_with?("trip_membership.") }
+  Rails.event.subscribe(CommentSubscriber.new) { |e| e[:name].start_with?("comment.") }
+  Rails.event.subscribe(ReactionSubscriber.new) { |e| e[:name].start_with?("reaction.") }
+  Rails.event.subscribe(ChecklistSubscriber.new) { |e| e[:name].start_with?("checklist") }
 end
