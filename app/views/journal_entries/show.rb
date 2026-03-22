@@ -36,18 +36,22 @@ module Views
       private
 
       def render_actions
-        link_to(
-          "Edit",
-          view_context.edit_trip_journal_entry_path(@trip, @entry),
-          class: "ha-button ha-button-secondary"
-        )
-        button_to(
-          "Delete",
-          view_context.trip_journal_entry_path(@trip, @entry),
-          method: :delete,
-          class: "ha-button ha-button-danger",
-          form: { class: "inline-flex" }
-        )
+        if view_context.allowed_to?(:edit?, @entry)
+          link_to(
+            "Edit",
+            view_context.edit_trip_journal_entry_path(@trip, @entry),
+            class: "ha-button ha-button-secondary"
+          )
+        end
+        if view_context.allowed_to?(:destroy?, @entry)
+          button_to(
+            "Delete",
+            view_context.trip_journal_entry_path(@trip, @entry),
+            method: :delete,
+            class: "ha-button ha-button-danger",
+            form: { class: "inline-flex" }
+          )
+        end
         link_to(
           "Back to trip", view_context.trip_path(@trip),
           class: "ha-button ha-button-secondary"

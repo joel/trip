@@ -52,11 +52,13 @@ module Components
           view_context.trip_journal_entry_path(@trip, @entry),
           class: "ha-button ha-button-secondary"
         )
-        link_to(
-          "Edit",
-          view_context.edit_trip_journal_entry_path(@trip, @entry),
-          class: "ha-button ha-button-secondary"
-        )
+        if view_context.allowed_to?(:edit?, @entry)
+          link_to(
+            "Edit",
+            view_context.edit_trip_journal_entry_path(@trip, @entry),
+            class: "ha-button ha-button-secondary"
+          )
+        end
       end
     end
   end

@@ -60,4 +60,44 @@ RSpec.describe "/trips/:trip_id/journal_entries" do
       end.to change(JournalEntry, :count).by(-1)
     end
   end
+
+  describe "authorization" do
+    let!(:viewer_user) { create(:user) }
+    let!(:other_contributor) { create(:user) }
+    let!(:entry) { create(:journal_entry, trip: trip, author: admin) }
+
+    before do
+      create(:trip_membership, trip: trip, user: viewer_user,
+                               role: :viewer)
+      create(:trip_membership, trip: trip, user: other_contributor,
+                               role: :contributor)
+    end
+
+    context "when logged in as viewer" do
+      before { stub_current_user(viewer_user) }
+
+      it "allows show" do
+        get trip_journal_entry_path(trip, entry)
+        expect(response).to be_successful
+      end
+
+      it "forbids create" do
+        post trip_journal_entries_path(trip), params: {
+          journal_entry: {
+            name: "No", entry_date: Date.current.to_s
+          }
+        }
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context "when logged in as other contributor (not author)" do
+      before { stub_current_user(other_contributor) }
+
+      it "forbids edit of another's entry" do
+        get edit_trip_journal_entry_path(trip, entry)
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+  end
 end

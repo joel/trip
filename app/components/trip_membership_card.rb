@@ -51,6 +51,8 @@ module Components
     end
 
     def render_actions
+      return unless view_context.allowed_to?(:destroy?, @membership)
+
       div(class: "mt-5 flex flex-wrap gap-2") do
         button_to(
           "Remove",

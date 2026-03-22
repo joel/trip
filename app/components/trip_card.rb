@@ -50,8 +50,10 @@ module Components
       div(class: "mt-5 flex flex-wrap gap-2") do
         link_to("View", view_context.trip_path(@trip),
                 class: "ha-button ha-button-secondary")
-        link_to("Edit", view_context.edit_trip_path(@trip),
-                class: "ha-button ha-button-secondary")
+        if view_context.allowed_to?(:edit?, @trip)
+          link_to("Edit", view_context.edit_trip_path(@trip),
+                  class: "ha-button ha-button-secondary")
+        end
       end
     end
   end

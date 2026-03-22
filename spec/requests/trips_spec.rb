@@ -80,6 +80,57 @@ RSpec.describe "/trips" do
     end
   end
 
+  describe "authorization" do
+    let!(:viewer_user) { create(:user) }
+    let!(:trip) { create(:trip, created_by: admin) }
+
+    before do
+      create(:trip_membership, trip: trip, user: viewer_user,
+                               role: :viewer)
+    end
+
+    context "when logged in as viewer" do
+      before { stub_current_user(viewer_user) }
+
+      it "allows show" do
+        get trip_path(trip)
+        expect(response).to be_successful
+      end
+
+      it "forbids edit" do
+        get edit_trip_path(trip)
+        expect(response).to have_http_status(:forbidden)
+      end
+
+      it "forbids create" do
+        post trips_path, params: { trip: { name: "No" } }
+        expect(response).to have_http_status(:forbidden)
+      end
+
+      it "forbids destroy" do
+        delete trip_path(trip)
+        expect(response).to have_http_status(:forbidden)
+      end
+
+      it "forbids transition" do
+        patch transition_trip_path(trip),
+              params: { state: "started" }
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context "when logged in as non-member" do
+      let!(:outsider) { create(:user) }
+
+      before { stub_current_user(outsider) }
+
+      it "forbids show" do
+        get trip_path(trip)
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+  end
+
   describe "unauthenticated access" do
     before { stub_current_user(nil) }
 

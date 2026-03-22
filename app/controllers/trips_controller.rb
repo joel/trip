@@ -3,6 +3,7 @@
 class TripsController < ApplicationController
   before_action :require_authenticated_user!
   before_action :set_trip, only: %i[show edit update destroy transition]
+  before_action :authorize_trip!
 
   def index
     @trips = if current_user.role?(:superadmin)
@@ -85,6 +86,10 @@ class TripsController < ApplicationController
 
   def set_trip
     @trip = Trip.find(params[:id])
+  end
+
+  def authorize_trip!
+    authorize!(@trip || Trip)
   end
 
   def trip_params
