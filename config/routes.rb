@@ -16,7 +16,18 @@ Rails.application.routes.draw do
 
   # Core domain
   resources :trips do
-    resources :journal_entries, except: [:index]
+    resources :journal_entries, except: [:index] do
+      resources :comments, only: %i[create update destroy]
+      resources :reactions, only: %i[create destroy]
+    end
+    resources :checklists do
+      resources :checklist_sections, only: %i[create destroy]
+      resources :checklist_items, only: %i[create destroy] do
+        member do
+          patch :toggle
+        end
+      end
+    end
     resources :trip_memberships, only: %i[index new create destroy],
                                  path: "members"
     member do

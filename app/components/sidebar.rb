@@ -57,7 +57,9 @@ module Components
               path: view_context.trips_path,
               label: "Trips",
               icon: Components::Icons::Map.new,
-              active: %w[trips journal_entries trip_memberships]
+              active: %w[trips journal_entries trip_memberships
+                         comments reactions checklists
+                         checklist_sections checklist_items]
                       .include?(view_context.controller_name),
               delay: "80ms"
             )
