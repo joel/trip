@@ -97,6 +97,14 @@ When a PR receives code review comments:
 
 - **Use `[skip ci]`** in commit messages when the change does not require CI. This includes documentation-only changes (`.md` files, skill files, `AGENTS.md`, `CLAUDE.md`), comment-only code changes, and config changes that do not affect runtime behavior. Place `[skip ci]` at the end of the commit subject line or in the commit body. When in doubt, let CI run.
 
+- **Test full user journeys, not just page rendering.** Runtime tests must verify multi-step flows end-to-end (e.g., request access → admin approves → invitation email sent → user signs up → user verified). A page rendering correctly does not guarantee the business logic behind it works. If a feature involves events, subscribers, or background jobs, verify the downstream effects actually happen (check emails in MailCatcher, check database records).
+
+- **Rails.event structured events (Rails 8.1).** Subscribers must respond to `#emit(event)`, not `#call`. The event is a hash: `event[:name]`, `event[:payload]`, `event[:tags]`, etc. Register with `Rails.event.subscribe(subscriber)` and use an optional filter block: `{ |e| e[:name].start_with?("prefix.") }`.
+
+- **Shell escaping with `docker exec` + `bin/rails runner`.** Ruby bang methods (`save!`, `find_by!`) break in shell because `!` is interpreted by bash. Use heredoc redirect instead: `docker exec -i container bin/rails runner - < /tmp/script.rb`.
+
+- **Rodauth forms lose query parameters on POST.** If a URL contains query params (e.g., `?invitation_token=xxx`), the Rodauth form POST will not include them. Add hidden fields in the Phlex view to carry params through.
+
 ---
 
 ## 5. Runtime Test Workflow (Mandatory)
