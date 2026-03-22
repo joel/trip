@@ -23,6 +23,7 @@ module Components
               plain @entry.name
             end
             render_location if @entry.location_name.present?
+            render_comment_count if @entry.comments.any?
             render_description if @entry.description.present?
           end
         end
@@ -35,6 +36,13 @@ module Components
     def render_location
       p(class: "mt-1 text-xs text-[var(--ha-muted)]") do
         plain @entry.location_name
+      end
+    end
+
+    def render_comment_count
+      count = @entry.comments.size
+      p(class: "mt-1 text-xs text-[var(--ha-muted)]") do
+        plain "#{count} comment#{"s" if count != 1}"
       end
     end
 
