@@ -76,6 +76,12 @@ RSpec.describe JournalEntryPolicy do
         .apply(:edit?)).to be(false)
     end
 
+    it "denies author on finished trip" do
+      trip.update!(state: :finished)
+      expect(described_class.new(entry, user: author)
+        .apply(:edit?)).to be(false)
+    end
+
     it "denies viewer" do
       expect(described_class.new(entry, user: viewer_user)
         .apply(:edit?)).to be(false)
@@ -95,6 +101,12 @@ RSpec.describe JournalEntryPolicy do
 
     it "denies other contributor" do
       expect(described_class.new(entry, user: other_contributor)
+        .apply(:destroy?)).to be(false)
+    end
+
+    it "denies author on finished trip" do
+      trip.update!(state: :finished)
+      expect(described_class.new(entry, user: author)
         .apply(:destroy?)).to be(false)
     end
   end
