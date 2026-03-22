@@ -4,7 +4,8 @@ class ReactionsController < ApplicationController
   before_action :require_authenticated_user!
   before_action :set_trip
   before_action :set_journal_entry
-  before_action :authorize_reaction!
+  before_action :authorize_reaction!, only: [:create]
+  before_action :set_and_authorize_reaction!, only: [:destroy]
 
   def create
     Reactions::Toggle.new.call(
@@ -16,8 +17,7 @@ class ReactionsController < ApplicationController
   end
 
   def destroy
-    reaction = @journal_entry.reactions.find(params[:id])
-    reaction.destroy!
+    @reaction.destroy!
     redirect_to [@trip, @journal_entry], status: :see_other
   end
 
@@ -37,5 +37,10 @@ class ReactionsController < ApplicationController
     authorize!(
       @journal_entry.reactions.new(user: current_user)
     )
+  end
+
+  def set_and_authorize_reaction!
+    @reaction = @journal_entry.reactions.find(params[:id])
+    authorize!(@reaction)
   end
 end
