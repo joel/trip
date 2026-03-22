@@ -13,6 +13,8 @@ class User < ApplicationRecord
   has_many :journal_entries, foreign_key: :author_id,
                              dependent: :restrict_with_error,
                              inverse_of: :author
+  has_many :comments, dependent: :destroy
+  has_many :reactions, dependent: :destroy
 
   validates :email, presence: true, uniqueness: { case_sensitive: false }
 end
