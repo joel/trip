@@ -77,6 +77,11 @@ Rails/I18nLocaleTexts:
     - 'app/controllers/invitations_controller.rb'
     - 'app/controllers/trips_controller.rb'
     - 'app/controllers/journal_entries_controller.rb'
+    - 'app/controllers/comments_controller.rb'
+    - 'app/controllers/reactions_controller.rb'
+    - 'app/controllers/checklists_controller.rb'
+    - 'app/controllers/checklist_items_controller.rb'
+    - 'app/controllers/checklist_sections_controller.rb'
     - 'app/controllers/trip_memberships_controller.rb'
     - 'app/mailers/invitation_mailer.rb'
 
