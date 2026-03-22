@@ -30,6 +30,7 @@ module Views
               class: "space-y-6"
             ) do |form|
               raw safe(view_context.rodauth.create_account_additional_form_tags.to_s)
+              render_invitation_token_field(form)
 
               render_login_field(form)
               render_login_confirm_field(form) if view_context.rodauth.require_login_confirmation?
@@ -142,6 +143,13 @@ module Views
             ) { password_error }
           end
         end
+      end
+
+      def render_invitation_token_field(form)
+        token = view_context.params[:invitation_token]
+        return unless token
+
+        form.hidden_field(:invitation_token, value: token)
       end
 
       def render_password_confirm_field(form)
