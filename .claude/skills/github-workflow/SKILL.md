@@ -5,7 +5,7 @@ description: Use this skill for every task that involves code changes in this pr
 
 # GitHub Workflow
 
-This skill enforces the full development workflow defined in AGENTS.md. Every code change follows this lifecycle: Issue → Kanban → Branch → Implement → Test → Live Verify → Push → PR → Review.
+This skill enforces the full development workflow defined in AGENTS.md. Every code change follows this lifecycle: Issue → Kanban → Branch → Implement → Test → Live Verify → Push → PR → Review → Respond → Resolve.
 
 ## Why This Matters
 
@@ -202,17 +202,100 @@ unset GITHUB_TOKEN && gh project item-edit \
   --single-select-option-id df73e18b
 ```
 
+### Step 11: Respond to PR Review Comments
+
+After the PR receives review comments, you **must** respond to every comment and resolve each conversation. Never leave comments unanswered.
+
+#### 11a: Read all review comments
+
+```bash
+unset GITHUB_TOKEN && gh api repos/joel/trip/pulls/<PR_NUMBER>/comments \
+  --jq '.[] | {id: .id, node_id: .node_id, path: .path, body: .body}'
+```
+
+#### 11b: Evaluate and act on each comment
+
+For each comment, decide one of three responses:
+
+- **Actionable:** Fix the code, commit, push, then reply referencing the commit hash.
+- **Incorrect:** Reply with a clear technical explanation of why no change is needed.
+- **Deferred:** Reply acknowledging the concern and stating which future phase or PR will address it.
+
+#### 11c: Reply to each comment
+
+```bash
+unset GITHUB_TOKEN && gh api repos/joel/trip/pulls/comments/<COMMENT_ID>/replies \
+  -X POST \
+  -f body='**Fixed in <commit-sha>.** <explanation of what was changed and why>'
+```
+
+#### 11d: Resolve all review threads
+
+First, retrieve thread IDs:
+
+```bash
+unset GITHUB_TOKEN && gh api graphql -f query='
+{
+  repository(owner: "joel", name: "trip") {
+    pullRequest(number: <PR_NUMBER>) {
+      reviewThreads(first: 20) {
+        nodes {
+          id
+          isResolved
+          comments(first: 1) {
+            nodes { path }
+          }
+        }
+      }
+    }
+  }
+}' --jq '.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved == false) | {id, path: .comments.nodes[0].path}'
+```
+
+Then resolve each unresolved thread:
+
+```bash
+unset GITHUB_TOKEN && gh api graphql -f query='
+mutation {
+  resolveReviewThread(input: {threadId: "<THREAD_NODE_ID>"}) {
+    thread { isResolved }
+  }
+}'
+```
+
+Multiple threads can be resolved in a single mutation by aliasing:
+
+```bash
+unset GITHUB_TOKEN && gh api graphql -f query='
+mutation {
+  t1: resolveReviewThread(input: {threadId: "<ID1>"}) { thread { isResolved } }
+  t2: resolveReviewThread(input: {threadId: "<ID2>"}) { thread { isResolved } }
+}'
+```
+
+### Step 12: Move Issue to Done (after merge)
+
+```bash
+unset GITHUB_TOKEN && gh project item-edit \
+  --project-id PVT_kwHNFp3OAUj6Xw \
+  --id <ITEM_ID> \
+  --field-id PVTSSF_lAHNFp3OAUj6X84P9YK- \
+  --single-select-option-id 98236657
+```
+
 ## Quick Reference: Complete Flow
 
 ```
-1. gh issue create          → Create issue with plan
-2. gh project item-add      → Add to Kanban (Backlog)
-3. gh project item-edit     → Move to Ready, then In Progress
-4. git checkout -b feature/ → Create branch
-5. <implement changes>      → Write code
-6. bundle exec rake         → Lint + tests + system tests
-7. git commit               → Overcommit hooks validate
-8. /runtime-test            → Live browser verification
-9. git push + gh pr create  → Push and open PR (Closes #N)
-10. gh project item-edit    → Move to In Review
+1.  gh issue create          → Create issue with plan
+2.  gh project item-add      → Add to Kanban (Backlog)
+3.  gh project item-edit     → Move to Ready, then In Progress
+4.  git checkout -b feature/ → Create branch
+5.  <implement changes>      → Write code
+6.  bundle exec rake         → Lint + tests + system tests
+7.  git commit               → Overcommit hooks validate
+8.  /runtime-test            → Live browser verification
+9.  git push + gh pr create  → Push and open PR (Closes #N)
+10. gh project item-edit     → Move to In Review
+11. gh api .../comments      → Reply to every review comment + resolve threads
+12. gh project item-edit     → Move to Done (after merge)
 ```
