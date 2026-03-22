@@ -105,6 +105,8 @@ When a PR receives code review comments:
 
 - **Rodauth forms lose query parameters on POST.** If a URL contains query params (e.g., `?invitation_token=xxx`), the Rodauth form POST will not include them. Add hidden fields in the Phlex view to carry params through.
 
+- **Pre-fill forms from context, not just params.** When a URL carries context (tokens, IDs) that determines valid input, pre-fill and lock the relevant form fields. If the backend validates that an email matches an invitation, the form must pre-fill that email from the invitation record and make it read-only. Never rely on the user to type something that the system already knows — mismatches cause silent rejections that look like bugs.
+
 ---
 
 ## 5. Runtime Test Workflow (Mandatory)

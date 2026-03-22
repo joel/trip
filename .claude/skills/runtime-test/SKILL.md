@@ -176,17 +176,29 @@ agent-browser open https://catalyst.workeverywhere.docker/access_requests
 curl -sk https://mail.workeverywhere.docker/messages | python3 -c "import json,sys; [print(m['id'],m['subject'],m['recipients']) for m in json.load(sys.stdin)]"
 # Must see "You've been invited to Trip Journal" to the requester's email
 
-# 5. Extract invitation token and sign up
+# 5. Extract invitation token and open the signup link
 curl -sk https://mail.workeverywhere.docker/messages/<N>.plain
-# Navigate to the invitation URL, fill matching email, create account
+# Navigate to the invitation URL
 
-# 6. Verify account via email link
+# 6. VERIFY: email field is pre-filled and read-only
+# The create account form MUST show the invited email pre-filled
+# and locked. If the field is empty or editable, the user will
+# type a different email and get rejected by the invitation gate.
+agent-browser open "https://catalyst.workeverywhere.docker/create-account?invitation_token=<TOKEN>"
+# Check: email field has the correct value and is read-only
+agent-browser eval 'document.querySelector("#login")?.value'
+agent-browser eval 'document.querySelector("#login")?.readOnly'
+
+# 7. Submit the form and verify account creation succeeds
+# Click "Create Account" — no email typing needed
+
+# 8. Verify account via email link
 # Check for "Verify Account" email, navigate to verify URL
 
-# 7. Confirm user is logged in after verification
+# 9. Confirm user is logged in after verification
 ```
 
-If any step produces no email, no redirect, or an error — the flow is broken and must be fixed before pushing.
+If any step produces no email, no redirect, or an error — the flow is broken and must be fixed before pushing. Pay special attention to step 6: if the email field is not pre-filled, users will enter mismatched emails causing silent rejections.
 
 ### Shell Tips for Runtime Testing
 
