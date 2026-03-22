@@ -150,6 +150,8 @@ EOF
 
 Never use `OVERCOMMIT_DISABLE=1`.
 
+**`[skip ci]` flag:** Add `[skip ci]` to commit messages when the change does not need CI. This includes documentation-only commits (`.md` files, skill files, `AGENTS.md`), comment-only code changes, and non-runtime config changes. Place it at the end of the subject line or in the commit body.
+
 ### Step 8: Runtime Test Workflow
 
 After committing and before pushing, perform live verification. Use the `/runtime-test` skill for the full checklist, or manually:

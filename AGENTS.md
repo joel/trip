@@ -95,6 +95,8 @@ When a PR receives code review comments:
 
 - **Never disable overcommit entirely** (`OVERCOMMIT_DISABLE=1`). When a hook indicates a false positive, skip **only** the specific hook: `SKIP=<HookName> git commit ...` (e.g., `SKIP=RailsSchemaUpToDate`). Always add a footnote in the commit message body explaining which hook was skipped and why, for audit trail purposes.
 
+- **Use `[skip ci]`** in commit messages when the change does not require CI. This includes documentation-only changes (`.md` files, skill files, `AGENTS.md`, `CLAUDE.md`), comment-only code changes, and config changes that do not affect runtime behavior. Place `[skip ci]` at the end of the commit subject line or in the commit body. When in doubt, let CI run.
+
 ---
 
 ## 5. Runtime Test Workflow (Mandatory)
