@@ -38,24 +38,7 @@ class MigrateRolesMaskToV1Roles < ActiveRecord::Migration[8.1]
   end
 
   def down
-    execute <<~SQL
-      UPDATE users SET roles_mask = (
-        CASE
-          WHEN roles_mask & 1 != 0 THEN 1 ELSE 0
-        END
-        |
-        CASE
-          WHEN roles_mask & 2 != 0 THEN 8 ELSE 0
-        END
-        |
-        CASE
-          WHEN roles_mask & 4 != 0 THEN 4 ELSE 0
-        END
-        |
-        CASE
-          WHEN roles_mask & 8 != 0 THEN 16 ELSE 0
-        END
-      )
-    SQL
+    raise ActiveRecord::IrreversibleMigration,
+      "Cannot reverse: admin and superadmin roles were merged into superadmin (lossy transform)"
   end
 end
