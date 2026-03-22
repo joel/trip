@@ -76,6 +76,20 @@ The project uses `overcommit`. Commits will fail if the following hooks are not 
 5. Once you start working, move the issue to **In Progress**.
 6. Pre-commit validation must include **both** `bundle exec rake project:tests` **and** `bundle exec rake project:system-tests`.
 7. When all tests pass and browser verification succeeds, push the branch, create the PR with a description, and move the issue to **In Review**.
+8. After the PR receives review comments, you **must** respond to every comment, then resolve each conversation.
+
+### PR Review Response Rules
+
+When a PR receives code review comments:
+
+1. **Read all comments** using `gh api repos/joel/trip/pulls/<PR>/comments`.
+2. **Evaluate each comment** — decide whether to act on it, explain why not, or defer to a future phase.
+3. **For actionable feedback:** Fix the code, commit, push, then reply explaining what was fixed and in which commit.
+4. **For incorrect feedback:** Reply with a clear technical explanation of why no action is needed.
+5. **For deferred feedback:** Reply acknowledging the concern and stating which phase or PR will address it.
+6. **Reply to every comment** using `gh api repos/joel/trip/pulls/comments/<ID>/replies -X POST -f body='...'`.
+7. **Resolve every conversation** after replying using the GraphQL `resolveReviewThread` mutation.
+8. Never leave review comments unanswered or unresolved.
 
 ### Workflow Rules
 
