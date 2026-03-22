@@ -19,7 +19,9 @@ module AccessRequests
 
     def emit_event(access_request)
       Rails.event.notify("access_request.approved",
-                         access_request_id: access_request.id, email: access_request.email)
+                         access_request_id: access_request.id,
+                         email: access_request.email,
+                         reviewer_id: access_request.reviewed_by_id)
       Success()
     end
   end
