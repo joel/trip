@@ -8,11 +8,12 @@ class ChecklistSectionsController < ApplicationController
 
   def create
     @checklist.checklist_sections.create!(
-      name: params[:checklist_section][:name]
+      checklist_section_params
     )
     redirect_to [@trip, @checklist], notice: "Section added."
   rescue ActiveRecord::RecordInvalid
-    redirect_to [@trip, @checklist], alert: "Could not add section."
+    redirect_to [@trip, @checklist],
+                alert: "Could not add section."
   end
 
   def destroy
@@ -34,5 +35,9 @@ class ChecklistSectionsController < ApplicationController
 
   def authorize_checklist!
     authorize!(@checklist)
+  end
+
+  def checklist_section_params
+    params.expect(checklist_section: [:name])
   end
 end

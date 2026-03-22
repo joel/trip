@@ -46,7 +46,12 @@ class ChecklistItemsController < ApplicationController
   end
 
   def set_checklist_item
-    @checklist_item = ChecklistItem.find(params[:id])
+    @checklist_item = ChecklistItem
+                      .joins(:checklist_section)
+                      .where(checklist_sections: {
+                               checklist_id: @checklist.id
+                             })
+                      .find(params[:id])
   end
 
   def authorize_checklist_item!
