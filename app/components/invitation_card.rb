@@ -36,11 +36,18 @@ module Components
     private
 
     def render_status_badge
-      css = STATUS_BADGES[@invitation.status]
+      display_status = effective_status
+      css = STATUS_BADGES[display_status]
 
       span(class: "rounded-full px-3 py-1 text-xs font-medium #{css}") do
-        plain @invitation.status.capitalize
+        plain display_status.capitalize
       end
+    end
+
+    def effective_status
+      return "expired" if @invitation.pending? && @invitation.expired?
+
+      @invitation.status
     end
   end
 end
