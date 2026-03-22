@@ -86,7 +86,7 @@ module Views
 
         div(class: "mt-3 text-sm text-[var(--ha-muted)]") do
           plain "From: #{start_loc.location_name}" if start_loc
-          plain " — To: #{end_loc.location_name}" if end_loc && end_loc != start_loc
+          plain " — To: #{end_loc.location_name}" if end_loc && end_loc.id != start_loc&.id
         end
       end
 
