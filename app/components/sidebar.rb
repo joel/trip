@@ -52,6 +52,16 @@ module Components
             active: view_context.current_page?(view_context.root_path),
             delay: "40ms"
           )
+          if view_context.rodauth.logged_in?
+            render Components::NavItem.new(
+              path: view_context.trips_path,
+              label: "Trips",
+              icon: Components::Icons::Map.new,
+              active: %w[trips journal_entries trip_memberships]
+                      .include?(view_context.controller_name),
+              delay: "80ms"
+            )
+          end
           if view_context.allowed_to?(:index?, User)
             render Components::NavItem.new(
               path: view_context.users_path,
