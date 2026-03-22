@@ -49,11 +49,11 @@ class Trip < ApplicationRecord
 
   def start_location
     journal_entries.chronological
-                   .where.not(location_name: nil).first
+                   .where.not(location_name: [nil, ""]).first
   end
 
   def end_location
     journal_entries.chronological
-                   .where.not(location_name: nil).last
+                   .where.not(location_name: [nil, ""]).last
   end
 end
