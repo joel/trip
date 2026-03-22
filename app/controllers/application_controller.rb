@@ -8,7 +8,12 @@ class ApplicationController < ActionController::Base
   authorize :user, through: :current_user
 
   rescue_from ActionPolicy::Unauthorized do
-    head :forbidden
+    respond_to do |format|
+      format.html do
+        render Views::Shared::Forbidden.new, status: :forbidden
+      end
+      format.any { head :forbidden }
+    end
   end
 
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
