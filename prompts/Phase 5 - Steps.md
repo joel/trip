@@ -1,56 +1,260 @@
-# Phase 5: Steps Taken
+# Phase 5: Steps Taken — Audit Trail
 
-## Setup
-1. Created GitHub issue #18: "Phase 5: Comments, Reactions, and Checklists" with `enhancement` label
-2. Created feature branch `feature/phase-5-comments-reactions-checklists` from main
+**Date:** 2026-03-22
+**Issue:** [#18 — Phase 5: Comments, Reactions, and Checklists](https://github.com/joel/trip/issues/18)
+**PR:** [#19](https://github.com/joel/trip/pull/19)
+**Branch:** `feature/phase-5-comments-reactions-checklists`
+**Total diff:** 81 files changed, 3523 insertions, 3 deletions
+**Final test count:** 322 examples, 0 failures, 2 pending
 
-## Commit 1: Migrations + Models + Factories + Model Specs
-- Created 5 migrations: comments, reactions, checklists, checklist_sections, checklist_items (all UUID PKs)
-- Created 5 models: Comment, Reaction, Checklist, ChecklistSection, ChecklistItem
-- Modified 3 existing models: Trip (checklists, reactions, commentable?), JournalEntry (comments, reactions), User (comments, reactions)
-- Added Reaction#trip convenience method for polymorphic chain resolution
-- Created 5 factories and 5 model specs + added commentable? tests to trip_spec.rb
-- Fixed RuboCop: inverse_of on has_many with scope, factory association style, hash alignment
-- Result: 76 model specs pass, 244 total pass
+---
 
-## Commit 2: Actions + Subscribers + Event Registration + Action Specs
-- Created 9 actions: Comments (Create/Update/Delete), Reactions (Toggle), Checklists (Create/Update/Delete), ChecklistItems (Toggle/Create)
-- Fixed Reactions::Toggle to not use yield (returns Success directly from branches)
-- Created 3 subscribers: CommentSubscriber, ReactionSubscriber, ChecklistSubscriber
-- Registered subscribers in config/initializers/event_subscribers.rb
-- Created 5 action specs
-- Result: 33 action specs pass, 254 total pass
+## Step 1: Setup
 
-## Commit 3: Policies + Policy Specs
-- Created 4 policies: CommentPolicy, ReactionPolicy, ChecklistPolicy, ChecklistItemPolicy
-- CommentPolicy: members can create (including viewers), own-only update/destroy, uses Trip#commentable?
-- ChecklistPolicy: contributors-only CRUD, uses Trip#writable?
-- ReactionPolicy: uses Reaction#trip for polymorphic resolution
-- Fixed RuboCop: removed duplicate ternary branch in ChecklistPolicy
-- Created 4 policy specs covering role x action x state matrix
-- Result: 97 policy specs pass, 300 total pass
+1. Created GitHub issue #18 with `enhancement` label
+2. Attempted to add to Kanban board — blocked by missing `read:project` scope on token (skipped)
+3. Created feature branch `feature/phase-5-comments-reactions-checklists` from `main`
+4. Detected Ruby version manager: `mise` with Ruby 4.0.1
 
-## Commit 4: Routes + Controllers + Sidebar Update
-- Updated config/routes.rb with nested routes (comments/reactions under journal_entries, checklists/sections/items under trips)
-- Created 5 controllers: CommentsController, ReactionsController, ChecklistsController, ChecklistItemsController, ChecklistSectionsController
-- Updated sidebar.rb active state to include new controller names
-- Added new controllers to .rubocop_todo.yml for I18nLocaleTexts exclusion (matching existing pattern)
-- Result: 300 total pass
+---
 
-## Commit 5: Views + Components + Request Specs
-- Created 6 components: CommentCard, CommentForm, ReactionSummary, ChecklistCard, ChecklistForm, ChecklistItemRow
-- Created 4 checklist views: index, show, new, edit
-- Modified JournalEntries::Show: added render_reactions and render_comments sections
-- Modified Trips::Show: added "Checklists" link in header actions
-- Modified JournalEntryCard: added comment count badge
-- Fixed request spec: cancelled trip test was using superadmin (bypasses state guard), switched to contributor
-- Fixed RuboCop: multiline method alignment, numeric predicate, empty block, hash alignment
-- Created 4 request specs
-- Result: 322 total pass, lint clean
+## Step 2: Commit 1 — Migrations + Models + Factories + Model Specs
 
-## Commit 6: Docs
-- Added Phase 5 plan to prompts/Phase 5.md
+**Commit:** `b816e37` — `feat(models): Add Comment, Reaction, Checklist models with migrations`
 
-## PR
-- Pushed branch and created PR #19: https://github.com/joel/trip/pull/19
-- Closes issue #18
+### Files created (25)
+- 5 migrations: `db/migrate/20260322200004_create_comments.rb` through `20260322200008_create_checklist_items.rb`
+- 5 models: `app/models/comment.rb`, `reaction.rb`, `checklist.rb`, `checklist_section.rb`, `checklist_item.rb`
+- 5 factories: `spec/factories/comments.rb`, `reactions.rb`, `checklists.rb`, `checklist_sections.rb`, `checklist_items.rb`
+- 5 model specs: `spec/models/comment_spec.rb`, `reaction_spec.rb`, `checklist_spec.rb`, `checklist_section_spec.rb`, `checklist_item_spec.rb`
+
+### Files modified (4)
+- `app/models/trip.rb` — added `has_many :checklists`, `has_many :reactions`, `def commentable?`
+- `app/models/journal_entry.rb` — added `has_many :comments`, `has_many :reactions`
+- `app/models/user.rb` — added `has_many :comments`, `has_many :reactions`
+- `spec/models/trip_spec.rb` — added `#commentable?` tests
+
+### Design decisions
+- `Reaction` model includes a `#trip` convenience method that resolves the polymorphic chain (Trip/JournalEntry/Comment → trip)
+- `Trip#commentable?` returns true for planning/started/finished (separate from `writable?` which excludes finished)
+- Reactions migration has no `updated_at` column (reactions are immutable once created)
+
+### RuboCop fixes required
+- Added `inverse_of:` to has_many associations with scope lambdas (Checklist, ChecklistSection)
+- Changed factory association style from `association :reactable, factory:` to implicit `reactable factory: %i[...]`
+- Fixed hash alignment in spec files
+
+### Test results
+- 76 model specs pass
+- 244 total pass (no regressions)
+
+### Hook notes
+- Skipped `RailsSchemaUpToDate` hook (schema auto-generated by migration, documented in commit message)
+
+---
+
+## Step 3: Commit 2 — Actions + Subscribers + Event Registration + Action Specs
+
+**Commit:** `d3f0bd3` — `feat(actions): Add actions, subscribers for comments, reactions, checklists`
+
+### Files created (18)
+- 9 actions: `app/actions/comments/{create,update,delete}.rb`, `app/actions/reactions/toggle.rb`, `app/actions/checklists/{create,update,delete}.rb`, `app/actions/checklist_items/{toggle,create}.rb`
+- 3 subscribers: `app/subscribers/{comment,reaction,checklist}_subscriber.rb`
+- 5 action specs
+
+### Files modified (1)
+- `config/initializers/event_subscribers.rb` — registered 3 new subscribers with filter blocks
+
+### Bug fix during implementation
+- `Reactions::Toggle` initially used `yield remove(existing)` / `yield add(...)` but the `yield` unwraps `Success(:removed)` and the method ended without re-wrapping. Fixed by removing `yield` and returning `Success` directly from branch methods.
+
+### Design decisions
+- `Reactions::Toggle` is a single action that handles both create and remove — find existing by user+emoji+reactable, destroy if found, create if not
+- Checklist subscriber uses `start_with?("checklist")` (no dot) to catch both `checklist.*` and `checklist_item.*` events
+- Event payloads include relevant IDs for downstream use (comment_id, journal_entry_id, etc.)
+
+### Test results
+- 33 action specs pass
+- 254 total pass
+
+---
+
+## Step 4: Commit 3 — Policies + Policy Specs
+
+**Commit:** `8e8508f` — `feat(policies): Add authorization policies for comments, reactions, checklists`
+
+### Files created (8)
+- 4 policies: `app/policies/{comment,reaction,checklist,checklist_item}_policy.rb`
+- 4 policy specs
+
+### Key authorization rules
+| Policy | Create | Update/Destroy | State Guard |
+|--------|--------|----------------|-------------|
+| CommentPolicy | any member | own comment only | `commentable?` |
+| ReactionPolicy | any member | own reaction only | `commentable?` |
+| ChecklistPolicy | contributor only | contributor only | `writable?` |
+| ChecklistItemPolicy | contributor only | contributor only | `writable?` |
+
+### RuboCop fix
+- `ChecklistPolicy#trip` had an identical ternary branch (`record.is_a?(Checklist) ? record.trip : record.trip`) — simplified to `record.trip`
+
+### Test results
+- 97 policy specs pass
+- 300 total pass
+
+---
+
+## Step 5: Commit 4 — Routes + Controllers + Sidebar Update
+
+**Commit:** `60b49ef` — `feat(controllers): Add routes and controllers for Phase 5`
+
+### Files created (5)
+- `app/controllers/comments_controller.rb` — create/update/destroy, nested under trips/journal_entries
+- `app/controllers/reactions_controller.rb` — create (toggle) + destroy
+- `app/controllers/checklists_controller.rb` — full CRUD with Phlex view rendering
+- `app/controllers/checklist_items_controller.rb` — create/toggle/destroy
+- `app/controllers/checklist_sections_controller.rb` — create/destroy (minimal)
+
+### Files modified (3)
+- `config/routes.rb` — added nested routes for comments, reactions, checklists, sections, items
+- `app/components/sidebar.rb` — added new controller names to Trips nav active state check
+- `.rubocop_todo.yml` — added 5 new controllers to `Rails/I18nLocaleTexts` exclusion list (matching existing pattern where all controllers use inline strings)
+
+### Route structure
+```
+trips/:trip_id/journal_entries/:id/comments (create, update, destroy)
+trips/:trip_id/journal_entries/:id/reactions (create, destroy)
+trips/:trip_id/checklists (full CRUD)
+trips/:trip_id/checklists/:id/checklist_sections (create, destroy)
+trips/:trip_id/checklists/:id/checklist_items (create, destroy, member toggle)
+```
+
+### Test results
+- 300 total pass (no new specs in this commit, validated existing pass)
+
+---
+
+## Step 6: Commit 5 — Views + Components + Request Specs
+
+**Commit:** `236f4c0` — `feat(views): Add views and components for Phase 5`
+
+### Files created (14)
+- 6 components: `app/components/{comment_card,comment_form,reaction_summary,checklist_card,checklist_form,checklist_item_row}.rb`
+- 4 views: `app/views/checklists/{index,show,new,edit}.rb`
+- 4 request specs: `spec/requests/{comments,reactions,checklists,checklist_items}_spec.rb`
+
+### Files modified (3)
+- `app/views/journal_entries/show.rb` — added `render_reactions` and `render_comments` private methods
+- `app/views/trips/show.rb` — added "Checklists" link in `render_header_actions`
+- `app/components/journal_entry_card.rb` — added `render_comment_count` badge
+
+### Design decisions
+- Comments render inline on the journal entry show page (no separate pages)
+- Reaction summary shows 6 predefined emojis (thumbsup, heart, tada, eyes, fire, rocket) with Unicode display
+- Active reactions have blue border styling, inactive have neutral styling
+- Checklist show page has inline forms for adding sections and items (no separate pages)
+- Completed items show green checkmark + strikethrough text
+
+### Request spec bug fix
+- `comments_spec.rb` "denies on cancelled trip" test was using superadmin user (which bypasses all state guards). Fixed by switching to a contributor user.
+
+### RuboCop fixes
+- `Layout/MultilineMethodCallIndentation` in ChecklistCard and Checklists::Show
+- `Style/NumericPredicate` — changed `count > 0` to `count.positive?`
+- `Lint/EmptyBlock` — changed `{}` to `{ "" }` in ChecklistItemRow unchecked checkbox
+- Multiple `Layout/HashAlignment` in spec files
+
+### Test results
+- 322 total pass, lint clean
+
+---
+
+## Step 7: Commit 6 — Phase 5 Plan
+
+**Commit:** `0ba0794` — `docs: Add Phase 5 implementation plan [skip ci]`
+
+- Added `prompts/Phase 5.md` to the branch
+
+---
+
+## Step 8: PR Creation
+
+- Pushed branch to origin
+- Created PR #19: https://github.com/joel/trip/pull/19
+- PR closes issue #18
+
+---
+
+## Step 9: Runtime Testing
+
+- Rebuilt app: `bin/cli app rebuild` — health check passed (200 OK)
+- Verified mail service running
+- Created test admin user via `rails runner` in Docker container
+- Fixed Rodauth verification status (set status=2 for open/verified account)
+- Logged in via email auth link flow
+
+### Features verified in live Docker environment
+- Home page (logged out + logged in) renders correctly
+- Trip show page shows "Checklists" link in header
+- Journal entry show page shows reactions bar + comments section
+- Reaction toggle: clicked thumbsup → shows count "1" with active blue styling
+- Comment form: posted "What a wonderful day in Paris!" → comment appears with author, timestamp, delete button
+- Comment count badge: journal entry card shows "1 comment"
+- Checklists index: empty state with "New checklist" button
+- Created "Packing List" checklist → redirected to show page
+- Added "Clothing" section → renders with "Remove section" button
+- Added "T-shirts" item → renders with checkbox and "Remove" button
+- Toggled item checkbox → shows green checkmark + strikethrough text
+- Sidebar highlights "Trips" on all nested pages
+
+---
+
+## Step 10: Security Review
+
+**Commit:** `94317ff` — `fix(security): Address IDOR and authorization gaps in controllers`
+
+### Issues found and fixed
+
+1. **CRITICAL — ChecklistItem IDOR**: `set_checklist_item` used global `ChecklistItem.find(params[:id])` allowing cross-checklist item access. Fixed by scoping through `joins(:checklist_section).where(checklist_sections: { checklist_id: @checklist.id })`.
+
+2. **HIGH — Reaction destroy authorization gap**: `authorize_reaction!` checked against a newly built reaction (always owned by current user), not the actual reaction being destroyed. Fixed by splitting into `authorize_reaction!` (create) and `set_and_authorize_reaction!` (destroy) with explicit record authorization.
+
+3. **MEDIUM — Missing strong params**: `ChecklistSectionsController#create` accessed params directly without `expect()`. Fixed by adding `checklist_section_params` method.
+
+### Test results after fixes
+- 322 total pass (no regressions)
+
+---
+
+## Step 11: Review Reports
+
+**Commit:** `574c561` — `docs: Add Phase 5 review reports [skip ci]`
+
+- Wrote `prompts/Phase 5 - QA Review.md` — runtime test checklist, all items passing
+- Wrote `prompts/Phase 5 - Security Review.md` — 3 issues found and fixed
+- Wrote `prompts/Phase 5 - UX Review.md` — accessibility notes and improvement suggestions
+- Pushed all changes to origin
+
+---
+
+## Final Summary
+
+| Metric | Value |
+|--------|-------|
+| Commits | 8 |
+| Files changed | 81 |
+| Lines added | 3,523 |
+| Lines removed | 3 |
+| New models | 5 |
+| New actions | 9 |
+| New policies | 4 |
+| New controllers | 5 |
+| New components | 6 |
+| New views | 4 |
+| New subscribers | 3 |
+| New factories | 5 |
+| New spec files | 23 |
+| Modified existing files | 8 |
+| Total tests | 322 (0 failures) |
+| Security issues found | 3 (all fixed) |
+| RuboCop offenses | 0 (all resolved) |
