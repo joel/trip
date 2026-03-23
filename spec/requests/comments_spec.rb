@@ -51,6 +51,50 @@ RSpec.describe "/trips/:trip_id/journal_entries/:id/comments" do
     end
   end
 
+  describe "turbo_stream responses" do
+    let(:turbo_headers) do
+      { "Accept" => "text/vnd.turbo-stream.html" }
+    end
+
+    it "appends comment and replaces form on create" do
+      post trip_journal_entry_comments_path(trip, entry),
+           params: { comment: { body: "Turbo!" } },
+           headers: turbo_headers
+      expect(response.media_type).to eq(
+        "text/vnd.turbo-stream.html"
+      )
+      expect(response.body).to include("comments_#{entry.id}")
+      expect(response.body).to include(
+        "comment_form_#{entry.id}"
+      )
+    end
+
+    it "replaces comment card on update" do
+      comment = create(:comment, journal_entry: entry,
+                                 user: admin)
+      patch trip_journal_entry_comment_path(
+        trip, entry, comment
+      ), params: { comment: { body: "Updated" } },
+         headers: turbo_headers
+      expect(response.media_type).to eq(
+        "text/vnd.turbo-stream.html"
+      )
+      expect(response.body).to include("<turbo-stream")
+    end
+
+    it "removes comment card on destroy" do
+      comment = create(:comment, journal_entry: entry,
+                                 user: admin)
+      delete trip_journal_entry_comment_path(
+        trip, entry, comment
+      ), headers: turbo_headers
+      expect(response.media_type).to eq(
+        "text/vnd.turbo-stream.html"
+      )
+      expect(response.body).to include("remove")
+    end
+  end
+
   describe "authorization" do
     let(:outsider) { create(:user) }
 

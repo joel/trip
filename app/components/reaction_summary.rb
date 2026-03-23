@@ -21,8 +21,13 @@ module Components
     end
 
     def view_template
-      div(class: "flex flex-wrap gap-2") do
-        EMOJIS.each { |emoji| render_emoji_button(emoji) }
+      div(
+        id: "reaction_summary_#{@entry.id}",
+        class: "ha-card p-4"
+      ) do
+        div(class: "flex flex-wrap gap-2") do
+          EMOJIS.each { |emoji| render_emoji_button(emoji) }
+        end
       end
     end
 

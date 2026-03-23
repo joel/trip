@@ -95,11 +95,9 @@ module Views
       end
 
       def render_reactions
-        div(class: "ha-card p-4") do
-          render Components::ReactionSummary.new(
-            trip: @trip, journal_entry: @entry
-          )
-        end
+        render Components::ReactionSummary.new(
+          trip: @trip, journal_entry: @entry
+        )
       end
 
       def render_comments
@@ -109,13 +107,16 @@ module Views
             plain "Comments"
           end
 
-          comments = @entry.comments.chronological
-                           .includes(:user)
-          comments.each do |comment|
-            render Components::CommentCard.new(
-              trip: @trip, journal_entry: @entry,
-              comment: comment
-            )
+          div(id: "comments_#{@entry.id}",
+              class: "space-y-4") do
+            comments = @entry.comments.chronological
+                             .includes(:user)
+            comments.each do |comment|
+              render Components::CommentCard.new(
+                trip: @trip, journal_entry: @entry,
+                comment: comment
+              )
+            end
           end
 
           render_comment_form

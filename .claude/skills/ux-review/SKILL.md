@@ -69,6 +69,13 @@ Also test at a narrow viewport (375px) to catch mobile/responsive issues.
 - [ ] Is text contrast sufficient in both light and dark mode?
 - [ ] Are images or icons meaningful to screen readers (alt text or aria-label)?
 
+### In-Place Updates (PWA)
+- [ ] Do interactive actions (reactions, comments, toggles, form submissions) update the DOM in place without a full page reload?
+- [ ] Are Turbo Stream responses used for create/update/destroy actions instead of `redirect_to`?
+- [ ] Does the page maintain scroll position after user interactions?
+- [ ] Do forms reset after successful submission (textarea cleared, not stale)?
+- [ ] Is there no visible page flash or full-page re-render on user actions?
+
 ### Responsive
 - [ ] Does the layout hold at 375px width without horizontal scrolling?
 - [ ] Are touch targets large enough on mobile (44x44px minimum)?
