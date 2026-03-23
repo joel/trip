@@ -78,7 +78,7 @@ module Views
       def render_body
         div(class: "ha-card p-6 prose dark:prose-invert " \
                    "max-w-none") do
-          unsafe_raw @entry.body.to_s
+          raw(safe(@entry.body.to_s))
         end
       end
 
