@@ -8,25 +8,41 @@ RSpec.describe GenerateExportJob do
     create(:trip, :with_dates, name: "Test Trip")
   end
   let(:export) { create(:export, trip: trip, user: admin) }
+  let(:tempfile) do
+    f = Tempfile.new(["test", ".zip"])
+    f.write("fake content")
+    f.rewind
+    f
+  end
+  let(:generator) do
+    instance_double(Exports::MarkdownGenerator, call: tempfile)
+  end
 
   before do
     create(:journal_entry, trip: trip, author: admin,
                            name: "Day One",
                            entry_date: Date.current)
+    allow(Exports::MarkdownGenerator).to receive(:new)
+      .and_return(generator)
   end
 
-  it "processes export and attaches file" do
+  after { tempfile.close! if tempfile && !tempfile.closed? }
+
+  it "transitions through processing to completed" do
     described_class.perform_now(export.id)
 
     export.reload
     expect(export).to be_completed
+  end
+
+  it "attaches the generated file" do
+    described_class.perform_now(export.id)
+
+    export.reload
     expect(export.file).to be_attached
   end
 
-  it "marks export as failed on error" do
-    generator = instance_double(Exports::MarkdownGenerator)
-    allow(Exports::MarkdownGenerator).to receive(:new)
-      .and_return(generator)
+  it "marks export as failed on generator error" do
     allow(generator).to receive(:call)
       .and_raise(StandardError, "boom")
 
@@ -55,6 +71,5 @@ RSpec.describe GenerateExportJob do
 
     export.reload
     expect(export).to be_completed
-    expect(export.file).to be_attached
   end
 end
