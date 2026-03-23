@@ -6,7 +6,8 @@ module Components
       "pending" => "bg-amber-100 text-amber-800 " \
                    "dark:bg-amber-500/10 dark:text-amber-300",
       "processing" => "bg-sky-100 text-sky-800 " \
-                      "dark:bg-sky-500/10 dark:text-sky-300",
+                      "dark:bg-sky-500/10 dark:text-sky-300 " \
+                      "animate-pulse",
       "completed" => "bg-emerald-100 text-emerald-800 " \
                      "dark:bg-emerald-500/10 dark:text-emerald-300",
       "failed" => "bg-red-100 text-red-800 " \

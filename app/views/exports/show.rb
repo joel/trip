@@ -12,7 +12,9 @@ module Views
       end
 
       def view_template
-        div(class: "space-y-6") do
+        raw(safe('<meta http-equiv="refresh" content="5">')) if @export.pending? || @export.processing?
+
+        div(class: "space-y-8") do
           render Components::PageHeader.new(
             section: @trip.name,
             title: "#{@export.format.capitalize} Export",
@@ -45,7 +47,7 @@ module Views
       end
 
       def render_details
-        div(class: "ha-card p-6 space-y-4") do
+        div(class: "ha-card ha-fade-in p-6 space-y-4") do
           render_detail_row("Status") do
             render Components::ExportStatusBadge.new(
               status: @export.status
@@ -64,12 +66,21 @@ module Views
               )
             end
           end
+          if @export.failed?
+            render_detail_row("") do
+              link_to(
+                "Try again",
+                view_context.new_trip_export_path(@trip),
+                class: "ha-button ha-button-secondary"
+              )
+            end
+          end
         end
       end
 
       def render_detail_row(label, &)
         div(class: "flex items-center justify-between") do
-          span(class: "text-sm text-[var(--ha-muted)]") do
+          span(class: "text-xs text-[var(--ha-muted)]") do
             plain label
           end
           span(class: "text-sm font-medium " \

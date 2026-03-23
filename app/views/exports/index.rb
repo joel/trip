@@ -11,7 +11,7 @@ module Views
       end
 
       def view_template
-        div(class: "space-y-6") do
+        div(class: "space-y-8") do
           render Components::PageHeader.new(
             section: @trip.name,
             title: "Exports",
@@ -22,9 +22,10 @@ module Views
 
           if @exports.any?
             div(class: "grid gap-4") do
-              @exports.each do |export|
+              @exports.each_with_index do |export, idx|
                 render Components::ExportCard.new(
-                  trip: @trip, export: export
+                  trip: @trip, export: export,
+                  delay: "#{40 + (idx * 40)}ms"
                 )
               end
             end

@@ -36,5 +36,35 @@ RSpec.describe Exports::RequestExport do
         )
       end.to change(Export, :count).by(1)
     end
+
+    it "returns failure for invalid format" do
+      result = described_class.new.call(
+        trip: trip, user: admin, format: "pdf"
+      )
+
+      expect(result).to be_failure
+    end
+
+    it "prevents duplicate active exports" do
+      create(:export, trip: trip, user: admin,
+                      format: :markdown, status: :pending)
+
+      result = described_class.new.call(
+        trip: trip, user: admin, format: "markdown"
+      )
+
+      expect(result).to be_failure
+    end
+
+    it "allows new export after previous completes" do
+      create(:export, trip: trip, user: admin,
+                      format: :markdown, status: :completed)
+
+      result = described_class.new.call(
+        trip: trip, user: admin, format: "markdown"
+      )
+
+      expect(result).to be_success
+    end
   end
 end
