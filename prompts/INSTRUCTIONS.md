@@ -10,7 +10,7 @@ Follow these steps:
 Steps:
 - Read `PRPs/trip-journal.md`
 - Read CLAUDE.md
-- Use the project skill /github-workflow to execute the PLAN `prompts/Phase X.md`
+- Use the project skill /github-workflow to execute the PLAN `prompts/Phase 6.md`
 - Write the Steps taken in `prompts/Phase X - Steps.md` for trail and audit
 - QA at runtime is everything works, use the project skill /runtime-test
 
