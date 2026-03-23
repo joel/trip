@@ -1,6 +1,6 @@
 ---
 name: ux-review
-description: Use this skill after runtime-test completes to review the user experience, flow coherence, and accessibility of new or changed UI. Trigger when the user says "ux review", "check the flow", "accessibility check", or after any phase that introduces new pages, forms, or navigation changes. Also trigger automatically after runtime-test passes, before a PR is opened. This skill reviews what the browser sees, not just what the code says — always use agent-browser screenshots as the primary source of truth.
+description: Use this skill after product-review completes to review the user experience, flow coherence, and accessibility of new or changed UI. Trigger when the user says "ux review", "check the flow", "accessibility check", or after any phase that introduces new pages, forms, or navigation changes. Also trigger automatically after product-review passes, before a PR is opened. This skill reviews what the browser sees, not just what the code says — always use agent-browser screenshots as the primary source of truth.
 ---
 
 # UX Review

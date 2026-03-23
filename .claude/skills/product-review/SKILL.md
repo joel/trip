@@ -1,6 +1,6 @@
 ---
-name: runtime-test
-description: Use after committing code changes to perform mandatory live runtime verification. Triggers when the user says "test live", "runtime test", "verify live", "browser test", or after completing a feature/fix. Rebuilds the app, restarts services, and visually verifies all pages with agent-browser.
+name: product-review
+description: Use after committing code changes to perform mandatory live product verification. Triggers when the user says "product review", "test live", "runtime test", "verify live", "browser test", or after completing a feature/fix. Rebuilds the app, restarts services, and visually verifies all pages with agent-browser using seed data.
 ---
 
 # Runtime Test Workflow
