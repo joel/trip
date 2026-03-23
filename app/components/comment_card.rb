@@ -14,8 +14,11 @@ module Components
 
     def view_template
       div(id: dom_id(@comment),
-          class: "flex gap-3 rounded-lg bg-[var(--ha-surface)] " \
-                 "p-4") do
+          class: "flex gap-3 rounded-xl border " \
+                 "border-[var(--ha-border)] " \
+                 "bg-[var(--ha-surface)] p-4 " \
+                 "transition-colors duration-150 " \
+                 "hover:bg-[var(--ha-surface-hover)]") do
         div(class: "flex-1") do
           render_header
           p(class: "mt-1 text-sm text-[var(--ha-text)]") do
@@ -51,7 +54,8 @@ module Components
             @trip, @entry, @comment
           ),
           method: :delete,
-          class: "text-xs text-red-500 hover:text-red-700",
+          class: "text-xs text-[var(--ha-danger)] " \
+                 "hover:text-[var(--ha-danger-strong)]",
           form: { class: "inline-flex" }
         )
       end

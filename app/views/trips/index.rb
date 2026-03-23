@@ -31,7 +31,9 @@ module Views
           end
 
           if @trips.any?
-            div(id: "trips", class: "grid gap-4") do
+            div(id: "trips",
+                class: "grid gap-4 sm:grid-cols-2 " \
+                       "lg:grid-cols-3") do
               @trips.each do |trip|
                 render Components::TripCard.new(trip: trip)
               end

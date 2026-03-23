@@ -6,7 +6,7 @@ module Views
       def view_template
         div(class: "space-y-8") do
           div(class: "ha-card p-8") do
-            p(class: "text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ha-muted)]") do
+            p(class: "ha-overline") do
               plain "Access"
             end
             h1(class: "mt-2 text-3xl font-semibold tracking-tight sm:text-4xl") do
@@ -22,7 +22,7 @@ module Views
           div(class: "ha-card p-6 space-y-6") do
             div do
               p(
-                class: "text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ha-muted)]"
+                class: "ha-overline"
               ) { plain "Email" }
               h2(class: "mt-2 text-lg font-semibold") { plain "Continue with email" }
               p(class: "mt-2 text-sm text-[var(--ha-muted)]") do

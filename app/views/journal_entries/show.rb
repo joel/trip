@@ -84,11 +84,12 @@ module Views
 
       def render_images
         div(class: "grid grid-cols-2 gap-4 sm:grid-cols-3") do
-          @entry.images.each do |image|
+          @entry.images.each_with_index do |image, index|
             img(
               src: view_context.url_for(image),
-              class: "rounded-xl object-cover",
-              alt: @entry.name
+              class: "aspect-[4/3] w-full rounded-xl " \
+                     "object-cover",
+              alt: "#{@entry.name} - photo #{index + 1}"
             )
           end
         end
@@ -111,11 +112,18 @@ module Views
               class: "space-y-4") do
             comments = @entry.comments.chronological
                              .includes(:user)
-            comments.each do |comment|
-              render Components::CommentCard.new(
-                trip: @trip, journal_entry: @entry,
-                comment: comment
-              )
+            if comments.any?
+              comments.each do |comment|
+                render Components::CommentCard.new(
+                  trip: @trip, journal_entry: @entry,
+                  comment: comment
+                )
+              end
+            else
+              p(class: "text-sm text-[var(--ha-muted)] " \
+                       "italic") do
+                plain "No comments yet."
+              end
             end
           end
 

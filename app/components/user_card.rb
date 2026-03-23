@@ -13,7 +13,7 @@ module Components
       div(id: dom_id(@user), class: "ha-card p-6") do
         div(class: "flex items-start justify-between gap-4") do
           div do
-            p(class: "text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ha-muted)]") { "User" }
+            p(class: "ha-overline") { "User" }
             p(class: "mt-2 text-lg font-semibold text-[var(--ha-text)]") { @user.name }
             div(class: "mt-3 flex items-center gap-2 text-xs text-[var(--ha-muted)]") do
               span(class: "rounded-full bg-[var(--ha-surface-muted)] px-2 py-1") { "Email" }
@@ -34,7 +34,7 @@ module Components
     private
 
     def render_actions
-      div(class: "mt-5 flex flex-wrap gap-2") do
+      div(class: "ha-card-actions") do
         link_to("View", @user, class: "ha-button ha-button-secondary")
         link_to("Edit", view_context.edit_user_path(@user), class: "ha-button ha-button-secondary") if view_context.allowed_to?(:edit?, @user)
       end

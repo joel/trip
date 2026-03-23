@@ -11,7 +11,7 @@ module Components
     def view_template(&block)
       div(class: "flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between") do
         div do
-          p(class: "text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ha-muted)]") { @section }
+          p(class: "ha-overline") { @section }
           h1(class: "mt-2 text-3xl font-semibold tracking-tight sm:text-4xl") { @title }
           p(class: "mt-2 text-sm text-[var(--ha-muted)]") { @subtitle } if @subtitle
         end

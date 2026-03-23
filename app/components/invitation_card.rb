@@ -13,7 +13,7 @@ module Components
       div(id: dom_id(@invitation), class: "ha-card p-6") do
         div(class: "flex items-start justify-between gap-4") do
           div do
-            p(class: "text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ha-muted)]") do
+            p(class: "ha-overline") do
               plain "Invitation"
             end
             p(class: "mt-2 text-lg font-semibold text-[var(--ha-text)]") { @invitation.email }

@@ -66,14 +66,15 @@ module Components
 
     def active_class
       "inline-flex items-center rounded-full border " \
-        "border-blue-300 bg-blue-50 px-3 py-1 text-sm " \
-        "dark:border-blue-600 dark:bg-blue-900/30"
+        "border-[var(--ha-accent)]/30 bg-[var(--ha-accent)]/10 " \
+        "px-3 py-1 text-sm transition-all duration-150"
     end
 
     def inactive_class
       "inline-flex items-center rounded-full border " \
         "border-[var(--ha-border)] bg-[var(--ha-surface)] " \
-        "px-3 py-1 text-sm hover:bg-[var(--ha-surface-hover)]"
+        "px-3 py-1 text-sm transition-all duration-150 " \
+        "hover:bg-[var(--ha-surface-hover)]"
     end
   end
 end

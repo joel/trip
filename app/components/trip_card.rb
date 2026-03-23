@@ -13,10 +13,7 @@ module Components
       div(id: dom_id(@trip), class: "ha-card p-6") do
         div(class: "flex items-start justify-between gap-4") do
           div do
-            p(class: "text-xs font-semibold uppercase " \
-                     "tracking-[0.2em] text-[var(--ha-muted)]") do
-              plain "Trip"
-            end
+            p(class: "ha-overline") { plain "Trip" }
             p(class: "mt-2 text-lg font-semibold " \
                      "text-[var(--ha-text)]") do
               plain @trip.name
@@ -47,9 +44,9 @@ module Components
     end
 
     def render_actions
-      div(class: "mt-5 flex flex-wrap gap-2") do
+      div(class: "ha-card-actions") do
         link_to("View", view_context.trip_path(@trip),
-                class: "ha-button ha-button-secondary")
+                class: "ha-button ha-button-primary")
         if view_context.allowed_to?(:edit?, @trip)
           link_to("Edit", view_context.edit_trip_path(@trip),
                   class: "ha-button ha-button-secondary")
