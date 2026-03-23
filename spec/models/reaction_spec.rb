@@ -10,6 +10,13 @@ RSpec.describe Reaction do
       expect(reaction.errors[:emoji]).to include("can't be blank")
     end
 
+    it "rejects emojis outside the allowed set" do
+      reaction = build(:reaction, emoji: "wave")
+      expect(reaction).not_to be_valid
+      expect(reaction.errors[:emoji])
+        .to include("is not included in the list")
+    end
+
     it "enforces uniqueness per user, emoji, and reactable" do
       entry = create(:journal_entry)
       user = create(:user)

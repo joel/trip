@@ -4,7 +4,7 @@ module Components
   class ReactionSummary < Components::Base
     include Phlex::Rails::Helpers::ButtonTo
 
-    EMOJIS = %w[thumbsup heart tada eyes fire rocket].freeze
+    EMOJIS = Reaction::ALLOWED_EMOJIS
 
     EMOJI_DISPLAY = {
       "thumbsup" => "\u{1F44D}",
