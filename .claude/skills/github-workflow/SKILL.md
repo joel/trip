@@ -154,7 +154,7 @@ Never use `OVERCOMMIT_DISABLE=1`.
 
 ### Step 8: Runtime Test Workflow
 
-After committing and before pushing, perform live verification. Use the `/runtime-test` skill for the full checklist, or manually:
+After committing and before pushing, perform live verification. Use the `/product-review` skill for the full checklist, or manually:
 
 ```bash
 bin/cli app rebuild
@@ -295,7 +295,7 @@ unset GITHUB_TOKEN && gh project item-edit \
 5.  <implement changes>      → Write code
 6.  bundle exec rake         → Lint + tests + system tests
 7.  git commit               → Overcommit hooks validate
-8.  /runtime-test            → Live browser verification
+8.  /product-review           → Live browser verification
 9.  git push + gh pr create  → Push and open PR (Closes #N)
 10. gh project item-edit     → Move to In Review
 11. gh api .../comments      → Reply to every review comment + resolve threads
