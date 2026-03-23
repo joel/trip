@@ -14,7 +14,7 @@ class ExportPolicy < ApplicationPolicy
   end
 
   def show?
-    superadmin? || own_export?
+    superadmin? || (member? && own_export?)
   end
 
   def download?

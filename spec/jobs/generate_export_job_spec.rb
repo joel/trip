@@ -46,4 +46,15 @@ RSpec.describe GenerateExportJob do
       ActionMailer::Base.deliveries.count
     }.by(1)
   end
+
+  it "stays completed when mailer raises" do
+    allow(ExportMailer).to receive(:export_ready)
+      .and_raise(StandardError, "SMTP down")
+
+    described_class.perform_now(export.id)
+
+    export.reload
+    expect(export).to be_completed
+    expect(export.file).to be_attached
+  end
 end

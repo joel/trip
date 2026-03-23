@@ -27,14 +27,22 @@ class GenerateExportJob < ApplicationJob
     end
 
     step :notify_user do
-      ExportMailer.export_ready(@export.id).deliver_now
+      send_notification
     end
   rescue StandardError => e
-    @export&.failed! unless @export&.failed?
+    @export&.failed! unless @export&.completed? || @export&.failed?
     raise e
   end
 
   private
+
+  def send_notification
+    ExportMailer.export_ready(@export.id).deliver_now
+  rescue StandardError => e
+    Rails.logger.error(
+      "Export #{@export.id} notification failed: #{e.message}"
+    )
+  end
 
   def generator
     case @export.format
