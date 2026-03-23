@@ -8,7 +8,7 @@ module Components
       return if view_context.rodauth.login_form_footer_links.empty?
 
       div(class: "mt-4 border-t border-[var(--ha-border)] pt-4") do
-        p(class: "text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ha-muted)]") do
+        p(class: "ha-overline") do
           plain "More options"
         end
         div(class: "mt-2 flex flex-wrap gap-3 text-sm text-[var(--ha-muted)]") do

@@ -24,6 +24,7 @@
     --ha-danger-strong: #ef4444;
     --ha-ring: #38bdf8;
     --ha-ring-shadow: rgba(14, 165, 233, 0.25);
+    --ha-surface-hover: #f1f5f9;
     --ha-card-shadow: 0 22px 45px -34px rgba(15, 23, 42, 0.35);
   }
 
@@ -49,6 +50,7 @@
     --ha-danger-strong: #ef4444;
     --ha-ring: #38bdf8;
     --ha-ring-shadow: rgba(14, 165, 233, 0.35);
+    --ha-surface-hover: #1e293b;
     --ha-card-shadow: 0 24px 50px -32px rgba(2, 6, 23, 0.75);
   }
 
@@ -85,6 +87,33 @@
     border: 1px solid var(--ha-card-border);
     background: var(--ha-card);
     box-shadow: var(--ha-card-shadow);
+    transition: transform 150ms ease, box-shadow 150ms ease;
+  }
+
+  .ha-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 26px 50px -30px rgba(15, 23, 42, 0.45);
+  }
+
+  .dark .ha-card:hover {
+    box-shadow: 0 28px 55px -28px rgba(2, 6, 23, 0.85);
+  }
+
+  .ha-overline {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--ha-muted);
+  }
+
+  .ha-card-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    border-top: 1px solid var(--ha-card-border);
+    padding-top: 1rem;
   }
 
   .ha-input {

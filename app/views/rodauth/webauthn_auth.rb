@@ -11,7 +11,7 @@ module Views
 
         div(class: "ha-card p-6 space-y-6") do
           div do
-            p(class: "text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ha-muted)]") do
+            p(class: "ha-overline") do
               plain "Passkey"
             end
             h2(class: "mt-2 text-lg font-semibold") { plain "Use a passkey" }

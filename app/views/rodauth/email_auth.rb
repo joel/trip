@@ -8,7 +8,7 @@ module Views
       def view_template
         div(class: "space-y-8") do
           div(class: "ha-card p-8") do
-            p(class: "text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ha-muted)]") do
+            p(class: "ha-overline") do
               plain "Email link"
             end
             h1(class: "mt-2 text-3xl font-semibold tracking-tight sm:text-4xl") do

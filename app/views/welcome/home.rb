@@ -18,7 +18,7 @@ module Views
         div(class: "ha-card p-8") do
           div(class: "flex flex-col gap-6 md:flex-row md:items-center md:justify-between") do
             div do
-              p(class: "text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ha-muted)]") do
+              p(class: "ha-overline") do
                 plain "Catalyst Hub"
               end
               h1(class: "mt-2 text-4xl font-semibold tracking-tight sm:text-5xl") { "Welcome home" }
@@ -42,12 +42,12 @@ module Views
 
       def render_users_card
         div(class: "ha-card p-6 ha-rise", style: "animation-delay: 160ms;") do
-          p(class: "text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ha-muted)]") { "Users" }
+          p(class: "ha-overline") { "Users" }
           h2(class: "mt-2 text-2xl font-semibold") { "Stay connected" }
           p(class: "mt-3 text-sm text-[var(--ha-muted)]") do
             plain "Manage who owns and contributes to the latest updates."
           end
-          div(class: "mt-5 flex flex-wrap gap-2") do
+          div(class: "ha-card-actions") do
             link_to("New user", view_context.new_user_path, class: "ha-button ha-button-primary")
             link_to("Browse", view_context.users_path, class: "ha-button ha-button-secondary")
           end
@@ -64,12 +64,12 @@ module Views
 
       def render_passkey_card
         div(class: "ha-card p-6 ha-rise", style: "animation-delay: 240ms;") do
-          p(class: "text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ha-muted)]") { "Security" }
+          p(class: "ha-overline") { "Security" }
           h2(class: "mt-2 text-2xl font-semibold") { "Add a passkey" }
           p(class: "mt-3 text-sm text-[var(--ha-muted)]") do
             plain "Register a passkey per device for faster, safer sign-ins."
           end
-          div(class: "mt-5 flex flex-wrap gap-2") do
+          div(class: "ha-card-actions") do
             link_to("Add passkey", view_context.rodauth.webauthn_setup_path,
                     class: "ha-button ha-button-primary")
             if view_context.rodauth.webauthn_setup?
@@ -82,12 +82,12 @@ module Views
 
       def render_signin_card
         div(class: "ha-card p-6 ha-rise", style: "animation-delay: 240ms;") do
-          p(class: "text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ha-muted)]") { "Access" }
+          p(class: "ha-overline") { "Access" }
           h2(class: "mt-2 text-2xl font-semibold") { "Private application" }
           p(class: "mt-3 text-sm text-[var(--ha-muted)]") do
             plain "This is an invite-only app. Request access or sign in if you already have an account."
           end
-          div(class: "mt-5 flex flex-wrap gap-2") do
+          div(class: "ha-card-actions") do
             link_to("Request Access", view_context.new_access_request_path,
                     class: "ha-button ha-button-primary")
             link_to("Sign in", view_context.rodauth.login_path,

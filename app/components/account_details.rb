@@ -10,7 +10,7 @@ module Components
       div(class: "ha-card p-6") do
         div(class: "flex flex-wrap items-start justify-between gap-4") do
           div do
-            p(class: "text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ha-muted)]") { "Account" }
+            p(class: "ha-overline") { "Account" }
             p(class: "mt-2 text-lg font-semibold text-[var(--ha-text)]") do
               plain(@user.name.presence || "Unnamed")
             end

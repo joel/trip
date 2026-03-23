@@ -14,7 +14,7 @@ module Components
       div(id: dom_id(@access_request), class: "ha-card p-6") do
         div(class: "flex items-start justify-between gap-4") do
           div do
-            p(class: "text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ha-muted)]") do
+            p(class: "ha-overline") do
               plain "Access Request"
             end
             p(class: "mt-2 text-lg font-semibold text-[var(--ha-text)]") { @access_request.email }
@@ -45,7 +45,7 @@ module Components
     end
 
     def render_actions
-      div(class: "mt-5 flex flex-wrap gap-2") do
+      div(class: "ha-card-actions") do
         button_to("Approve", view_context.approve_access_request_path(@access_request),
                   method: :patch, class: "ha-button ha-button-primary")
         button_to("Reject", view_context.reject_access_request_path(@access_request),

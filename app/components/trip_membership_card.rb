@@ -53,7 +53,7 @@ module Components
     def render_actions
       return unless view_context.allowed_to?(:destroy?, @membership)
 
-      div(class: "mt-5 flex flex-wrap gap-2") do
+      div(class: "ha-card-actions") do
         button_to(
           "Remove",
           view_context.trip_trip_membership_path(@trip, @membership),

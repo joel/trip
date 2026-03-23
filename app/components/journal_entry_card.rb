@@ -54,7 +54,7 @@ module Components
     end
 
     def render_actions
-      div(class: "mt-5 flex flex-wrap gap-2") do
+      div(class: "ha-card-actions") do
         link_to(
           "View",
           view_context.trip_journal_entry_path(@trip, @entry),
