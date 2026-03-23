@@ -59,7 +59,8 @@ module Components
               icon: Components::Icons::Map.new,
               active: %w[trips journal_entries trip_memberships
                          comments reactions checklists
-                         checklist_sections checklist_items]
+                         checklist_sections checklist_items
+                         exports]
                       .include?(view_context.controller_name),
               delay: "80ms"
             )

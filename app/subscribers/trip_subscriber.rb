@@ -13,6 +13,11 @@ class TripSubscriber
         "transitioned from #{event[:payload][:from_state]} " \
         "to #{event[:payload][:to_state]}"
       )
+      NotifyTripStateChangeJob.perform_later(
+        event[:payload][:trip_id],
+        event[:payload][:from_state],
+        event[:payload][:to_state]
+      )
     end
   end
 end

@@ -30,6 +30,11 @@ Rails.application.routes.draw do
     end
     resources :trip_memberships, only: %i[index new create destroy],
                                  path: "members"
+    resources :exports, only: %i[index new create show] do
+      member do
+        get :download
+      end
+    end
     member do
       patch :transition
     end

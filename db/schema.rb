@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_22_200008) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_23_100001) do
   create_table "access_requests", id: uuid, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -97,6 +97,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_22_200008) do
     t.index ["journal_entry_id", "created_at"], name: "index_comments_on_journal_entry_id_and_created_at"
     t.index ["journal_entry_id"], name: "index_comments_on_journal_entry_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
+  create_table "exports", id: uuid, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "format", null: false
+    t.integer "status", default: 0, null: false
+    t.string "trip_id", limit: 36, null: false
+    t.datetime "updated_at", null: false
+    t.string "user_id", limit: 36, null: false
+    t.index ["trip_id", "user_id", "created_at"], name: "index_exports_on_trip_id_and_user_id_and_created_at"
+    t.index ["trip_id"], name: "index_exports_on_trip_id"
+    t.index ["user_id"], name: "index_exports_on_user_id"
   end
 
   create_table "invitations", id: uuid, force: :cascade do |t|
@@ -212,6 +224,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_22_200008) do
   add_foreign_key "checklists", "trips"
   add_foreign_key "comments", "journal_entries"
   add_foreign_key "comments", "users"
+  add_foreign_key "exports", "trips"
+  add_foreign_key "exports", "users"
   add_foreign_key "invitations", "users", column: "inviter_id"
   add_foreign_key "journal_entries", "trips"
   add_foreign_key "journal_entries", "users", column: "author_id"

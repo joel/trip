@@ -20,6 +20,7 @@ class Trip < ApplicationRecord
   has_many :members, through: :trip_memberships, source: :user
   has_many :journal_entries, dependent: :destroy
   has_many :checklists, dependent: :destroy
+  has_many :exports, dependent: :destroy
   has_many :reactions, as: :reactable, dependent: :destroy
 
   validates :name, presence: true

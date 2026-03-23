@@ -12,4 +12,5 @@ Rails.application.config.after_initialize do
   Rails.event.subscribe(CommentSubscriber.new) { |e| e[:name].start_with?("comment.") }
   Rails.event.subscribe(ReactionSubscriber.new) { |e| e[:name].start_with?("reaction.") }
   Rails.event.subscribe(ChecklistSubscriber.new) { |e| e[:name].start_with?("checklist") }
+  Rails.event.subscribe(ExportSubscriber.new) { |e| e[:name].start_with?("export.") }
 end

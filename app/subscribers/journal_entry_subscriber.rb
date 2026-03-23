@@ -8,6 +8,9 @@ class JournalEntrySubscriber
         "Journal entry created: " \
         "#{event[:payload][:journal_entry_id]}"
       )
+      ProcessJournalImagesJob.perform_later(
+        event[:payload][:journal_entry_id]
+      )
     end
   end
 end
