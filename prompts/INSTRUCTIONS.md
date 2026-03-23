@@ -25,7 +25,7 @@ Task 2 — Security Review
 Task 3 — UX Review
   Instructions: Read .claude/skills/ux-review/SKILL.md and follow it in full for the current branch. Write the complete report to prompts/Phase X - UX Review.md.
 
-Once all three tasks complete, read the three reports and give me a consolidated summary of all 🔴 Critical/Broken/Defect findings that must be fixed before the PR is opened.
+Once all three tasks complete, read the three reports and give me a consolidated summary of all 🔴 Critical/Broken/Defect findings
 
 # After completion
 
