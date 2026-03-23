@@ -1,0 +1,23 @@
+{
+  "skill_name": "ui-polish",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Polish the journal entry show page — it has reactions, comments, images, and rich text sections. Review it and tell me what needs improvement.",
+      "expected_output": "A structured review covering spatial composition, typography, color, shadows, transitions, and micro-details for the journal entry show page, with specific actionable recommendations.",
+      "files": []
+    },
+    {
+      "id": 1,
+      "prompt": "The trip cards look generic, make them pop. Review the trip card component design.",
+      "expected_output": "A review of the TripCard component identifying specific visual improvements — spatial composition, shadow depth, typography hierarchy, accent usage, and CSS extraction opportunities.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Review the sidebar design — is it polished enough?",
+      "expected_output": "A review of the Sidebar component evaluating its gradient, animations, icon/label treatment, dark mode behavior, and micro-interaction quality.",
+      "files": []
+    }
+  ]
+}
