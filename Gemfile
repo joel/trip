@@ -45,6 +45,8 @@ gem "dry-monads", "~> 1.6"
 
 # Export
 gem "gepub"
+gem "reverse_markdown"
+gem "rubyzip", require: "zip"
 
 # View components
 gem "phlex-rails", "~> 2.0"

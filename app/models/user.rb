@@ -14,6 +14,7 @@ class User < ApplicationRecord
                              dependent: :restrict_with_error,
                              inverse_of: :author
   has_many :comments, dependent: :destroy
+  has_many :exports, dependent: :destroy
   has_many :reactions, dependent: :destroy
 
   validates :email, presence: true, uniqueness: { case_sensitive: false }
