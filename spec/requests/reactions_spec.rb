@@ -29,6 +29,31 @@ RSpec.describe "/trips/:trip_id/journal_entries/:id/reactions" do
     end
   end
 
+  describe "POST create (turbo_stream)" do
+    let(:turbo_headers) do
+      { "Accept" => "text/vnd.turbo-stream.html" }
+    end
+
+    it "returns turbo_stream response" do
+      post trip_journal_entry_reactions_path(trip, entry),
+           params: { emoji: "thumbsup" },
+           headers: turbo_headers
+      expect(response.media_type).to eq(
+        "text/vnd.turbo-stream.html"
+      )
+    end
+
+    it "replaces the reaction summary" do
+      post trip_journal_entry_reactions_path(trip, entry),
+           params: { emoji: "thumbsup" },
+           headers: turbo_headers
+      expect(response.body).to include("<turbo-stream")
+      expect(response.body).to include(
+        "reaction_summary_#{entry.id}"
+      )
+    end
+  end
+
   describe "authorization" do
     let(:outsider) { create(:user) }
 

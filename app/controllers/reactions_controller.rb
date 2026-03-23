@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class ReactionsController < ApplicationController
+  include TurboStreamable
+
   before_action :require_authenticated_user!
   before_action :set_trip
   before_action :set_journal_entry
@@ -13,12 +15,34 @@ class ReactionsController < ApplicationController
       user: current_user,
       emoji: params[:emoji]
     )
-    redirect_to [@trip, @journal_entry]
+    @journal_entry.reload
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: stream_replace(
+          "reaction_summary_#{@journal_entry.id}",
+          reaction_summary_component
+        )
+      end
+      format.html { redirect_to [@trip, @journal_entry] }
+    end
   end
 
   def destroy
     @reaction.destroy!
-    redirect_to [@trip, @journal_entry], status: :see_other
+    @journal_entry.reload
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: stream_replace(
+          "reaction_summary_#{@journal_entry.id}",
+          reaction_summary_component
+        )
+      end
+      format.html do
+        redirect_to [@trip, @journal_entry], status: :see_other
+      end
+    end
   end
 
   private
@@ -42,5 +66,11 @@ class ReactionsController < ApplicationController
   def set_and_authorize_reaction!
     @reaction = @journal_entry.reactions.find(params[:id])
     authorize!(@reaction)
+  end
+
+  def reaction_summary_component
+    Components::ReactionSummary.new(
+      trip: @trip, journal_entry: @journal_entry
+    )
   end
 end

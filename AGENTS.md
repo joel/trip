@@ -8,6 +8,8 @@ This document provides instructions and protocols for AI Agents interacting with
 
 - **Live Testing:** Use the `agent-browser` tool to verify changes visually or functionally.
 
+- **GitHub CLI:** Always `unset GITHUB_TOKEN` before running `gh` commands. The environment may have a stale token that causes `HTTP 401: Bad credentials` errors. The `gh` CLI falls back to its own auth store when the env var is unset.
+
     - **Local URL:** `https://catalyst.workeverywhere.docker`
 
 ---

@@ -11,21 +11,23 @@ module Components
     end
 
     def view_template
-      form_with(
-        model: [@trip, @entry, @comment],
-        class: "flex gap-3"
-      ) do |form|
-        div(class: "flex-1") do
-          form.text_area(
-            :body,
-            placeholder: "Add a comment...",
-            rows: 2,
-            class: "ha-input w-full text-sm"
-          )
-        end
-        div(class: "flex items-end") do
-          form.submit "Post",
-                      class: "ha-button ha-button-primary text-sm"
+      div(id: "comment_form_#{@entry.id}") do
+        form_with(
+          model: [@trip, @entry, @comment],
+          class: "flex gap-3"
+        ) do |form|
+          div(class: "flex-1") do
+            form.text_area(
+              :body,
+              placeholder: "Add a comment...",
+              rows: 2,
+              class: "ha-input w-full text-sm"
+            )
+          end
+          div(class: "flex items-end") do
+            form.submit "Post",
+                        class: "ha-button ha-button-primary text-sm"
+          end
         end
       end
     end
