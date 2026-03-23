@@ -84,6 +84,17 @@ RSpec.describe ExportPolicy do
       expect(described_class.new(export, user: viewer_user)
         .apply(:show?)).to be(false)
     end
+
+    it "denies removed member's own export" do
+      export # create while membership exists
+      TripMembership.find_by(
+        trip: trip, user: contributor_user
+      ).destroy!
+      expect(
+        described_class.new(export, user: contributor_user)
+          .apply(:show?)
+      ).to be(false)
+    end
   end
 
   describe "#download?" do

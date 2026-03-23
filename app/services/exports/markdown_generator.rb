@@ -57,12 +57,13 @@ module Exports
       body_md = HtmlToMarkdown.new(
         entry.body&.to_s, image_map: image_map
       ).call
+      images_md = standalone_images_md(entry)
 
       zip.put_next_entry("#{slug}.md")
-      zip.write(entry_content(entry, body_md))
+      zip.write(entry_content(entry, body_md, images_md))
     end
 
-    def entry_content(entry, body_md)
+    def entry_content(entry, body_md, images_md)
       <<~MARKDOWN
         ---
         title: "#{entry.name}"
@@ -76,7 +77,17 @@ module Exports
         # #{entry.name}
 
         #{body_md}
+        #{images_md}
       MARKDOWN
+    end
+
+    def standalone_images_md(entry)
+      return "" unless entry.images.attached?
+
+      entry.images.filter_map do |image|
+        blob = image.blob
+        "![#{blob.filename}](assets/#{blob.filename})"
+      end.join("\n\n")
     end
 
     def write_images(zip, image_blobs)

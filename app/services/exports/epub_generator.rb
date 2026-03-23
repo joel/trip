@@ -83,11 +83,26 @@ module Exports
         end
       end
 
+      standalone = standalone_images_html(entry, image_resources)
+
       <<~HTML
         <h1>#{CGI.escapeHTML(entry.name)}</h1>
         <p><em>#{entry.entry_date} — #{CGI.escapeHTML(entry.author.name || entry.author.email)}</em></p>
         #{doc.to_html}
+        #{standalone}
       HTML
+    end
+
+    def standalone_images_html(entry, image_resources)
+      return "" unless entry.images.attached?
+
+      entry.images.filter_map do |image|
+        blob = image.blob
+        href = image_resources[blob.key]
+        next unless href
+
+        %(<img src="#{href}" alt="#{CGI.escapeHTML(blob.filename.to_s)}" />)
+      end.join("\n")
     end
 
     def collect_blobs(entry)
