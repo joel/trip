@@ -126,7 +126,7 @@ module Exports
 
     def entry_slug(entry)
       date = entry.entry_date&.strftime("%Y-%m-%d") || "undated"
-      name = entry.name.parameterize
+      name = entry.name.parameterize.presence || "untitled"
       "#{date}-#{name}"
     end
   end

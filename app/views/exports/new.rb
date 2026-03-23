@@ -12,23 +12,21 @@ module Views
       end
 
       def view_template
-        div(class: "space-y-6") do
+        div(class: "space-y-8") do
           render Components::PageHeader.new(
             section: @trip.name,
             title: "New Export",
             subtitle: "Choose the format for your trip export."
-          )
-
-          div(class: "ha-card p-6") do
-            render_form
-          end
-
-          div(class: "flex flex-wrap gap-2") do
+          ) do
             link_to(
               "Back to exports",
               view_context.trip_exports_path(@trip),
               class: "ha-button ha-button-secondary"
             )
+          end
+
+          div(class: "ha-card ha-fade-in p-6") do
+            render_form
           end
         end
       end
@@ -45,7 +43,8 @@ module Views
             render_format_option(f, "markdown",
                                  "Markdown ZIP",
                                  "Obsidian-compatible ZIP with " \
-                                 "YAML frontmatter and images.")
+                                 "YAML frontmatter and images.",
+                                 checked: true)
             render_format_option(f, "epub",
                                  "ePub",
                                  "E-book format readable on " \
@@ -59,13 +58,18 @@ module Views
         end
       end
 
-      def render_format_option(form, value, label_text, description)
+      def render_format_option(form, value, label_text,
+                               description, checked: false)
         label(
           class: "flex cursor-pointer items-start gap-3 " \
                  "rounded-xl border border-[var(--ha-border)] " \
-                 "p-4 transition hover:bg-[var(--ha-bg-muted)]"
+                 "p-4 transition-colors " \
+                 "hover:bg-[var(--ha-surface-hover)] " \
+                 "has-[:checked]:border-[var(--ha-accent)] " \
+                 "has-[:checked]:bg-[var(--ha-accent)]/5"
         ) do
           form.radio_button :format, value,
+                            checked: checked,
                             class: "mt-1 accent-[var(--ha-accent)]"
           div do
             span(class: "text-sm font-medium " \

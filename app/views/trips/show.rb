@@ -55,11 +55,14 @@ module Views
           view_context.trip_checklists_path(@trip),
           class: "ha-button ha-button-secondary"
         )
-        link_to(
-          "Exports",
-          view_context.trip_exports_path(@trip),
-          class: "ha-button ha-button-secondary"
-        )
+        if view_context.allowed_to?(:index?, @trip,
+                                    with: ExportPolicy)
+          link_to(
+            "Exports",
+            view_context.trip_exports_path(@trip),
+            class: "ha-button ha-button-secondary"
+          )
+        end
         if view_context.allowed_to?(:destroy?, @trip)
           button_to(
             "Delete", view_context.trip_path(@trip),

@@ -7,9 +7,14 @@ class ExportsController < ApplicationController
 
   def index
     authorize! @trip, with: ExportPolicy
-    @exports = @trip.exports.where(user: current_user)
-                    .recent.includes(:user)
-    @exports = @trip.exports.recent.includes(:user) if current_user.role?(:superadmin)
+    @exports = if current_user.role?(:superadmin)
+                 @trip.exports.recent.includes(:user)
+                      .with_attached_file
+               else
+                 @trip.exports.where(user: current_user)
+                      .recent.includes(:user)
+                      .with_attached_file
+               end
     render Views::Exports::Index.new(
       trip: @trip, exports: @exports
     )
@@ -31,15 +36,15 @@ class ExportsController < ApplicationController
     authorize! @trip, with: ExportPolicy
     result = ::Exports::RequestExport.new.call(
       trip: @trip, user: current_user,
-      format: params[:export][:format]
+      format: export_params[:format]
     )
     case result
     in Dry::Monads::Success(export)
       redirect_to trip_export_path(@trip, export),
                   notice: "Export requested. We'll notify you when it's ready."
     in Dry::Monads::Failure(errors)
-      redirect_to new_trip_export_path(@trip),
-                  alert: "Could not create export."
+      message = errors.respond_to?(:full_messages) ? errors.full_messages.to_sentence : "Could not create export."
+      redirect_to new_trip_export_path(@trip), alert: message
     end
   end
 
@@ -64,5 +69,9 @@ class ExportsController < ApplicationController
 
   def set_export
     @export = @trip.exports.find(params[:id])
+  end
+
+  def export_params
+    params.expect(export: [:format])
   end
 end

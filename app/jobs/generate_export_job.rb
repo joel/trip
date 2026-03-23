@@ -3,6 +3,8 @@
 class GenerateExportJob < ApplicationJob
   include ActiveJob::Continuable
 
+  self.max_resumptions = 5
+
   queue_as :default
 
   def perform(export_id)
@@ -12,18 +14,18 @@ class GenerateExportJob < ApplicationJob
       @export.processing!
     end
 
-    step :generate_file do
-      @tempfile = generator.call
-    end
-
-    step :attach_file do
-      @export.file.attach(
-        io: File.open(@tempfile.path),
-        filename: export_filename,
-        content_type: content_type
-      )
-      @export.completed!
-      @tempfile.close!
+    step :generate_and_attach do
+      tempfile = generator.call
+      begin
+        @export.file.attach(
+          io: File.open(tempfile.path),
+          filename: export_filename,
+          content_type: content_type
+        )
+        @export.completed!
+      ensure
+        tempfile.close!
+      end
     end
 
     step :notify_user do
@@ -54,7 +56,7 @@ class GenerateExportJob < ApplicationJob
   end
 
   def export_filename
-    trip_slug = @export.trip.name.parameterize
+    trip_slug = @export.trip.name.parameterize.presence || "export"
     case @export.format
     when "markdown" then "#{trip_slug}.zip"
     when "epub" then "#{trip_slug}.epub"
