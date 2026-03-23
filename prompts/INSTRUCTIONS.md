@@ -13,9 +13,19 @@ Steps:
 - Use the project skill /github-workflow to execute the PLAN `prompts/Phase X.md`
 - Write the Steps taken in `prompts/Phase X - Steps.md` for trail and audit
 - QA at runtime is everything works, use the project skill /runtime-test
-- Run the project skill /qa-review, write the report in `prompts/Phase X - QA Review.md` for trail and audit
-- Run the project skill /security-review, write the report in `prompts/Phase X - Security Review.md` for trail and audit
-- Run the project skill /ux-review, write the report in `prompts/Phase X - UX Review.md` for trail and audit
+
+Use the Task tool to spin up three parallel sub-agents for review. Each agent must work independently and write its report to disk before exiting. Do not wait for one to finish before starting the next.
+
+Task 1 — QA Review
+  Instructions: Read .claude/skills/qa-review/SKILL.md and follow it in full for the current branch. Write the complete report to prompts/Phase X - QA Review.md.
+
+Task 2 — Security Review
+  Instructions: Read .claude/skills/security-review/SKILL.md and follow it in full for the current branch. Write the complete report to prompts/Phase X - Security Review.md.
+
+Task 3 — UX Review
+  Instructions: Read .claude/skills/ux-review/SKILL.md and follow it in full for the current branch. Write the complete report to prompts/Phase X - UX Review.md.
+
+Once all three tasks complete, read the three reports and give me a consolidated summary of all 🔴 Critical/Broken/Defect findings that must be fixed before the PR is opened.
 
 # After completion
 
