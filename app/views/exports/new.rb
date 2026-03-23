@@ -38,6 +38,7 @@ module Views
       def render_form
         form_with(
           url: view_context.trip_exports_path(@trip),
+          scope: :export,
           method: :post, class: "space-y-6"
         ) do |f|
           div(class: "space-y-4") do
