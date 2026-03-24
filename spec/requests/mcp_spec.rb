@@ -89,7 +89,7 @@ RSpec.describe "MCP Endpoint" do
           .to eq("trip_journal")
       end
 
-      it "lists all 10 tools" do
+      it "lists all 11 tools" do
         post "/mcp", params: init_payload, headers: headers
 
         list_payload = {
@@ -105,7 +105,7 @@ RSpec.describe "MCP Endpoint" do
           "list_journal_entries", "create_comment",
           "add_reaction", "update_trip", "transition_trip",
           "toggle_checklist_item", "list_checklists",
-          "get_trip_status"
+          "get_trip_status", "add_journal_images"
         )
       end
 
