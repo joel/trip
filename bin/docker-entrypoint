@@ -1,5 +1,14 @@
 #!/bin/bash -e
 
+# Sync db/ files from the image into the persistent volume.
+# Kamal mounts catalyst_db:/rails/db which hides the image's db/ directory.
+# db-image/ is a copy stashed outside the volume mount path in the Dockerfile.
+if [ -d "/rails/db-image" ]; then
+  cp -rf /rails/db-image/migrate /rails/db/
+  cp -f /rails/db-image/seeds.rb /rails/db/seeds.rb 2>/dev/null || true
+  cp -f /rails/db-image/schema.rb /rails/db/schema.rb 2>/dev/null || true
+fi
+
 # If running the rails server then create or migrate existing database
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
   ./bin/rails db:prepare
