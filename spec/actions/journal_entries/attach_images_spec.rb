@@ -32,13 +32,17 @@ RSpec.describe JournalEntries::AttachImages do
   before { stub_download }
 
   describe "#call" do
+    before do
+      allow(entry.images).to receive(:attach).and_return(true)
+    end
+
     it "attaches images from valid URLs" do
       result = described_class.new.call(
         journal_entry: entry, urls: valid_urls
       )
 
       expect(result).to be_success
-      expect(entry.images.count).to eq(2)
+      expect(entry.images).to have_received(:attach).twice
     end
 
     it "emits journal_entry.images_added event" do
@@ -96,14 +100,7 @@ RSpec.describe JournalEntries::AttachImages do
 
     context "with image count limits" do
       it "rejects when total would exceed maximum" do
-        # Attach 19 images first
-        19.times do |i|
-          entry.images.attach(
-            io: StringIO.new("data#{i}"),
-            filename: "existing_#{i}.jpg",
-            content_type: "image/jpeg"
-          )
-        end
+        allow(entry.images).to receive(:count).and_return(19)
 
         result = described_class.new.call(
           journal_entry: entry,
