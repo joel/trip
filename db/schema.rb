@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_23_100001) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_24_100001) do
   create_table "access_requests", id: uuid, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -92,10 +92,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_23_100001) do
     t.text "body", null: false
     t.datetime "created_at", null: false
     t.string "journal_entry_id", limit: 36, null: false
+    t.string "telegram_message_id"
     t.datetime "updated_at", null: false
     t.string "user_id", limit: 36, null: false
     t.index ["journal_entry_id", "created_at"], name: "index_comments_on_journal_entry_id_and_created_at"
     t.index ["journal_entry_id"], name: "index_comments_on_journal_entry_id"
+    t.index ["telegram_message_id"], name: "index_comments_on_telegram_message_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
