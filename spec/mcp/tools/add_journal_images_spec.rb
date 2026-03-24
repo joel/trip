@@ -4,22 +4,32 @@ require "rails_helper"
 
 RSpec.describe Tools::AddJournalImages do
   let(:entry) { create(:journal_entry) }
-  let(:fixture_path) do
-    Rails.root.join("spec/fixtures/files/test_image.jpg")
+  let(:image_data) do
+    Rails.root.join("spec/fixtures/files/test_image.jpg").binread
   end
 
-  def stub_download
-    allow(URI).to receive(:open) do
-      io = StringIO.new(File.binread(fixture_path))
-      io.define_singleton_method(:content_type) { "image/jpeg" }
-      io.define_singleton_method(:size) { 1024 }
-      io
-    end
+  def ok_response
+    response = Net::HTTPOK.new("1.1", "200", "OK")
+    allow(response).to receive_messages(content_type: "image/jpeg", body: image_data)
+    response
+  end
+
+  def stub_net_http(response: ok_response)
+    http = instance_double(Net::HTTP)
+    allow(Net::HTTP).to receive(:new).and_return(http)
+    allow(http).to receive_messages(
+      "use_ssl=": nil, "open_timeout=": nil,
+      "read_timeout=": nil, "verify_mode=": nil,
+      request: response
+    )
+    http
   end
 
   describe ".call" do
     before do
-      stub_download
+      allow(Resolv).to receive(:getaddress)
+        .and_return("93.184.216.34")
+      stub_net_http
       allow_any_instance_of( # rubocop:disable RSpec/AnyInstance
         ActiveStorage::Attached::Many
       ).to receive(:attach).and_return(true)
@@ -87,7 +97,8 @@ RSpec.describe Tools::AddJournalImages do
     end
 
     it "handles download errors gracefully" do
-      allow(URI).to receive(:open)
+      http = stub_net_http
+      allow(http).to receive(:request)
         .and_raise(Timeout::Error)
 
       result = described_class.call(
