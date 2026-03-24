@@ -20,7 +20,7 @@ RSpec.describe ChecklistItemPolicy do
   end
 
   describe "#toggle?" do
-    it "allows superadmin" do
+    it "allows superadmin on writable trip" do
       expect(described_class.new(item, user: admin)
         .apply(:toggle?)).to be(true)
     end
@@ -41,6 +41,18 @@ RSpec.describe ChecklistItemPolicy do
         .apply(:toggle?)).to be(false)
     end
 
+    it "denies superadmin on finished trip" do
+      trip.update!(state: :finished)
+      expect(described_class.new(item, user: admin)
+        .apply(:toggle?)).to be(false)
+    end
+
+    it "denies superadmin on archived trip" do
+      trip.update!(state: :archived)
+      expect(described_class.new(item, user: admin)
+        .apply(:toggle?)).to be(false)
+    end
+
     it "denies non-member" do
       expect(described_class.new(item, user: outsider)
         .apply(:toggle?)).to be(false)
@@ -57,6 +69,12 @@ RSpec.describe ChecklistItemPolicy do
       expect(described_class.new(item, user: viewer_user)
         .apply(:create?)).to be(false)
     end
+
+    it "denies superadmin on cancelled trip" do
+      trip.update!(state: :cancelled)
+      expect(described_class.new(item, user: admin)
+        .apply(:create?)).to be(false)
+    end
   end
 
   describe "#destroy?" do
@@ -67,6 +85,12 @@ RSpec.describe ChecklistItemPolicy do
 
     it "denies viewer" do
       expect(described_class.new(item, user: viewer_user)
+        .apply(:destroy?)).to be(false)
+    end
+
+    it "denies superadmin on archived trip" do
+      trip.update!(state: :archived)
+      expect(described_class.new(item, user: admin)
         .apply(:destroy?)).to be(false)
     end
   end

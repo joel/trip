@@ -2,15 +2,15 @@
 
 class ChecklistItemPolicy < ApplicationPolicy
   def create?
-    superadmin? || (contributor? && trip.writable?)
+    (superadmin? || contributor?) && trip.writable?
   end
 
   def toggle?
-    superadmin? || (contributor? && trip.writable?)
+    (superadmin? || contributor?) && trip.writable?
   end
 
   def destroy?
-    superadmin? || (contributor? && trip.writable?)
+    (superadmin? || contributor?) && trip.writable?
   end
 
   private

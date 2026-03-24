@@ -111,6 +111,12 @@ When a PR receives code review comments:
 
 ---
 
+## MCP API Key Scope
+
+The `MCP_API_KEY` environment variable controls access to the MCP endpoint (`POST /mcp`). A valid key grants **unrestricted read/write access to all domain data** through the 10 registered MCP tools (journal entries, comments, reactions, trips, checklists). All MCP actions are attributed to the **Jack** system actor (`jack@system.local`). This is by design — Jack is the AI travel assistant and needs full access to operate on behalf of the user.
+
+---
+
 ## 5. Runtime Test Workflow (Mandatory)
 
 After all code changes are committed and tests pass, you **must** perform a live runtime verification before pushing the branch or creating a PR.

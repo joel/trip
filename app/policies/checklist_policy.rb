@@ -10,7 +10,7 @@ class ChecklistPolicy < ApplicationPolicy
   end
 
   def create?
-    superadmin? || (contributor? && trip.writable?)
+    (superadmin? || contributor?) && trip.writable?
   end
 
   def new?
@@ -18,7 +18,7 @@ class ChecklistPolicy < ApplicationPolicy
   end
 
   def edit?
-    superadmin? || (contributor? && trip.writable?)
+    (superadmin? || contributor?) && trip.writable?
   end
 
   def update?
@@ -26,7 +26,7 @@ class ChecklistPolicy < ApplicationPolicy
   end
 
   def destroy?
-    superadmin? || (contributor? && trip.writable?)
+    (superadmin? || contributor?) && trip.writable?
   end
 
   private

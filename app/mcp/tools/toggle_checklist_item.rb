@@ -6,7 +6,10 @@ module Tools
 
     input_schema(
       properties: {
-        checklist_item_id: { type: "string", description: "Checklist item UUID" }
+        checklist_item_id: {
+          type: "string",
+          description: "Checklist item UUID"
+        }
       },
       required: %w[checklist_item_id]
     )
@@ -15,28 +18,24 @@ module Tools
       item = ChecklistItem.find(checklist_item_id)
       require_writable!(item.checklist_section.checklist.trip)
 
-      result = ChecklistItems::Toggle.new.call(checklist_item: item)
+      result = ChecklistItems::Toggle.new.call(
+        checklist_item: item
+      )
 
       case result
       in Dry::Monads::Success(toggled)
-        MCP::Tool::Response.new([{
-                                  type: "text",
-                                  text: { id: toggled.id, content: toggled.content,
-                                          completed: toggled.completed }.to_json
-                                }])
-      in Dry::Monads::Failure(errors)
-        MCP::Tool::Response.new(
-          [{ type: "text", text: errors.to_s }], error: true
+        success_response(
+          id: toggled.id, content: toggled.content,
+          completed: toggled.completed
         )
+      in Dry::Monads::Failure(errors)
+        error_response(errors)
       end
     rescue ToolError => e
-      MCP::Tool::Response.new(
-        [{ type: "text", text: e.message }], error: true
-      )
+      error_response(e.message)
     rescue ActiveRecord::RecordNotFound
-      MCP::Tool::Response.new(
-        [{ type: "text", text: "Checklist item not found: #{checklist_item_id}" }],
-        error: true
+      error_response(
+        "Checklist item not found: #{checklist_item_id}"
       )
     end
   end

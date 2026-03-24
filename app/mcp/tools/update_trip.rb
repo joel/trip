@@ -6,9 +6,15 @@ module Tools
 
     input_schema(
       properties: {
-        trip_id: { type: "string", description: "Trip UUID (optional if exactly one trip is started)" },
+        trip_id: {
+          type: "string",
+          description: "Trip UUID (optional if exactly one " \
+                       "trip is started)"
+        },
         name: { type: "string", description: "New trip name" },
-        description: { type: "string", description: "New trip description" }
+        description: {
+          type: "string", description: "New trip description"
+        }
       }
     )
 
@@ -17,26 +23,21 @@ module Tools
       trip = resolve_trip(trip_id)
       require_writable!(trip)
       params = { name: name, description: description }.compact
+      raise ToolError, "No updatable parameters provided" if params.empty?
 
       result = Trips::Update.new.call(trip: trip, params: params)
 
       case result
       in Dry::Monads::Success(updated)
-        MCP::Tool::Response.new([{
-                                  type: "text",
-                                  text: { id: updated.id, name: updated.name,
-                                          state: updated.state }.to_json
-                                }])
-      in Dry::Monads::Failure(errors)
-        message = errors.respond_to?(:full_messages) ? errors.full_messages.join(", ") : errors.to_s
-        MCP::Tool::Response.new(
-          [{ type: "text", text: message }], error: true
+        success_response(
+          id: updated.id, name: updated.name,
+          state: updated.state
         )
+      in Dry::Monads::Failure(errors)
+        error_response(errors)
       end
     rescue ToolError => e
-      MCP::Tool::Response.new(
-        [{ type: "text", text: e.message }], error: true
-      )
+      error_response(e.message)
     end
   end
 end

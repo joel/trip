@@ -2,11 +2,11 @@
 
 class ReactionPolicy < ApplicationPolicy
   def create?
-    superadmin? || (member? && trip.commentable?)
+    (superadmin? || member?) && trip.commentable?
   end
 
   def destroy?
-    superadmin? || (own_reaction? && trip.commentable?)
+    (superadmin? || own_reaction?) && trip.commentable?
   end
 
   private

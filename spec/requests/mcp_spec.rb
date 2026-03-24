@@ -58,29 +58,83 @@ RSpec.describe "MCP Endpoint" do
       end
     end
 
+    context "with invalid Content-Type" do
+      it "returns 415 Unsupported Media Type" do
+        post "/mcp", params: "{}", headers: {
+          "Authorization" => "Bearer #{api_key}",
+          "Content-Type" => "text/plain"
+        }
+        expect(response).to have_http_status(:unsupported_media_type)
+      end
+    end
+
+    context "with malformed JSON" do
+      it "returns JSON-RPC parse error" do
+        post "/mcp", params: "not json{{{", headers: headers
+        expect(response).to have_http_status(:ok)
+
+        body = response.parsed_body
+        expect(body["error"]["code"]).to eq(-32_700)
+        expect(body["error"]["message"]).to eq("Parse error")
+      end
+    end
+
     context "with valid API key" do
       it "responds to initialize request" do
         post "/mcp", params: init_payload, headers: headers
         expect(response).to have_http_status(:ok)
 
         body = response.parsed_body
-        expect(body["result"]["serverInfo"]["name"]).to eq("trip_journal")
+        expect(body["result"]["serverInfo"]["name"])
+          .to eq("trip_journal")
       end
 
       it "lists all 10 tools" do
         post "/mcp", params: init_payload, headers: headers
 
-        list_payload = { jsonrpc: "2.0", id: "2", method: "tools/list" }.to_json
+        list_payload = {
+          jsonrpc: "2.0", id: "2", method: "tools/list"
+        }.to_json
         post "/mcp", params: list_payload, headers: headers
         expect(response).to have_http_status(:ok)
 
-        tool_names = response.parsed_body["result"]["tools"].pluck("name")
+        tool_names = response.parsed_body["result"]["tools"]
+                             .pluck("name")
         expect(tool_names).to contain_exactly(
           "create_journal_entry", "update_journal_entry",
           "list_journal_entries", "create_comment",
           "add_reaction", "update_trip", "transition_trip",
-          "toggle_checklist_item", "list_checklists", "get_trip_status"
+          "toggle_checklist_item", "list_checklists",
+          "get_trip_status"
         )
+      end
+
+      it "executes tools/call and creates a journal entry" do # rubocop:disable RSpec/ExampleLength
+        trip = create(:trip, :started)
+        post "/mcp", params: init_payload, headers: headers
+
+        call_payload = {
+          jsonrpc: "2.0", id: "3",
+          method: "tools/call",
+          params: {
+            name: "create_journal_entry",
+            arguments: {
+              trip_id: trip.id,
+              name: "MCP Test Entry",
+              entry_date: Date.current.to_s
+            }
+          }
+        }.to_json
+
+        expect do
+          post "/mcp", params: call_payload, headers: headers
+        end.to change(JournalEntry, :count).by(1)
+
+        expect(response).to have_http_status(:ok)
+        content = response.parsed_body["result"]["content"]
+        data = JSON.parse(content.first["text"])
+        expect(data["name"]).to eq("MCP Test Entry")
+        expect(data["trip_id"]).to eq(trip.id)
       end
     end
   end

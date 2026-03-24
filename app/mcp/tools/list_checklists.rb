@@ -2,11 +2,16 @@
 
 module Tools
   class ListChecklists < BaseTool
-    description "List all checklists with sections and items for a trip"
+    description "List all checklists with sections and items " \
+                "for a trip"
 
     input_schema(
       properties: {
-        trip_id: { type: "string", description: "Trip UUID (optional if exactly one trip is started)" }
+        trip_id: {
+          type: "string",
+          description: "Trip UUID (optional if exactly one " \
+                       "trip is started)"
+        }
       }
     )
 
@@ -30,14 +35,9 @@ module Tools
         }
       end
 
-      MCP::Tool::Response.new([{
-                                type: "text",
-                                text: { checklists: checklists }.to_json
-                              }])
+      success_response(checklists: checklists)
     rescue ToolError => e
-      MCP::Tool::Response.new(
-        [{ type: "text", text: e.message }], error: true
-      )
+      error_response(e.message)
     end
   end
 end

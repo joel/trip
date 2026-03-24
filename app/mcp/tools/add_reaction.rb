@@ -6,8 +6,15 @@ module Tools
 
     input_schema(
       properties: {
-        journal_entry_id: { type: "string", description: "Journal entry UUID" },
-        emoji: { type: "string", description: "Unicode emoji to toggle" }
+        journal_entry_id: {
+          type: "string",
+          description: "Journal entry UUID"
+        },
+        emoji: {
+          type: "string",
+          description: "Emoji name to toggle",
+          enum: Reaction::ALLOWED_EMOJIS
+        }
       },
       required: %w[journal_entry_id emoji]
     )
@@ -20,29 +27,28 @@ module Tools
       )
       format_result(result, emoji, journal_entry_id)
     rescue ToolError => e
-      text_error(e.message)
+      error_response(e.message)
     rescue ActiveRecord::RecordNotFound
-      text_error("Journal entry not found: #{journal_entry_id}")
+      error_response(
+        "Journal entry not found: #{journal_entry_id}"
+      )
     end
 
-    private_class_method def self.format_result(result, emoji, entry_id)
+    private_class_method def self.format_result(result, emoji, eid)
       case result
       in Dry::Monads::Success(:removed)
-        text_response(action: "removed", emoji: emoji, journal_entry_id: entry_id)
+        success_response(
+          action: "removed", emoji: emoji,
+          journal_entry_id: eid
+        )
       in Dry::Monads::Success(reaction)
-        text_response(action: "added", emoji: emoji, id: reaction.id, journal_entry_id: entry_id)
+        success_response(
+          action: "added", emoji: emoji,
+          id: reaction.id, journal_entry_id: eid
+        )
       in Dry::Monads::Failure(errors)
-        msg = errors.respond_to?(:full_messages) ? errors.full_messages.join(", ") : errors.to_s
-        text_error(msg)
+        error_response(errors)
       end
-    end
-
-    private_class_method def self.text_response(**data)
-      MCP::Tool::Response.new([{ type: "text", text: data.to_json }])
-    end
-
-    private_class_method def self.text_error(message)
-      MCP::Tool::Response.new([{ type: "text", text: message }], error: true)
     end
   end
 end
