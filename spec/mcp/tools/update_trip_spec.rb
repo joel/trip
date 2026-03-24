@@ -16,6 +16,17 @@ RSpec.describe Tools::UpdateTrip do
       expect(trip.reload.name).to eq("Updated Name")
     end
 
+    it "rejects updates on non-writable trips" do
+      trip.update!(state: :archived)
+
+      result = described_class.call(
+        trip_id: trip.id, name: "Should fail"
+      )
+
+      expect(result.error?).to be true
+      expect(result.content.first[:text]).to include("not writable")
+    end
+
     it "resolves active trip when trip_id is omitted" do
       result = described_class.call(name: "Auto-resolved")
 

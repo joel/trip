@@ -46,6 +46,18 @@ RSpec.describe Tools::CreateJournalEntry do
       expect(result.content.first[:text]).to include("No active trip")
     end
 
+    it "rejects writes to non-writable trips" do
+      cancelled_trip = create(:trip, :cancelled)
+
+      result = described_class.call(
+        name: "Should fail", entry_date: Date.current.to_s,
+        trip_id: cancelled_trip.id
+      )
+
+      expect(result.error?).to be true
+      expect(result.content.first[:text]).to include("not writable")
+    end
+
     it "returns idempotent response for duplicate telegram_message_id" do
       first = described_class.call(
         name: "Telegram entry", entry_date: Date.current.to_s,

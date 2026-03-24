@@ -23,6 +23,15 @@ RSpec.describe Tools::ToggleChecklistItem do
       expect(data["completed"]).to be false
     end
 
+    it "rejects toggles on non-writable trips" do
+      item.checklist_section.checklist.trip.update!(state: :archived)
+
+      result = described_class.call(checklist_item_id: item.id)
+
+      expect(result.error?).to be true
+      expect(result.content.first[:text]).to include("not writable")
+    end
+
     it "returns error for nonexistent item" do
       result = described_class.call(checklist_item_id: "nonexistent")
 

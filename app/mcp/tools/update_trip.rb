@@ -15,6 +15,7 @@ module Tools
     def self.call(trip_id: nil, name: nil, description: nil,
                   _server_context: {})
       trip = resolve_trip(trip_id)
+      require_writable!(trip)
       params = { name: name, description: description }.compact
 
       result = Trips::Update.new.call(trip: trip, params: params)

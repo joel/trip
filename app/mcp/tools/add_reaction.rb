@@ -14,10 +14,13 @@ module Tools
 
     def self.call(journal_entry_id:, emoji:, _server_context: {})
       entry = JournalEntry.find(journal_entry_id)
+      require_commentable!(entry.trip)
       result = Reactions::Toggle.new.call(
         reactable: entry, user: resolve_jack_user, emoji: emoji
       )
       format_result(result, emoji, journal_entry_id)
+    rescue ToolError => e
+      text_error(e.message)
     rescue ActiveRecord::RecordNotFound
       text_error("Journal entry not found: #{journal_entry_id}")
     end

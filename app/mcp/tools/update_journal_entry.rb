@@ -21,9 +21,12 @@ module Tools
                   entry_date: nil, location_name: nil,
                   description: nil, _server_context: {})
       entry = JournalEntry.find(journal_entry_id)
+      require_writable!(entry.trip)
       params = { name: name, entry_date: entry_date,
                  location_name: location_name, description: description }.compact
       perform_update(entry, params, body)
+    rescue ToolError => e
+      error_response(e.message)
     rescue ActiveRecord::RecordNotFound
       error_response("Journal entry not found: #{journal_entry_id}")
     end
