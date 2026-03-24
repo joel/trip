@@ -10,6 +10,46 @@ Controllers stay thin. Models stay persistence-focused. Actions own the business
 - **Composable** -- monadic `yield` chains steps, short-circuits on failure
 - **Observable** -- every mutation emits a structured event for downstream subscribers
 
+## The Big Picture
+
+```
+                    +------------------------------+
+                    |        HTTP Request           |
+                    +-------------+----------------+
+                                  |
+                                  v
++----------+            +-----------------+            +-------------+
+|          |  authorize |                 |   call()   |             |
+|  Policy  |<-----------+   Controller    +----------->|   Action    |
+|          |            |                 |            |             |
++----------+            +--------+--------+            +------+------+
+                                 |                            |
+                            render                     +------+------+
+                                 |                     |             |
+                                 v                     |  persist()  |
+                        +-----------------+            |  emit()     |
+                        |   Phlex View    |            |             |
+                        +-----------------+            +------+------+
+                                                              |
+                                            Rails.event.notify|
+                                                              v
+                                                    +---------+--------+
+                                                    |    Subscriber    |
+                                                    +--------+---------+
+                                                             |
+                                                   perform_later
+                                                             v
+                                                    +---------+--------+
+                                                    |   Background     |
+                                                    |      Job         |
+                                                    +--------+---------+
+                                                             |
+                                                             v
+                                                    +---------+--------+
+                                                    |     Mailer       |
+                                                    +------------------+
+```
+
 ## How It Works
 
 ```ruby
@@ -52,6 +92,96 @@ module Trips
 end
 ```
 
+## The Railway: Success & Failure
+
+Actions use the **railway pattern** -- data flows along the "happy track" until something fails, then it switches to the "error track" and skips remaining steps:
+
+```
+  call()
+    |
+    v
+ persist()  --Success--> emit_event()  --Success--> return Success(record)
+    |                        |
+    |                        |
+  Failure                  Failure
+    |                        |
+    +--------+---------------+
+             |
+             v
+      return Failure(errors)   <-- controller renders error page
+```
+
+The `yield` keyword unwraps `Success` values and short-circuits on `Failure` -- no nested `if/else` chains needed.
+
+## Patterns at a Glance
+
+### Standard Create/Update
+
+```
+call(params:) --> persist() --> emit_event() --> Success(record)
+```
+
+### Delete (capture IDs first)
+
+```
+capture ids --> destroy!() --> emit_event(ids) --> Success()
+
+Why: the record is gone after destroy!, so grab IDs before.
+```
+
+### Guard + State Transition
+
+```
+validate_guard() --> capture from_state --> transition!() --> emit_event() --> Success()
+      |
+      +-- Failure(:requires_members)
+
+Example: can't start a trip without members.
+```
+
+### Idempotent Toggle
+
+```
+find existing reaction
+  |
+  +-- found?    --> remove() --> Success(:removed)
+  +-- not found --> add()    --> Success(reaction)
+```
+
+### Pre-validation
+
+```
+check_precondition() --> persist() --> emit_event() --> Success(record)
+        |
+        +-- Failure("already in progress")
+
+Example: one pending export per user/trip/format.
+```
+
+## Event Flow
+
+Every action emits events. Subscribers react. Jobs execute. It's a clean pipeline:
+
+```
+  +------------------+         +-------------------+         +------------------+
+  |     Action       |         |    Subscriber     |         |      Job         |
+  |                  |         |                   |         |                  |
+  | "trip.created"   +-------->| TripSubscriber    +-------->| (log only)       |
+  |                  |         |                   |         |                  |
+  | "export.         +-------->| ExportSubscriber  +-------->| GenerateExport   |
+  |  requested"      |         |                   |         |   Job            |
+  |                  |         |                   |         |                  |
+  | "trip.state_     +-------->| TripSubscriber    +-------->| NotifyTrip       |
+  |  changed"        |         |                   |         |  StateChangeJob  |
+  |                  |         |                   |         |                  |
+  | "invitation.     +-------->| InvitationSub     +-------->| SendInvitation   |
+  |  sent"           |         |                   |         |  EmailJob        |
+  |                  |         |                   |         |                  |
+  | "journal_entry.  +-------->| JournalEntrySub   +-------->| ProcessJournal   |
+  |  created"        |         |                   |         |  ImagesJob       |
+  +------------------+         +-------------------+         +------------------+
+```
+
 ## Actions Inventory
 
 | Domain | Action | What it does |
@@ -78,23 +208,52 @@ end
 | **Checklist Items** | `Create` | Add an item to a section |
 | | `Toggle` | Toggle item completion |
 
-## Patterns
+## Error Handling
 
-**Standard CRUD**: `persist() -> emit_event() -> Success(record)`
+Actions return typed failures that controllers can pattern-match on:
 
-**Delete with ID capture**: Capture IDs before `destroy!` since the object is gone after.
+```
++-----------------------------+------------------------------------------+
+| Scenario                    | What the action returns                  |
++-----------------------------+------------------------------------------+
+| Validation failure          | Failure(e.record.errors)                 |
+| Business rule violated      | Failure(:requires_members)               |
+| Record not found            | Failure(:not_found)                      |
+| Invalid enum value          | Failure(errors) with errors.add(:format) |
++-----------------------------+------------------------------------------+
+                                       |
+                                       v
+                              Controller pattern-matches:
+                              in Failure(:requires_members) -> alert
+                              in Failure(errors)            -> render form
+```
 
-**Guard validation**: Check business rules (e.g., trip must have members) before allowing state transitions.
+## Directory Structure
 
-**Idempotent toggle**: Find-or-remove pattern for reactions -- no `yield`, uses conditional branching.
-
-**Pre-validation**: Check preconditions (e.g., no duplicate pending exports) before persisting.
-
-## Events
-
-Every action emits a structured event via `Rails.event.notify("entity.action", payload)`. Subscribers in `app/subscribers/` listen for these events and dispatch background jobs (emails, image processing, etc).
-
-See `config/initializers/event_subscribers.rb` for the subscriber registry.
+```
+app/actions/
+  base_action.rb               <-- includes Dry::Monads
+  access_requests/
+    approve.rb, reject.rb, submit.rb
+  checklist_items/
+    create.rb, toggle.rb
+  checklists/
+    create.rb, delete.rb, update.rb
+  comments/
+    create.rb, delete.rb, update.rb
+  exports/
+    request_export.rb
+  invitations/
+    accept.rb, send_invitation.rb
+  journal_entries/
+    create.rb, delete.rb, update.rb
+  reactions/
+    toggle.rb
+  trip_memberships/
+    assign.rb, remove.rb
+  trips/
+    create.rb, transition_state.rb, update.rb
+```
 
 ## For AI Agents
 
