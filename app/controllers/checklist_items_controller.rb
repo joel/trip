@@ -25,8 +25,25 @@ class ChecklistItemsController < ApplicationController
   end
 
   def toggle
-    ChecklistItems::Toggle.new.call(checklist_item: @checklist_item)
-    redirect_to [@trip, @checklist]
+    ChecklistItems::Toggle.new.call(
+      checklist_item: @checklist_item
+    )
+    @checklist_item.reload
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace(
+          dom_id(@checklist_item),
+          html: render_to_string(
+            Components::ChecklistItemRow.new(
+              trip: @trip, checklist: @checklist,
+              item: @checklist_item
+            ), layout: false
+          )
+        )
+      end
+      format.html { redirect_to [@trip, @checklist] }
+    end
   end
 
   def destroy
