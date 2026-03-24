@@ -204,6 +204,51 @@ module Views
 end
 ```
 
+## MCP Server (AI Integration)
+
+> Open [`docs/mcp-architecture.excalidraw`](docs/mcp-architecture.excalidraw) in [excalidraw.com](https://excalidraw.com) for the interactive diagram.
+
+The app exposes an [MCP](https://modelcontextprotocol.io) endpoint at `POST /mcp` that lets AI clients (Claude, Cursor, etc.) interact with the trip journal as **Jack**, the AI travel assistant.
+
+```
+MCP Client  --POST /mcp-->  McpController  -->  TripJournalServer  -->  10 Tools  -->  Actions  -->  DB
+              Bearer token     (auth + validate)    (JSON-RPC router)      (BaseTool)
+```
+
+### 10 Tools
+
+| Tool | Description |
+|------|-------------|
+| `create_journal_entry` | Create a journal entry for a trip |
+| `update_journal_entry` | Update an existing journal entry |
+| `list_journal_entries` | List entries with pagination (limit 1-100) |
+| `create_comment` | Add a comment to a journal entry |
+| `add_reaction` | Toggle an emoji reaction (thumbsup, heart, tada, eyes, fire, rocket) |
+| `update_trip` | Update a trip's name or description |
+| `transition_trip` | Transition trip state (planning/started/finished/cancelled/archived) |
+| `get_trip_status` | Get status, dates, member count, entry count |
+| `list_checklists` | List all checklists with sections and items |
+| `toggle_checklist_item` | Toggle a checklist item's completion |
+
+### Configuration
+
+Set `MCP_API_KEY` in your environment. The key grants full read/write access to all domain data via the Jack system actor (`jack@system.local`).
+
+```json
+{
+  "mcpServers": {
+    "trip-journal": {
+      "url": "https://catalyst.workeverywhere.docker/mcp",
+      "headers": {
+        "Authorization": "Bearer your-mcp-api-key"
+      }
+    }
+  }
+}
+```
+
+See [`app/mcp/README.md`](app/mcp/README.md) for full tool documentation, input validation, and state guards.
+
 ## Setup
 
 ### Prerequisites
@@ -280,6 +325,8 @@ app/
   controllers/     # Thin controllers (delegate to actions)
   jobs/            # Background jobs (Solid Queue)
   mailers/         # Email delivery
+  mcp/             # MCP server + 10 tools (AI integration)
+    tools/         # Tool classes inheriting BaseTool
   models/          # ActiveRecord models
   policies/        # ActionPolicy authorization
   services/        # Domain services (export generators)
@@ -289,4 +336,7 @@ config/
   initializers/
     event_subscribers.rb  # Subscriber registry
     roles.rb              # Role definitions
+docs/
+  architecture.excalidraw       # App architecture diagram
+  mcp-architecture.excalidraw   # MCP server diagram
 ```
