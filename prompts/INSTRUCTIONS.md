@@ -28,6 +28,9 @@ Task 3 — UX Review
 Task 4 - UI Polish
   Instructions: Read .claude/skills/ui-polish/SKILL.md and follow it in full for the current branch. Write the complete report to prompts/Phase X - UI Polish Review.md.
 
+Task 5 - UI Designer
+  Instructions: Read .claude/skills/ui-designer/SKILL.md and follow it in full for the current branch. Ensure UI Component Library is Sync. Write the complete report to prompts/Phase X - UI Designer Review.md.
+
 Once all three tasks complete, read the three reports and give me a consolidated summary of all 🔴 Critical/Broken/Defect findings
 
 # After completion
