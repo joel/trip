@@ -83,12 +83,12 @@ module Views
       end
 
       def render_images
-        div(class: "grid grid-cols-2 gap-4 sm:grid-cols-3") do
+        div(class: "grid grid-cols-3 gap-4") do
           @entry.images.each_with_index do |image, index|
             img(
               src: view_context.url_for(image),
-              class: "aspect-[4/3] w-full rounded-xl " \
-                     "object-cover",
+              class: "w-full rounded-xl",
+              style: "aspect-ratio: 4/3; object-fit: cover",
               alt: "#{@entry.name} - photo #{index + 1}"
             )
           end
