@@ -1,7 +1,7 @@
 # New Phase
 
 Follow these steps:
-- Draft the next phase PLAN, 8, and write it down in `prompts/Phase 8.md`
+- Draft the next phase PLAN, X, and write it down in `prompts/Phase X.md`
 
 /clear # Clear the context to start a new cone
 
@@ -10,8 +10,8 @@ Follow these steps:
 Steps:
 - Read `PRPs/trip-journal.md`
 - Read CLAUDE.md
-- Use the project skill /github-workflow to execute the PLAN `prompts/Phase 8.md`
-- Write the Steps taken in `prompts/Phase 8 - Steps.md` for trail and audit
+- Use the project skill /github-workflow to execute the PLAN `prompts/Phase X.md`
+- Write the Steps taken in `prompts/Phase X - Steps.md` for trail and audit
 - QA at runtime is everything works, use the project skill /product-review
 
 Use the Task tool to spin up parallel sub-agents for review. Each agent must work independently and write its report to disk before exiting. Do not wait for one to finish before starting the next.
