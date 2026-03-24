@@ -51,7 +51,12 @@ module Views
             view_context.trip_journal_entry_path(@trip, @entry),
             method: :delete,
             class: "ha-button ha-button-danger",
-            form: { class: "inline-flex" }
+            form: {
+              class: "inline-flex",
+              data: {
+                turbo_confirm: "Delete this journal entry?"
+              }
+            }
           )
         end
         link_to(

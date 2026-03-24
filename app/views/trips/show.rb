@@ -68,7 +68,13 @@ module Views
             "Delete", view_context.trip_path(@trip),
             method: :delete,
             class: "ha-button ha-button-danger",
-            form: { class: "inline-flex" }
+            form: {
+              class: "inline-flex",
+              data: {
+                turbo_confirm: "Delete this trip and " \
+                               "all its entries?"
+              }
+            }
           )
         end
         link_to("Back to trips", view_context.trips_path,
