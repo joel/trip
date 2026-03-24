@@ -142,6 +142,60 @@
 
 ## Files Modified (4)
 1. `app/views/pwa/manifest.json.erb` — updated with branding, icons, screenshot
-2. `app/views/pwa/service-worker.js` — replaced skeleton with caching strategy
+2. `app/views/pwa/service-worker.js.erb` — replaced skeleton with caching strategy
 3. `app/views/layouts/application_layout.rb` — added meta tags, install banner
 4. `public/icon.svg` — replaced red circle with compass icon
+
+---
+
+## Step 10: Review Fixes (2026-03-24)
+
+All 5 review agents ran in parallel (QA, Security, UX, UI Polish, UI Designer).
+Reports written to `prompts/Phase 7 - {QA,Security,UX,UI Polish,UI Designer} Review.md`.
+
+### Critical/Broken Fixes Applied
+
+| ID | Finding | Fix |
+|----|---------|-----|
+| D1 | Service worker never registered | Added `navigator.serviceWorker.register()` to `application.js` |
+| B2 | Sidebar doesn't collapse on mobile | Added `@media (max-width: 767px)` CSS with fixed sidebar and margin-left on main |
+| JIT | Tailwind sky classes not compiled | Docker rebuild compiles all new classes |
+
+### High-Priority Fixes Applied
+
+| ID | Finding | Fix |
+|----|---------|-----|
+| F1-F3 | Touch targets below 44px | Dismiss button: h-7 w-7 → h-11 w-11; Install button: px-3 py-1.5 → px-4 py-2.5; Offline button: padding increased + min-height: 44px |
+| F4/E1 | sessionStorage for dismiss | Changed to localStorage for persistent dismiss state |
+| F5 | Offline X icon = "error" | Replaced with WiFi-off icon (arcs + slash + dot) |
+| F6 | Offline dark-only | Added @media (prefers-color-scheme: light) with light tokens |
+| F7/E6 | No iOS install guidance | Added iOS detection + "Tap Share, then Add to Home Screen" instructions |
+| E4/W2/W3 | Static cache version | ERB-embedded `ENV['GIT_SHA']` with v1 fallback; renamed to .js.erb |
+| E5 | No narrow screenshot | Generated 750x1334 screenshot-narrow.png, added to manifest |
+| W1 | Inline onclick in offline.html | Replaced with unobtrusive `addEventListener` script |
+| W4 | No worker-src CSP comment | Added `policy.worker_src :self` comment to CSP initializer |
+
+### UI/Polish Fixes Applied
+
+| Finding | Fix |
+|---------|-----|
+| No entrance animation | Replaced hidden toggle with opacity-0/translate-y-4 → opacity-100/translate-y-0 |
+| Banner title too small | Changed text-sm → text-base for visual hierarchy |
+| Missing aria_label on install | Added aria_label: "Install Trip Journal" |
+| Mobile banner positioning | Added left-6 sm:left-auto for full-width on mobile |
+| Missing focus styles (offline) | Added :focus-visible outline on Try again button |
+| Missing theme-color (offline) | Added meta name="theme-color" |
+| Missing reduced-motion (offline) | Added @media (prefers-reduced-motion: reduce) |
+| Space Grotesk font ref | Removed (font never loads offline) |
+| UI library not synced | Created pwa_install_banner.yml, updated SKILL.md table, regenerated index |
+
+### Additional Files Created
+8. `public/screenshot-narrow.png` — 750x1334 mobile screenshot
+9. `ui_library/pwa_install_banner.yml` — UI library registry entry
+
+### Additional Files Modified
+5. `app/javascript/controllers/application.js` — added SW registration
+6. `app/assets/tailwind/application.css` — added mobile sidebar rules
+7. `config/initializers/content_security_policy.rb` — added worker-src comment
+8. `.claude/skills/ui-designer/SKILL.md` — added PwaInstallBanner to component table
+9. `ui_library/index.html` — regenerated with new component
