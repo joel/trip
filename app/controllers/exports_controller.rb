@@ -8,12 +8,12 @@ class ExportsController < ApplicationController
   def index
     authorize! @trip, with: ExportPolicy
     @exports = if current_user.role?(:superadmin)
-                 @trip.exports.recent.includes(:user)
-                      .with_attached_file
+                 @trip.exports.recent
+                      .includes(:user, :file_attachment)
                else
                  @trip.exports.where(user: current_user)
-                      .recent.includes(:user)
-                      .with_attached_file
+                      .recent
+                      .includes(:user, :file_attachment)
                end
     render Views::Exports::Index.new(
       trip: @trip, exports: @exports

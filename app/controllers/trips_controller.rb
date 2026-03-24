@@ -18,6 +18,7 @@ class TripsController < ApplicationController
 
   def show
     @journal_entries = @trip.journal_entries.chronological
+                            .includes(:comments)
     render Views::Trips::Show.new(
       trip: @trip, journal_entries: @journal_entries
     )

@@ -6,7 +6,8 @@ class InvitationsController < ApplicationController
 
   # GET /invitations (superadmin)
   def index
-    @invitations = Invitation.order(created_at: :desc)
+    @invitations = Invitation.includes(:inviter)
+                             .order(created_at: :desc)
     render Views::Invitations::Index.new(invitations: @invitations)
   end
 
