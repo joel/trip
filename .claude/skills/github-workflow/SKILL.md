@@ -133,7 +133,16 @@ Or run everything at once:
 mise x -- bundle exec rake
 ```
 
-### Step 7: Commit
+### Step 7: Commit (Atomic Commits Required)
+
+**NEVER bundle all changes into a single giant commit.** Each commit must be:
+
+- **Atomic:** One logical change per commit (e.g., "harden MCP pagination", "fix superadmin policy bypass", "add comment edit UI" are three separate commits, not one)
+- **Focused:** Only files related to that one change are included
+- **Reversible:** Any commit can be reverted independently without breaking other changes
+- **Buildable:** Each commit passes lint and tests on its own
+
+When implementing a multi-part phase or feature, commit after each logical unit is complete and green. Run `bundle exec rake project:fix-lint && bundle exec rake project:tests` before each commit.
 
 Stage specific files (not `git add .`) and use a descriptive commit message. Overcommit hooks will enforce RuboCop, trailing whitespace, and commit message format (capitalized subject, no trailing period).
 
