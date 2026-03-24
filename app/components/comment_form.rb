@@ -17,6 +17,10 @@ module Components
           class: "flex gap-3"
         ) do |form|
           div(class: "flex-1") do
+            form.label(
+              :body, "Add a comment",
+              class: "sr-only"
+            )
             form.text_area(
               :body,
               placeholder: "Add a comment...",
