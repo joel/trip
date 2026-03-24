@@ -25,6 +25,7 @@ module Tools
                   actor_type: "Jack", actor_id: "jack",
                   telegram_message_id: nil, _server_context: {})
       trip = resolve_trip(trip_id)
+      require_writable!(trip)
       idempotent_check(trip, telegram_message_id) || create_entry(
         trip: trip, name: name, entry_date: entry_date, body: body,
         location_name: location_name, description: description,

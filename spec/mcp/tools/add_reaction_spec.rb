@@ -29,6 +29,17 @@ RSpec.describe Tools::AddReaction do
       expect(data["action"]).to eq("removed")
     end
 
+    it "rejects reactions on non-commentable trips" do
+      entry.trip.update!(state: :archived)
+
+      result = described_class.call(
+        journal_entry_id: entry.id, emoji: "thumbsup"
+      )
+
+      expect(result.error?).to be true
+      expect(result.content.first[:text]).to include("not commentable")
+    end
+
     it "returns error for nonexistent journal entry" do
       result = described_class.call(
         journal_entry_id: "nonexistent", emoji: "thumbsup"

@@ -16,6 +16,17 @@ RSpec.describe Tools::CreateComment do
       expect(data["journal_entry_id"]).to eq(entry.id)
     end
 
+    it "rejects comments on non-commentable trips" do
+      entry.trip.update!(state: :archived)
+
+      result = described_class.call(
+        journal_entry_id: entry.id, body: "Should fail"
+      )
+
+      expect(result.error?).to be true
+      expect(result.content.first[:text]).to include("not commentable")
+    end
+
     it "returns idempotent response for duplicate telegram_message_id" do
       first = described_class.call(
         journal_entry_id: entry.id, body: "First",

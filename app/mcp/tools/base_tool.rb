@@ -27,5 +27,19 @@ module Tools
         u.status = 2
       end
     end
+
+    private_class_method def self.require_writable!(trip)
+      return if trip.writable?
+
+      raise ToolError,
+            "Trip '#{trip.name}' is not writable (state: #{trip.state})"
+    end
+
+    private_class_method def self.require_commentable!(trip)
+      return if trip.commentable?
+
+      raise ToolError,
+            "Trip '#{trip.name}' is not commentable (state: #{trip.state})"
+    end
   end
 end

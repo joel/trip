@@ -13,6 +13,7 @@ module Tools
 
     def self.call(checklist_item_id:, _server_context: {})
       item = ChecklistItem.find(checklist_item_id)
+      require_writable!(item.checklist_section.checklist.trip)
 
       result = ChecklistItems::Toggle.new.call(checklist_item: item)
 
@@ -28,6 +29,10 @@ module Tools
           [{ type: "text", text: errors.to_s }], error: true
         )
       end
+    rescue ToolError => e
+      MCP::Tool::Response.new(
+        [{ type: "text", text: e.message }], error: true
+      )
     rescue ActiveRecord::RecordNotFound
       MCP::Tool::Response.new(
         [{ type: "text", text: "Checklist item not found: #{checklist_item_id}" }],

@@ -16,6 +16,17 @@ RSpec.describe Tools::UpdateJournalEntry do
       expect(entry.reload.name).to eq("Updated Title")
     end
 
+    it "rejects updates on non-writable trips" do
+      entry.trip.update!(state: :archived)
+
+      result = described_class.call(
+        journal_entry_id: entry.id, name: "Should fail"
+      )
+
+      expect(result.error?).to be true
+      expect(result.content.first[:text]).to include("not writable")
+    end
+
     it "returns error for nonexistent entry" do
       result = described_class.call(
         journal_entry_id: "nonexistent"

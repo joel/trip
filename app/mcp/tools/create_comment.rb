@@ -16,6 +16,7 @@ module Tools
     def self.call(journal_entry_id:, body:,
                   telegram_message_id: nil, _server_context: {})
       entry = JournalEntry.find(journal_entry_id)
+      require_commentable!(entry.trip)
 
       if telegram_message_id.present?
         existing = entry.comments.find_by(
@@ -37,6 +38,8 @@ module Tools
       in Dry::Monads::Failure(errors)
         error_response(errors)
       end
+    rescue ToolError => e
+      error_response(e.message)
     rescue ActiveRecord::RecordNotUnique
       existing = entry.comments.find_by!(telegram_message_id: telegram_message_id)
       success_response(existing)
