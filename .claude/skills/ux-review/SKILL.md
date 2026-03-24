@@ -69,12 +69,30 @@ Also test at a narrow viewport (375px) to catch mobile/responsive issues.
 - [ ] Is text contrast sufficient in both light and dark mode?
 - [ ] Are images or icons meaningful to screen readers (alt text or aria-label)?
 
-### In-Place Updates (PWA)
-- [ ] Do interactive actions (reactions, comments, toggles, form submissions) update the DOM in place without a full page reload?
-- [ ] Are Turbo Stream responses used for create/update/destroy actions instead of `redirect_to`?
-- [ ] Does the page maintain scroll position after user interactions?
-- [ ] Do forms reset after successful submission (textarea cleared, not stale)?
-- [ ] Is there no visible page flash or full-page re-render on user actions?
+### PWA & In-Place Updates (Critical)
+
+**Buttons vs links**: This app is a PWA with a service worker. Links (GET navigation) and buttons (POST/PATCH/DELETE mutations) behave differently. A page that renders correctly does NOT mean its buttons work. You MUST click every button type, not just verify the page loads.
+
+**Mandatory button tests** (on a writable/commentable trip):
+- [ ] Reaction emoji button works (POST, toggles count in-place)
+- [ ] Comment Post button works (POST, appends via Turbo Stream)
+- [ ] Comment Delete button works (DELETE, removes via Turbo Stream)
+- [ ] Comment Edit toggle + Save works (PATCH, replaces via Turbo Stream)
+- [ ] Checklist item toggle works (PATCH, updates in-place)
+- [ ] Trip Delete button works (DELETE with confirmation)
+- [ ] Sign out button works (ends session, redirects)
+
+**In-place update checks**:
+- [ ] Do interactive actions update the DOM without a full page reload?
+- [ ] Are Turbo Stream responses used for create/update/destroy actions?
+- [ ] Does the page maintain scroll position after interactions?
+- [ ] Do forms reset after successful submission (textarea cleared)?
+- [ ] Is there no visible page flash or full-page re-render?
+
+**Service worker checks**:
+- [ ] Service worker is registered and active
+- [ ] Service worker skips non-GET requests (check for `request.method !== "GET"`)
+- [ ] No stale caches blocking JavaScript or causing CSRF mismatches
 
 ### Responsive
 - [ ] Does the layout hold at 375px width without horizontal scrolling?
