@@ -35,21 +35,9 @@ class CommentsController < ApplicationController
     )
     case result
     in Dry::Monads::Success(comment)
-      respond_to do |format|
-        format.turbo_stream do
-          render turbo_stream: stream_replace(
-            dom_id(comment),
-            comment_card_component(comment)
-          )
-        end
-        format.html do
-          redirect_to [@trip, @journal_entry],
-                      notice: "Comment updated."
-        end
-      end
+      render_updated_comment(comment)
     in Dry::Monads::Failure(errors)
-      redirect_to [@trip, @journal_entry],
-                  alert: errors.full_messages.join(", ")
+      render_update_failure(errors)
     end
   end
 
@@ -92,6 +80,36 @@ class CommentsController < ApplicationController
 
   def comment_params
     params.expect(comment: [:body])
+  end
+
+  def render_updated_comment(comment)
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: stream_replace(
+          dom_id(comment),
+          comment_card_component(comment)
+        )
+      end
+      format.html do
+        redirect_to [@trip, @journal_entry],
+                    notice: "Comment updated."
+      end
+    end
+  end
+
+  def render_update_failure(errors)
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: stream_replace(
+          dom_id(@comment),
+          comment_card_component(@comment)
+        ), status: :unprocessable_content
+      end
+      format.html do
+        redirect_to [@trip, @journal_entry],
+                    alert: errors.full_messages.join(", ")
+      end
+    end
   end
 
   def render_created_comment(comment)
