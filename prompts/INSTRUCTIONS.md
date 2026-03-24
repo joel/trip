@@ -1,7 +1,7 @@
 # New Phase
 
 Follow these steps:
-- Write the plan in `prompts/Phase X.md`
+- Draft the next phase PLAN, 7, and write it down in `prompts/Phase 7.md`
 
 /clear # Clear the context to start a new cone
 
