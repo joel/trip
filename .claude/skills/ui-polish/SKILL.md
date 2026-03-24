@@ -21,6 +21,19 @@ Before reviewing, internalize the project's visual language:
 - **Animations**: `ha-fade-in` (600ms), `ha-rise` (600ms), staggered sidebar delays
 - **Dark mode**: Class-based (`.dark`), all tokens have dual values
 
+## Tailwind JIT Constraint (Critical)
+
+The Docker container compiles Tailwind CSS in JIT mode — **only classes already used in the codebase are included in the compiled stylesheet**. If you recommend a Tailwind class that has never been used before (e.g., `p-5`, `leading-relaxed`, `gap-5`), it will appear in the HTML class attribute but **have zero effect** until the Docker image is rebuilt with `bin/cli app rebuild`.
+
+**Before recommending a Tailwind utility**, verify it exists in the current build by checking whether any existing component already uses it. Prefer classes already in use:
+- Padding: `p-4` (16px), `p-6` (24px) — NOT `p-5`
+- Gaps: `gap-2`, `gap-3`, `gap-4` — NOT `gap-5`
+- Margins: `mt-1`, `mt-2`, `mt-3`, `mt-4` — all exist
+- Spacing: `space-y-3`, `space-y-4`, `space-y-6`, `space-y-8` — all exist
+- Text: `text-xs`, `text-sm`, `text-base`, `text-lg`, `text-xl` — all exist
+
+If a truly new class is needed, explicitly note in the recommendation: **"Requires `bin/cli app rebuild` to compile."**
+
 ## CSS Architecture Philosophy
 
 This project uses a deliberate hybrid approach — Tailwind utilities for one-off styling, custom CSS classes for repeated visual patterns. Both have a role:
