@@ -2,6 +2,18 @@
 
 require "sequel/core"
 
+# # Generate a magic login link (1 hour expiry)
+# rake auth:login_link[joel@acme.org]
+
+# # Verify an unverified account
+# rake auth:verify[joel@acme.org]
+
+# In production via Kamal:
+
+# kamal app exec 'bin/rails "auth:login_link[joel.azemar@gmail.com]"'
+
+# Set APP_URL=catalyst.workeverywhere.app in your Kamal env to get the correct host in the link.
+
 namespace :auth do
   desc "Generate a magic login link for a user. Usage: rake auth:login_link[user@example.com]"
   task :login_link, [:email] => :environment do |_t, args|
