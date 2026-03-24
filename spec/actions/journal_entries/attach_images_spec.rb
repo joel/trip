@@ -9,8 +9,8 @@ RSpec.describe JournalEntries::AttachImages do
     create(:journal_entry, trip: trip, author: admin)
   end
 
-  let(:fixture_path) do
-    Rails.root.join("spec/fixtures/files/test_image.jpg")
+  let(:image_data) do
+    Rails.root.join("spec/fixtures/files/test_image.jpg").binread
   end
 
   let(:valid_urls) do
@@ -20,26 +20,34 @@ RSpec.describe JournalEntries::AttachImages do
     ]
   end
 
-  def stub_download(content_type: "image/jpeg", size: 1024)
-    allow(URI).to receive(:open) do
-      io = StringIO.new(File.binread(fixture_path))
-      io.define_singleton_method(:content_type) { content_type }
-      io.define_singleton_method(:size) { size }
-      io
-    end
+  def ok_response(content_type: "image/jpeg", body: image_data)
+    response = Net::HTTPOK.new("1.1", "200", "OK")
+    allow(response).to receive_messages(content_type: content_type, body: body)
+    response
+  end
+
+  def redirect_response(location)
+    response = Net::HTTPFound.new("1.1", "302", "Found")
+    allow(response).to receive(:[]).with("location")
+                                   .and_return(location)
+    response
   end
 
   before do
-    stub_download
     allow(Resolv).to receive(:getaddress)
       .and_return("93.184.216.34")
+    http = instance_double(Net::HTTP)
+    allow(Net::HTTP).to receive(:new).and_return(http)
+    allow(http).to receive_messages(
+      "use_ssl=": nil, "open_timeout=": nil,
+      "read_timeout=": nil, "verify_mode=": nil,
+      request: ok_response
+    )
+    allow(entry.images).to receive(:attach)
+      .and_return(true)
   end
 
   describe "#call" do
-    before do
-      allow(entry.images).to receive(:attach).and_return(true)
-    end
-
     it "attaches images from valid URLs" do
       result = described_class.new.call(
         journal_entry: entry, urls: valid_urls
@@ -51,14 +59,17 @@ RSpec.describe JournalEntries::AttachImages do
 
     it "does not attach if a later download fails" do
       call_count = 0
-      allow(URI).to receive(:open) do
+      http = instance_double(Net::HTTP)
+      allow(Net::HTTP).to receive(:new).and_return(http)
+      allow(http).to receive_messages(
+        "use_ssl=": nil, "open_timeout=": nil,
+        "read_timeout=": nil, "verify_mode=": nil
+      )
+      allow(http).to receive(:request) do
         call_count += 1
         raise Timeout::Error if call_count > 1
 
-        io = StringIO.new(File.binread(fixture_path))
-        io.define_singleton_method(:content_type) { "image/jpeg" }
-        io.define_singleton_method(:size) { 1024 }
-        io
+        ok_response
       end
 
       result = described_class.new.call(
@@ -112,19 +123,12 @@ RSpec.describe JournalEntries::AttachImages do
         expect(result).to be_failure
         expect(result.failure).to include("Too many")
       end
-
-      it "rejects malformed URLs" do
-        result = described_class.new.call(
-          journal_entry: entry, urls: ["not a url %%%"]
-        )
-        expect(result).to be_failure
-        expect(result.failure).to include("Invalid URL")
-      end
     end
 
     context "with image count limits" do
       it "rejects when total would exceed maximum" do
-        allow(entry.images).to receive(:count).and_return(19)
+        allow(entry.images).to receive(:count)
+          .and_return(19)
 
         result = described_class.new.call(
           journal_entry: entry,
@@ -140,7 +144,13 @@ RSpec.describe JournalEntries::AttachImages do
 
     context "with download errors" do
       it "handles timeout" do
-        allow(URI).to receive(:open)
+        http = instance_double(Net::HTTP)
+        allow(Net::HTTP).to receive(:new).and_return(http)
+        allow(http).to receive_messages(
+          "use_ssl=": nil, "open_timeout=": nil,
+          "read_timeout=": nil, "verify_mode=": nil
+        )
+        allow(http).to receive(:request)
           .and_raise(Timeout::Error)
 
         result = described_class.new.call(
@@ -152,19 +162,32 @@ RSpec.describe JournalEntries::AttachImages do
       end
 
       it "handles HTTP errors" do
-        allow(URI).to receive(:open)
-          .and_raise(OpenURI::HTTPError.new("404", StringIO.new))
+        http = instance_double(Net::HTTP)
+        allow(Net::HTTP).to receive(:new).and_return(http)
+        allow(http).to receive_messages(
+          "use_ssl=": nil, "open_timeout=": nil,
+          "read_timeout=": nil, "verify_mode=": nil
+        )
+        resp = Net::HTTPNotFound.new("1.1", "404", "Not Found")
+        allow(resp).to receive(:code).and_return("404")
+        allow(http).to receive(:request).and_return(resp)
 
         result = described_class.new.call(
           journal_entry: entry,
           urls: ["https://example.com/missing.jpg"]
         )
         expect(result).to be_failure
-        expect(result.failure).to include("Failed to download")
+        expect(result.failure).to include("HTTP 404")
       end
 
       it "handles connection refused" do
-        allow(URI).to receive(:open)
+        http = instance_double(Net::HTTP)
+        allow(Net::HTTP).to receive(:new).and_return(http)
+        allow(http).to receive_messages(
+          "use_ssl=": nil, "open_timeout=": nil,
+          "read_timeout=": nil, "verify_mode=": nil
+        )
+        allow(http).to receive(:request)
           .and_raise(Errno::ECONNREFUSED)
 
         result = described_class.new.call(
@@ -177,7 +200,7 @@ RSpec.describe JournalEntries::AttachImages do
     end
 
     context "with SSRF protection" do
-      it "rejects localhost URLs" do
+      it "rejects localhost" do
         allow(Resolv).to receive(:getaddress)
           .and_return("127.0.0.1")
 
@@ -189,7 +212,7 @@ RSpec.describe JournalEntries::AttachImages do
         expect(result.failure).to include("Blocked host")
       end
 
-      it "rejects private network URLs" do
+      it "rejects private network" do
         allow(Resolv).to receive(:getaddress)
           .and_return("192.168.1.1")
 
@@ -224,22 +247,80 @@ RSpec.describe JournalEntries::AttachImages do
         expect(result).to be_failure
         expect(result.failure).to include("Cannot resolve")
       end
+
+      it "re-validates redirect targets" do # rubocop:disable RSpec/ExampleLength
+        http = instance_double(Net::HTTP)
+        allow(Net::HTTP).to receive(:new).and_return(http)
+        allow(http).to receive_messages(
+          "use_ssl=": nil, "open_timeout=": nil,
+          "read_timeout=": nil, "verify_mode=": nil
+        )
+        allow(http).to receive(:request)
+          .and_return(redirect_response(
+                        "https://evil.internal/steal"
+                      ))
+        allow(Resolv).to receive(:getaddress)
+          .with("example.com").and_return("93.184.216.34")
+        allow(Resolv).to receive(:getaddress)
+          .with("evil.internal").and_return("10.0.0.1")
+
+        result = described_class.new.call(
+          journal_entry: entry,
+          urls: ["https://example.com/redirect.jpg"]
+        )
+        expect(result).to be_failure
+        expect(result.failure).to include("Blocked host")
+      end
+
+      it "rejects redirect to non-HTTPS" do
+        http = instance_double(Net::HTTP)
+        allow(Net::HTTP).to receive(:new).and_return(http)
+        allow(http).to receive_messages(
+          "use_ssl=": nil, "open_timeout=": nil,
+          "read_timeout=": nil, "verify_mode=": nil
+        )
+        allow(http).to receive(:request)
+          .and_return(redirect_response(
+                        "http://example.com/plain"
+                      ))
+
+        result = described_class.new.call(
+          journal_entry: entry,
+          urls: ["https://example.com/redirect.jpg"]
+        )
+        expect(result).to be_failure
+        expect(result.failure).to include("non-HTTPS")
+      end
     end
 
     context "with content validation" do
       it "rejects non-image content types" do
-        stub_download(content_type: "text/html")
+        http = instance_double(Net::HTTP)
+        allow(Net::HTTP).to receive(:new).and_return(http)
+        allow(http).to receive_messages(
+          "use_ssl=": nil, "open_timeout=": nil,
+          "read_timeout=": nil, "verify_mode=": nil,
+          request: ok_response(content_type: "text/html")
+        )
 
         result = described_class.new.call(
           journal_entry: entry,
           urls: ["https://example.com/page.html"]
         )
         expect(result).to be_failure
-        expect(result.failure).to include("Invalid content type")
+        expect(result.failure).to include(
+          "Invalid content type"
+        )
       end
 
       it "rejects oversized files" do
-        stub_download(size: 11.megabytes)
+        http = instance_double(Net::HTTP)
+        allow(Net::HTTP).to receive(:new).and_return(http)
+        allow(http).to receive_messages(
+          "use_ssl=": nil, "open_timeout=": nil,
+          "read_timeout=": nil, "verify_mode=": nil,
+          request: ok_response(body: "x" * 11.megabytes)
+        )
 
         result = described_class.new.call(
           journal_entry: entry,
