@@ -6,7 +6,7 @@ class JournalEntryPolicy < ApplicationPolicy
   end
 
   def create?
-    superadmin? || (contributor? && record.trip.writable?)
+    (superadmin? || contributor?) && record.trip.writable?
   end
 
   def new?
@@ -14,7 +14,7 @@ class JournalEntryPolicy < ApplicationPolicy
   end
 
   def edit?
-    superadmin? || (contributor? && own_entry? && record.trip.writable?)
+    (superadmin? || (contributor? && own_entry?)) && record.trip.writable?
   end
 
   def update?
@@ -22,7 +22,7 @@ class JournalEntryPolicy < ApplicationPolicy
   end
 
   def destroy?
-    superadmin? || (contributor? && own_entry? && record.trip.writable?)
+    (superadmin? || (contributor? && own_entry?)) && record.trip.writable?
   end
 
   private
