@@ -2,12 +2,30 @@
 
 module Tools
   class TransitionTrip < BaseTool
-    description "Transition a trip to a new state (start, finish, cancel)"
+    VALID_STATES = %w[
+      planning started finished cancelled archived
+    ].freeze
+
+    description(
+      "Transition a trip to a new state. Valid transitions: " \
+      "planning -> started/cancelled, " \
+      "started -> finished/cancelled, " \
+      "finished -> archived, " \
+      "cancelled -> planning"
+    )
 
     input_schema(
       properties: {
-        trip_id: { type: "string", description: "Trip UUID (optional if exactly one trip is started)" },
-        new_state: { type: "string", description: "Target state: started, finished, cancelled, archived, planning" }
+        trip_id: {
+          type: "string",
+          description: "Trip UUID (optional if exactly one " \
+                       "trip is started)"
+        },
+        new_state: {
+          type: "string",
+          description: "Target state",
+          enum: VALID_STATES
+        }
       },
       required: %w[new_state]
     )
@@ -21,20 +39,15 @@ module Tools
 
       case result
       in Dry::Monads::Success(updated)
-        MCP::Tool::Response.new([{
-                                  type: "text",
-                                  text: { id: updated.id, name: updated.name,
-                                          state: updated.state }.to_json
-                                }])
-      in Dry::Monads::Failure(error)
-        MCP::Tool::Response.new(
-          [{ type: "text", text: error.to_s }], error: true
+        success_response(
+          id: updated.id, name: updated.name,
+          state: updated.state
         )
+      in Dry::Monads::Failure(error)
+        error_response(error)
       end
     rescue ToolError => e
-      MCP::Tool::Response.new(
-        [{ type: "text", text: e.message }], error: true
-      )
+      error_response(e.message)
     end
   end
 end

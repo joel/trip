@@ -6,15 +6,15 @@ class CommentPolicy < ApplicationPolicy
   end
 
   def create?
-    superadmin? || (member? && trip.commentable?)
+    (superadmin? || member?) && trip.commentable?
   end
 
   def update?
-    superadmin? || (own_comment? && trip.commentable?)
+    (superadmin? || own_comment?) && trip.commentable?
   end
 
   def destroy?
-    superadmin? || (own_comment? && trip.commentable?)
+    (superadmin? || own_comment?) && trip.commentable?
   end
 
   private

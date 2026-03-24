@@ -40,7 +40,7 @@ RSpec.describe CommentPolicy do
   end
 
   describe "#create?" do
-    it "allows superadmin" do
+    it "allows superadmin on commentable trip" do
       expect(described_class.new(comment, user: admin)
         .apply(:create?)).to be(true)
     end
@@ -76,6 +76,18 @@ RSpec.describe CommentPolicy do
         .apply(:create?)).to be(false)
     end
 
+    it "denies superadmin on cancelled trip" do
+      trip.update!(state: :cancelled)
+      expect(described_class.new(comment, user: admin)
+        .apply(:create?)).to be(false)
+    end
+
+    it "denies superadmin on archived trip" do
+      trip.update!(state: :archived)
+      expect(described_class.new(comment, user: admin)
+        .apply(:create?)).to be(false)
+    end
+
     it "denies non-member" do
       expect(described_class.new(comment, user: outsider)
         .apply(:create?)).to be(false)
@@ -83,7 +95,7 @@ RSpec.describe CommentPolicy do
   end
 
   describe "#update?" do
-    it "allows superadmin" do
+    it "allows superadmin on commentable trip" do
       expect(described_class.new(comment, user: admin)
         .apply(:update?)).to be(true)
     end
@@ -103,10 +115,16 @@ RSpec.describe CommentPolicy do
       expect(described_class.new(comment, user: contributor)
         .apply(:update?)).to be(false)
     end
+
+    it "denies superadmin on archived trip" do
+      trip.update!(state: :archived)
+      expect(described_class.new(comment, user: admin)
+        .apply(:update?)).to be(false)
+    end
   end
 
   describe "#destroy?" do
-    it "allows superadmin" do
+    it "allows superadmin on commentable trip" do
       expect(described_class.new(comment, user: admin)
         .apply(:destroy?)).to be(true)
     end
@@ -118,6 +136,12 @@ RSpec.describe CommentPolicy do
 
     it "denies other member" do
       expect(described_class.new(comment, user: viewer_user)
+        .apply(:destroy?)).to be(false)
+    end
+
+    it "denies superadmin on cancelled trip" do
+      trip.update!(state: :cancelled)
+      expect(described_class.new(comment, user: admin)
         .apply(:destroy?)).to be(false)
     end
   end

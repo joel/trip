@@ -73,6 +73,12 @@ admin = create_user(
 )
 log "Superadmin: #{admin.email}"
 
+jack = create_user(
+  email: "jack@system.local",
+  name: "Jack", roles: []
+)
+log "System actor: #{jack.email}"
+
 alice = create_user(
   email: "alice@acme.org",
   name: "Alice Martin", roles: [:contributor]
