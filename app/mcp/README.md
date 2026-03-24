@@ -25,7 +25,7 @@ The Model Context Protocol (MCP) server exposes trip journaling capabilities to 
        | validate_actor_type!
        | success_response / error_response
        v
-  10 MCP Tools  -->  Actions (Dry::Monads)  -->  ActiveRecord
+  11 MCP Tools  -->  Actions (Dry::Monads)  -->  ActiveRecord
 ```
 
 ## Endpoint
@@ -39,7 +39,7 @@ The Model Context Protocol (MCP) server exposes trip journaling capabilities to 
 
 ## API Key Scope
 
-The `MCP_API_KEY` grants **unrestricted read/write access to all domain data** through the 10 registered tools. All actions are attributed to the **Jack** system actor (`jack@system.local`). This is by design -- Jack is the AI travel assistant and needs full access to operate.
+The `MCP_API_KEY` grants **unrestricted read/write access to all domain data** through the 11 registered tools. All actions are attributed to the **Jack** system actor (`jack@system.local`). This is by design -- Jack is the AI travel assistant and needs full access to operate.
 
 Set the key in `.env.development`:
 
@@ -56,6 +56,14 @@ MCP_API_KEY=your-secret-key
 | `create_journal_entry` | Create a journal entry for a trip | `name`, `entry_date` |
 | `update_journal_entry` | Update an existing journal entry | `journal_entry_id` + at least one field |
 | `list_journal_entries` | List entries with pagination (limit 1-100) | (none) |
+
+### Images
+
+| Tool | Description | Required Params |
+|------|-------------|-----------------|
+| `add_journal_images` | Attach images via HTTPS URLs (max 5/call, 10MB each) | `journal_entry_id`, `urls` |
+
+Allowed types: jpeg, png, webp, gif. Max 20 images per entry. Downloads use pinned DNS with SSRF protection. All-or-nothing: if any URL fails, no images are attached.
 
 ### Social
 
@@ -100,7 +108,7 @@ Tools respect the trip state machine:
 
 | Guard | States allowed | Tools using it |
 |-------|---------------|----------------|
-| `require_writable!` | planning, started | create/update journal entries, update trip, toggle checklist |
+| `require_writable!` | planning, started | create/update journal entries, add images, update trip, toggle checklist |
 | `require_commentable!` | planning, started, finished | create comment, add reaction |
 
 ## Error Handling
@@ -128,6 +136,7 @@ app/mcp/
     toggle_checklist_item.rb
     list_checklists.rb
     get_trip_status.rb
+    add_journal_images.rb
 ```
 
 ## Testing

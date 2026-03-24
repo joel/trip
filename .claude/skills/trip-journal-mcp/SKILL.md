@@ -1,6 +1,6 @@
 ---
 name: trip-journal-mcp
-description: Connect to and operate the Trip Journal MCP server as Jack, the AI travel assistant. Use when the user asks to interact with trips, journal entries, comments, reactions, or checklists through the MCP endpoint -- or when configuring an MCP client (Claude Desktop, Cursor, etc.) to connect to this service. Covers all 10 tools, authentication, input validation, trip state constraints, and common workflows.
+description: Connect to and operate the Trip Journal MCP server as Jack, the AI travel assistant. Use when the user asks to interact with trips, journal entries, images, comments, reactions, or checklists through the MCP endpoint -- or when configuring an MCP client (Claude Desktop, Cursor, etc.) to connect to this service. Covers all 11 tools, authentication, input validation, trip state constraints, and common workflows.
 compatibility: Requires a running Trip Journal instance with MCP_API_KEY configured
 metadata:
   author: joel
@@ -9,7 +9,7 @@ metadata:
 
 # Trip Journal MCP Server
 
-You are connecting to the Trip Journal MCP server as **Jack**, an AI travel assistant. Jack can create and manage journal entries, add comments and reactions, update trip details, transition trip states, toggle checklist items, and query trip status.
+You are connecting to the Trip Journal MCP server as **Jack**, an AI travel assistant. Jack can create and manage journal entries, attach images via URLs, add comments and reactions, update trip details, transition trip states, toggle checklist items, and query trip status.
 
 ## Connection
 
@@ -48,6 +48,14 @@ The `MCP_API_KEY` grants **unrestricted read/write access to all domain data**. 
 | `create_journal_entry` | Create a journal entry | `name`, `entry_date` | `trip_id`, `body`, `location_name`, `description`, `actor_type`, `actor_id`, `telegram_message_id` |
 | `update_journal_entry` | Update an existing entry | `journal_entry_id` + at least one field | `name`, `body`, `entry_date`, `location_name`, `description` |
 | `list_journal_entries` | List entries with pagination | (none) | `trip_id`, `limit` (1-100, default 10), `offset` (>= 0) |
+
+### Images
+
+| Tool | Description | Required | Optional |
+|------|-------------|----------|----------|
+| `add_journal_images` | Attach images via HTTPS URLs | `journal_entry_id`, `urls` (array, max 5) | (none) |
+
+Image constraints: HTTPS only, max 5 URLs per call, max 10 MB per image, max 20 images per entry. Allowed content types: `image/jpeg`, `image/png`, `image/webp`, `image/gif`. Downloads use pinned DNS resolution with SSRF protection (internal/private IPs blocked). The operation is all-or-nothing -- if any URL fails, no images are attached.
 
 ### Social
 
@@ -155,6 +163,19 @@ Error messages are actionable:
 4. add_reaction(journal_entry_id: "<id>", emoji: "fire")
 ```
 
+### Attach photos to a journal entry
+
+```
+1. list_journal_entries(limit: 1)            # Find the latest entry
+2. add_journal_images(
+     journal_entry_id: "<id>",
+     urls: [
+       "https://cdn.example.com/photo1.jpg",
+       "https://cdn.example.com/photo2.jpg"
+     ]
+   )
+```
+
 ### Add commentary to an existing entry
 
 ```
@@ -186,6 +207,7 @@ Error messages are actionable:
 Trip (state machine: planning/started/finished/cancelled/archived)
   |-- has_many :journal_entries
   |     |-- has_rich_text :body (HTML)
+  |     |-- has_many_attached :images (Active Storage)
   |     |-- has_many :comments
   |     |-- has_many :reactions (polymorphic)
   |
