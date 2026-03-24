@@ -20,6 +20,7 @@ module Views
             data: { controller: "theme" }
           ) do
             render Components::FlashToasts.new
+            render Components::PwaInstallBanner.new
             div(class: "flex min-h-screen") do
               render Components::Sidebar.new
               render_main(&)
@@ -34,15 +35,17 @@ module Views
         head do
           title { content_for(:title) || "Catalyst" }
           meta(name: "viewport", content: "width=device-width,initial-scale=1")
+          meta(name: "theme-color", content: "#0b1220")
           meta(name: "apple-mobile-web-app-capable", content: "yes")
-          meta(name: "application-name", content: "Catalyst")
+          meta(name: "apple-mobile-web-app-status-bar-style", content: "black-translucent")
+          meta(name: "application-name", content: "Trip Journal")
           meta(name: "mobile-web-app-capable", content: "yes")
           csrf_meta_tags
           csp_meta_tag
           yield(:head) if content_for?(:head)
           link(rel: "icon", href: "/icon.png", type: "image/png")
           link(rel: "icon", href: "/icon.svg", type: "image/svg+xml")
-          link(rel: "apple-touch-icon", href: "/icon.png")
+          link(rel: "apple-touch-icon", href: "/icon-192.png")
           link(rel: "manifest", href: "/manifest.json")
           stylesheet_link_tag(:app, data: { turbo_track: "reload" })
           javascript_importmap_tags

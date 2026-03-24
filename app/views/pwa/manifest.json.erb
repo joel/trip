@@ -1,23 +1,38 @@
 {
   "name": "Trip Journal",
-  "short_name": "TripJournal",
+  "short_name": "Trip",
+  "description": "A private, invite-only trip journal for documenting your travels.",
+  "start_url": "/",
+  "display": "standalone",
+  "scope": "/",
+  "orientation": "any",
+  "theme_color": "#0b1220",
+  "background_color": "#0b1220",
   "icons": [
     {
-      "src": "/icon.png",
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icon-512.png",
       "type": "image/png",
       "sizes": "512x512"
     },
     {
-      "src": "/icon.png",
+      "src": "/icon-maskable.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "maskable"
     }
   ],
-  "start_url": "/",
-  "display": "standalone",
-  "scope": "/",
-  "description": "A private, invite-only trip journal for documenting your travels.",
-  "theme_color": "#0e1726",
-  "background_color": "#0e1726"
+  "screenshots": [
+    {
+      "src": "/screenshot-wide.png",
+      "type": "image/png",
+      "sizes": "1280x720",
+      "form_factor": "wide"
+    }
+  ],
+  "categories": ["travel", "lifestyle"]
 }
