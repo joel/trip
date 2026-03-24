@@ -37,6 +37,9 @@ module Tools
       in Dry::Monads::Failure(errors)
         error_response(errors)
       end
+    rescue ActiveRecord::RecordNotUnique
+      existing = entry.comments.find_by!(telegram_message_id: telegram_message_id)
+      success_response(existing)
     rescue ActiveRecord::RecordNotFound
       error_response("Journal entry not found: #{journal_entry_id}")
     end

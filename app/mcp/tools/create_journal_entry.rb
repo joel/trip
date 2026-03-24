@@ -54,6 +54,9 @@ module Tools
       in Dry::Monads::Failure(errors)
         error_response(errors)
       end
+    rescue ActiveRecord::RecordNotUnique
+      existing = trip.journal_entries.find_by!(telegram_message_id: params[:telegram_message_id])
+      tool_response(existing)
     end
 
     private_class_method def self.tool_response(entry)
