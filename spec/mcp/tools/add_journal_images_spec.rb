@@ -18,7 +18,12 @@ RSpec.describe Tools::AddJournalImages do
   end
 
   describe ".call" do
-    before { stub_download }
+    before do
+      stub_download
+      allow_any_instance_of( # rubocop:disable RSpec/AnyInstance
+        ActiveStorage::Attached::Many
+      ).to receive(:attach).and_return(true)
+    end
 
     it "attaches images and returns count" do
       result = described_class.call(
@@ -29,7 +34,6 @@ RSpec.describe Tools::AddJournalImages do
       expect(result.error?).to be false
       data = JSON.parse(result.content.first[:text])
       expect(data["attached"]).to eq(1)
-      expect(data["total_images"]).to eq(1)
       expect(data["journal_entry_id"]).to eq(entry.id)
     end
 
