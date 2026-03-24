@@ -37,7 +37,7 @@ Once all three tasks complete, read the three reports and give me a consolidated
 
 Write the Steps taken in `prompts/Phase X - Steps.md` for trail and audit
 
-Go through the PR comments and share your thoughts.
+Go through the PR comments and share your thoughts. DO NOT FIX IT, give your thoughts first, and wait confirmation.
 
 Fix one by one (commit) the comments
 Reply to the comments so we leave a clear trace
