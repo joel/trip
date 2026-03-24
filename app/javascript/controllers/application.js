@@ -6,4 +6,9 @@ const application = Application.start()
 application.debug = false
 window.Stimulus   = application
 
+// Register service worker for PWA support
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/service-worker.js", { scope: "/" })
+}
+
 export { application }

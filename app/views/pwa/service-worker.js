@@ -1,4 +1,4 @@
-const CACHE_VERSION = "catalyst-v1"
+const CACHE_VERSION = "catalyst-<%= ENV.fetch('GIT_SHA', 'v1') %>"
 const STATIC_CACHE = `${CACHE_VERSION}-static`
 const OFFLINE_URL = "/offline.html"
 

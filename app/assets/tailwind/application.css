@@ -239,6 +239,24 @@
   .ha-nav[open] .ha-nav-toggle svg {
     transform: rotate(180deg);
   }
+
+  @media (max-width: 767px) {
+    .ha-nav {
+      position: fixed;
+      z-index: 40;
+      height: 100vh;
+      width: 4.5rem;
+    }
+
+    .ha-nav[open] {
+      width: min(16rem, 80vw);
+      box-shadow: 18px 0 45px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    .ha-nav ~ main {
+      margin-left: 4.5rem;
+    }
+  }
 }
 
 @layer utilities {
