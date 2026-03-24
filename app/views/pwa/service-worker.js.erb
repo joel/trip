@@ -46,6 +46,9 @@ self.addEventListener("fetch", (event) => {
   // Only handle same-origin requests
   if (url.origin !== self.location.origin) return
 
+  // Skip Active Storage URLs (authenticated media, must not be cached)
+  if (url.pathname.startsWith("/rails/active_storage/")) return
+
   // Network-first for HTML navigation requests
   if (request.mode === "navigate" || accept.includes("text/html")) {
     event.respondWith(
