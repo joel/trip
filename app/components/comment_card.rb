@@ -14,16 +14,15 @@ module Components
 
     def view_template
       div(id: dom_id(@comment),
-          class: "flex gap-3 rounded-xl border " \
+          class: "rounded-xl border " \
                  "border-[var(--ha-border)] " \
-                 "bg-[var(--ha-surface)] p-4 " \
+                 "bg-[var(--ha-surface)] p-5 " \
                  "transition-colors duration-150 " \
                  "hover:bg-[var(--ha-surface-hover)]") do
-        div(class: "flex-1") do
-          render_header
-          p(class: "mt-2 text-sm text-[var(--ha-text)]") do
-            plain @comment.body
-          end
+        render_header
+        p(class: "mt-3 text-sm leading-relaxed " \
+                 "text-[var(--ha-text)]") do
+          plain @comment.body
         end
         render_actions
       end
@@ -32,33 +31,36 @@ module Components
     private
 
     def render_header
-      div(class: "flex items-center gap-2") do
-        span(class: "text-sm font-semibold " \
-                    "text-[var(--ha-text)]") do
-          plain @comment.user.name || @comment.user.email
+      div(class: "flex items-center justify-between") do
+        div(class: "flex items-center gap-2") do
+          span(class: "text-sm font-semibold " \
+                      "text-[var(--ha-text)]") do
+            plain @comment.user.name || @comment.user.email
+          end
+          span(class: "text-xs text-[var(--ha-muted)]") do
+            plain time_ago_in_words(@comment.created_at)
+            plain " ago"
+          end
         end
-        span(class: "text-xs text-[var(--ha-muted)]") do
-          plain time_ago_in_words(@comment.created_at)
-          plain " ago"
-        end
+        render_delete_button if can_modify?
       end
     end
 
-    def render_actions
-      return unless can_modify?
+    def render_delete_button
+      button_to(
+        "Delete",
+        view_context.trip_journal_entry_comment_path(
+          @trip, @entry, @comment
+        ),
+        method: :delete,
+        class: "text-xs text-[var(--ha-danger)] " \
+               "hover:text-[var(--ha-danger-strong)]",
+        form: { class: "inline-flex" }
+      )
+    end
 
-      div(class: "flex gap-1") do
-        button_to(
-          "Delete",
-          view_context.trip_journal_entry_comment_path(
-            @trip, @entry, @comment
-          ),
-          method: :delete,
-          class: "text-xs text-[var(--ha-danger)] " \
-                 "hover:text-[var(--ha-danger-strong)]",
-          form: { class: "inline-flex" }
-        )
-      end
+    def render_actions
+      # Reserved for future inline actions (edit, reply)
     end
 
     def can_modify?

@@ -109,7 +109,7 @@ module Views
           end
 
           div(id: "comments_#{@entry.id}",
-              class: "space-y-3") do
+              class: "space-y-4") do
             comments = @entry.comments.chronological
                              .includes(:user)
             if comments.any?
