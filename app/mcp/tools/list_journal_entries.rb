@@ -17,7 +17,6 @@ module Tools
 
       entries = trip.journal_entries
                     .chronological
-                    .includes(:comments)
                     .offset(offset)
                     .limit(limit)
                     .map do |e|
