@@ -155,7 +155,7 @@ A collaborative trip journaling web application built with Rails 8.1, Phlex comp
 
 ### Actions (Business Logic)
 
-All business logic lives in `app/actions/` using Dry::Monads. See [`app/actions/README.md`](app/actions/README.md) for the full reference.
+All business logic lives in `app/actions/` using Dry::Monads. See [`app/actions/`](app/actions/) for the full reference.
 
 ```ruby
 result = Trips::Create.new.call(params: trip_params, user: current_user)
