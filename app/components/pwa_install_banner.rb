@@ -5,11 +5,12 @@ module Components
     def view_template
       div(
         data: { controller: "pwa" },
-        class: "fixed bottom-6 right-6 z-50"
+        class: "fixed bottom-6 left-6 right-6 z-50 sm:left-auto"
       ) do
         div(
           data: { pwa_target: "banner" },
-          class: "hidden pointer-events-auto flex items-start gap-3 rounded-2xl " \
+          class: "pointer-events-none opacity-0 translate-y-4 " \
+                 "flex items-start gap-3 rounded-2xl " \
                  "border border-sky-300/30 " \
                  "bg-[linear-gradient(140deg,rgba(56,189,248,0.12),rgba(15,23,42,0.92))] " \
                  "p-4 text-sky-100 " \
@@ -47,16 +48,24 @@ module Components
 
     def render_content
       div(class: "min-w-0 flex-1") do
-        p(class: "text-sm font-semibold") { "Install Trip Journal" }
+        p(class: "text-base font-semibold") { "Install Trip Journal" }
         p(class: "mt-1 text-sm text-sky-100/80") do
           "Add to your home screen for quick access."
         end
         button(
           type: "button",
-          data: { action: "pwa#install" },
-          class: "mt-2 inline-flex items-center rounded-lg bg-sky-500/20 px-3 py-1.5 " \
-                 "text-xs font-medium text-sky-100 transition hover:bg-sky-500/30"
+          data: { action: "pwa#install", pwa_target: "installButton" },
+          class: "mt-2 inline-flex items-center rounded-lg bg-sky-500/20 " \
+                 "px-4 py-2.5 text-sm font-medium text-sky-100 " \
+                 "transition hover:bg-sky-500/30",
+          aria_label: "Install Trip Journal"
         ) { "Install" }
+        p(
+          data: { pwa_target: "iosInstructions" },
+          class: "hidden mt-2 text-xs text-sky-100/70"
+        ) do
+          "Tap the Share button, then \"Add to Home Screen\"."
+        end
       end
     end
 
@@ -64,9 +73,10 @@ module Components
       button(
         type: "button",
         data: { action: "pwa#dismiss" },
-        class: "flex h-7 w-7 items-center justify-center rounded-full " \
-               "text-sky-100/80 transition hover:bg-sky-200/10 hover:text-sky-100",
-        aria_label: "Dismiss"
+        class: "flex h-11 w-11 items-center justify-center rounded-full " \
+               "text-sky-100/80 transition hover:bg-sky-200/10 " \
+               "hover:text-sky-100",
+        aria_label: "Dismiss install prompt"
       ) do
         render Components::Icons::Close.new(css: "h-3.5 w-3.5")
       end

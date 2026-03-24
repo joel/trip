@@ -247,6 +247,7 @@ end
 | ChecklistItemRow | List row | `checklist_item_row.rb` |
 | NoticeBanner | Feedback | `notice_banner.rb` |
 | FlashToasts | Feedback | `flash_toasts.rb` |
+| PwaInstallBanner | Feedback | `pwa_install_banner.rb` |
 | TripForm | Form | `trip_form.rb` |
 | JournalEntryForm | Form | `journal_entry_form.rb` |
 | UserForm | Form | `user_form.rb` |

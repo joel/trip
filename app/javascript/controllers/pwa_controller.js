@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["banner"]
+  static targets = ["banner", "installButton", "iosInstructions"]
 
   connect() {
     this.deferredPrompt = null
@@ -11,6 +11,11 @@ export default class extends Controller {
 
     if (this.shouldShowBanner()) {
       this.incrementPageVisits()
+
+      if (this.isIos() && this.pageVisits() >= 2 && !this.isDismissed()) {
+        this.showBanner()
+        this.showIosInstructions()
+      }
     }
   }
 
@@ -44,20 +49,33 @@ export default class extends Controller {
 
   dismiss() {
     this.hideBanner()
-    sessionStorage.setItem("pwa-banner-dismissed", "true")
+    localStorage.setItem("pwa-banner-dismissed", "true")
   }
 
   // Private
 
   showBanner() {
-    if (this.hasBannerTarget) {
-      this.bannerTarget.classList.remove("hidden")
-    }
+    if (!this.hasBannerTarget) return
+
+    this.bannerTarget.classList.remove("opacity-0", "translate-y-4",
+      "pointer-events-none")
+    this.bannerTarget.classList.add("opacity-100", "translate-y-0")
   }
 
   hideBanner() {
-    if (this.hasBannerTarget) {
-      this.bannerTarget.classList.add("hidden")
+    if (!this.hasBannerTarget) return
+
+    this.bannerTarget.classList.add("opacity-0", "translate-y-4",
+      "pointer-events-none")
+    this.bannerTarget.classList.remove("opacity-100", "translate-y-0")
+  }
+
+  showIosInstructions() {
+    if (this.hasInstallButtonTarget) {
+      this.installButtonTarget.classList.add("hidden")
+    }
+    if (this.hasIosInstructionsTarget) {
+      this.iosInstructionsTarget.classList.remove("hidden")
     }
   }
 
@@ -66,7 +84,12 @@ export default class extends Controller {
   }
 
   isDismissed() {
-    return sessionStorage.getItem("pwa-banner-dismissed") === "true"
+    return localStorage.getItem("pwa-banner-dismissed") === "true"
+  }
+
+  isIos() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
   }
 
   pageVisits() {
