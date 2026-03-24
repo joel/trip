@@ -55,7 +55,10 @@ module Components
         method: :delete,
         class: "text-xs text-[var(--ha-danger)] " \
                "hover:text-[var(--ha-danger-strong)]",
-        form: { class: "inline-flex" }
+        form: {
+          class: "inline-flex",
+          data: { turbo_confirm: "Delete this comment?" }
+        }
       )
     end
 
