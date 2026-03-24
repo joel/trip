@@ -3,6 +3,7 @@
 module Components
   class ChecklistItemRow < Components::Base
     include Phlex::Rails::Helpers::ButtonTo
+    include Phlex::Rails::Helpers::DOMID
 
     def initialize(trip:, checklist:, item:)
       @trip = trip
@@ -11,7 +12,8 @@ module Components
     end
 
     def view_template
-      div(class: "flex items-center gap-3 rounded-lg " \
+      div(id: dom_id(@item),
+          class: "flex items-center gap-3 rounded-lg " \
                  "bg-[var(--ha-surface)] px-4 py-3") do
         render_toggle
         render_content
