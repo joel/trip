@@ -64,9 +64,10 @@ aliases:
 
 # Use persistent storage volumes for sqlite database files and local Active Storage files.
 # Recommended to change this to a mounted volume path that is backed up off server.
+# Note: SQLite databases live in storage/, not db/. Do NOT mount a volume on db/
+# as it hides migrations, seeds, and schema from the image on each deploy.
 volumes:
   - "catalyst_storage:/rails/storage"
-  - "catalyst_db:/rails/db"
 
 # Bridge fingerprinted assets, like JS and CSS, between versions to avoid
 # hitting 404 on in-flight requests. Combines all files from new and old
