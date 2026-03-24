@@ -82,6 +82,21 @@ end
 
 Changes: added dark mode variants, used project-consistent spacing (`px-3 py-1`), matched the border-radius language.
 
+### Browsing the Libraries
+
+Both libraries have browsable `index.html` files:
+
+- **Reference library**: `open ~/Workspace/WebUIComponents/TailwindCSS/index.html` (657 components)
+- **Project library**: `open ui_library/index.html` (current project components)
+
+### Regenerating the Project Index
+
+After adding or modifying `ui_library/*.yml` entries, regenerate the browsable index:
+
+```bash
+mise x -- ruby ui_library/generate_index.rb
+```
+
 ## Project UI Library (`ui_library/`)
 
 The directory `ui_library/` at the project root tracks which library components are in use and how they map to project Phlex components. This keeps the project in sync with the reference library.

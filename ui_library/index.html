@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catalyst UI Library</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    [data-tree-toggle] { cursor: pointer; user-select: none; }
+    .tree-children { display: block; }
+    .nav-link.active { background-color: rgb(238 242 255); color: rgb(79 70 229); }
+    .dark .nav-link.active { background-color: rgb(49 46 89); color: rgb(165 160 255); }
+    #sidebar::-webkit-scrollbar { width: 6px; }
+    #sidebar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    pre { white-space: pre-wrap; word-wrap: break-word; }
+    .token-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 12px; font-family: ui-monospace, monospace; }
+  </style>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-950">
+  <div class="flex h-full">
+    <aside id="sidebar" class="w-72 shrink-0 border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 overflow-y-auto flex flex-col">
+      <div class="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 p-4">
+        <h1 class="text-lg font-bold text-gray-900 dark:text-white">Catalyst UI Library</h1>
+        <p id="count" class="mt-1 text-sm text-gray-500"></p>
+        <div class="relative mt-3">
+          <svg class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+          </svg>
+          <input id="search" type="text" placeholder="Search..."
+            class="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 pl-10 pr-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none" />
+        </div>
+      </div>
+      <nav id="tree" class="flex-1 p-2 space-y-0.5"></nav>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto">
+      <div id="welcome" class="flex items-center justify-center h-full">
+        <div class="text-center max-w-md">
+          <div class="mx-auto w-16 h-16 rounded-2xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center mb-4">
+            <svg class="w-8 h-8 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6.429 9.75 2.25 12l4.179 2.25m0-4.5 5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L12 12.75 6.429 9.75m11.142 0 4.179 2.25L12 17.25 2.25 12l4.179-2.25m11.142 0 4.179 2.25L12 22.5l-9.75-5.25 4.179-2.25" />
+            </svg>
+          </div>
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Catalyst UI Library</h2>
+          <p class="mt-2 text-gray-500 dark:text-gray-400">Select a component from the sidebar to view its source code, design tokens, and library mapping.</p>
+        </div>
+      </div>
+
+      <div id="detail" class="hidden">
+        <div class="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-3 flex items-center justify-between">
+          <div>
+            <p id="comp-name" class="text-lg font-semibold text-gray-900 dark:text-white"></p>
+            <p id="comp-file" class="text-sm text-gray-500 font-mono"></p>
+          </div>
+          <div class="flex gap-2">
+            <button id="btn-source" class="px-3 py-1.5 text-sm font-medium rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50">Source</button>
+            <button id="btn-meta" class="px-3 py-1.5 text-sm font-medium rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">Details</button>
+          </div>
+        </div>
+
+        <div id="view-source" class="p-6">
+          <pre id="source-code" class="rounded-xl bg-gray-900 text-gray-100 p-6 text-sm font-mono overflow-x-auto leading-relaxed"></pre>
+        </div>
+
+        <div id="view-meta" class="hidden p-6 space-y-6">
+          <div>
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-2">Description</h3>
+            <p id="meta-desc" class="text-gray-600 dark:text-gray-400"></p>
+          </div>
+          <div>
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-2">Library Source</h3>
+            <p id="meta-lib" class="text-gray-600 dark:text-gray-400 font-mono text-sm"></p>
+          </div>
+          <div>
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-2">Design Tokens</h3>
+            <div id="meta-tokens" class="flex flex-wrap gap-2"></div>
+          </div>
+          <div>
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-2">Tailwind Classes</h3>
+            <div id="meta-tw" class="flex flex-wrap gap-2"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+<script>
+const COMPONENTS = {"Badges":["trip_state_badge"],"Cards":["comment_card","export_card","trip_card"],"Headings":["page_header"],"Navigation":["sidebar"]};
+const CONTENT = {"comment_card":"# frozen_string_literal: true\n\nmodule Components\n  class CommentCard < Components::Base\n    include Phlex::Rails::Helpers::ButtonTo\n    include Phlex::Rails::Helpers::DOMID\n    include Phlex::Rails::Helpers::TimeAgoInWords\n\n    def initialize(trip:, journal_entry:, comment:)\n      @trip = trip\n      @entry = journal_entry\n      @comment = comment\n    end\n\n    def view_template\n      div(id: dom_id(@comment),\n          class: \"rounded-xl border \" \\\n                 \"border-[var(--ha-border)] \" \\\n                 \"bg-[var(--ha-surface)] p-4 \" \\\n                 \"transition-colors duration-150 \" \\\n                 \"hover:bg-[var(--ha-surface-hover)]\") do\n        render_header\n        p(class: \"mt-3 text-sm text-[var(--ha-text)]\") do\n          plain @comment.body\n        end\n      end\n    end\n\n    private\n\n    def render_header\n      div(class: \"flex items-center justify-between\") do\n        div(class: \"flex items-center gap-2\") do\n          span(class: \"text-sm font-semibold \" \\\n                      \"text-[var(--ha-text)]\") do\n            plain @comment.user.name || @comment.user.email\n          end\n          span(class: \"text-xs text-[var(--ha-muted)]\") do\n            plain time_ago_in_words(@comment.created_at)\n            plain \" ago\"\n          end\n        end\n        render_delete_button if can_modify?\n      end\n    end\n\n    def render_delete_button\n      button_to(\n        \"Delete\",\n        view_context.trip_journal_entry_comment_path(\n          @trip, @entry, @comment\n        ),\n        method: :delete,\n        class: \"text-xs text-[var(--ha-danger)] \" \\\n               \"hover:text-[var(--ha-danger-strong)]\",\n        form: { class: \"inline-flex\" }\n      )\n    end\n\n    def can_modify?\n      view_context.allowed_to?(:destroy?, @comment)\n    end\n  end\nend\n","export_card":"# frozen_string_literal: true\n\nmodule Components\n  class ExportCard < Components::Base\n    include Phlex::Rails::Helpers::LinkTo\n    include Phlex::Rails::Helpers::TimeAgoInWords\n    include Phlex::Rails::Helpers::DOMID\n\n    def initialize(trip:, export:, delay: \"40ms\")\n      @trip = trip\n      @export = export\n      @delay = delay\n    end\n\n    def view_template\n      div(\n        id: dom_id(@export),\n        class: \"ha-card ha-rise p-6\",\n        style: \"animation-delay: #{@delay};\"\n      ) do\n        div(class: \"flex items-start justify-between gap-4\") do\n          div(class: \"flex items-center gap-3\") do\n            render_format_icon\n            div do\n              p(class: \"ha-overline\") { \"Export\" }\n              p(class: \"mt-1 text-base font-semibold \" \\\n                       \"text-[var(--ha-text)]\") do\n                plain \"#{@export.format.capitalize} Export\"\n              end\n              p(class: \"mt-1 text-xs text-[var(--ha-muted)]\") do\n                plain \"Requested #{time_ago_in_words(@export.created_at)} ago\"\n                plain \" by #{@export.user.name || @export.user.email}\" if view_context.current_user&.role?(:superadmin)\n              end\n            end\n          end\n          render Components::ExportStatusBadge.new(\n            status: @export.status\n          )\n        end\n        render_actions\n      end\n    end\n\n    private\n\n    def render_format_icon\n      span(\n        class: \"flex h-10 w-10 items-center justify-center \" \\\n               \"rounded-2xl bg-[var(--ha-accent)]/10 \" \\\n               \"font-mono text-xs font-semibold tracking-wider \" \\\n               \"text-[var(--ha-accent)]\"\n      ) do\n        plain @export.markdown? ? \"MD\" : \"EP\"\n      end\n    end\n\n    def render_actions\n      div(class: \"ha-card-actions\") do\n        if @export.completed? && @export.file.attached?\n          link_to(\n            \"Download\",\n            view_context.download_trip_export_path(\n              @trip, @export\n            ),\n            class: \"ha-button ha-button-primary\"\n          )\n        end\n        link_to(\n          \"Details\",\n          view_context.trip_export_path(@trip, @export),\n          class: \"ha-button ha-button-secondary\"\n        )\n      end\n    end\n  end\nend\n","page_header":"# frozen_string_literal: true\n\nmodule Components\n  class PageHeader < Components::Base\n    def initialize(section:, title:, subtitle: nil)\n      @section = section\n      @title = title\n      @subtitle = subtitle\n    end\n\n    def view_template(&block)\n      div(class: \"flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between\") do\n        div do\n          p(class: \"ha-overline\") { @section }\n          h1(class: \"mt-2 text-3xl font-semibold tracking-tight sm:text-4xl\") { @title }\n          p(class: \"mt-2 text-sm text-[var(--ha-muted)]\") { @subtitle } if @subtitle\n        end\n        div(class: \"flex flex-wrap gap-2\", &block) if block\n      end\n    end\n  end\nend\n","sidebar":"# frozen_string_literal: true\n\nmodule Components\n  class Sidebar < Components::Base\n    include Phlex::Rails::Helpers::LinkTo\n    include Phlex::Rails::Helpers::ButtonTo\n\n    NAV_BASE = Components::NavItem::NAV_BASE\n\n    def view_template\n      details(\n        class: \"ha-nav flex h-screen flex-shrink-0 flex-col overflow-hidden \" \\\n               \"bg-[linear-gradient(180deg,var(--ha-panel),var(--ha-panel-strong))] \" \\\n               \"text-[var(--ha-panel-text)] shadow-[18px_0_45px_-30px_rgba(15,23,42,0.7)]\",\n        open: true\n      ) do\n        render_summary\n        div(class: \"ha-nav-body flex h-full flex-1 flex-col\") do\n          render_main_nav\n          render_bottom_nav\n        end\n      end\n    end\n\n    private\n\n    def render_summary\n      summary(class: \"flex cursor-pointer items-center justify-between gap-3 px-4 pb-3 pt-4\",\n              aria_label: \"Toggle menu\") do\n        div(class: \"ha-nav-brand flex items-center gap-3\") do\n          div(class: \"flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 \" \\\n                     \"text-lg font-semibold text-white\") { \"S\" }\n          span(class: \"ha-nav-label text-base font-semibold tracking-tight \" \\\n                      \"text-[var(--ha-panel-text)]\") { \"Catalyst\" }\n        end\n        span(class: \"ha-nav-toggle flex h-9 w-9 items-center justify-center rounded-xl \" \\\n                    \"bg-white/10 text-white/70\") do\n          render Components::Icons::ChevronLeft.new\n        end\n      end\n    end\n\n    def render_main_nav\n      div(class: \"px-3\") do\n        div(class: \"ha-nav-label mb-3 px-2 text-[0.65rem] font-semibold uppercase \" \\\n                   \"tracking-[0.2em] text-[var(--ha-panel-muted)]\") { \"Main\" }\n        nav(class: \"space-y-1\") do\n          render Components::NavItem.new(\n            path: view_context.root_path,\n            label: \"Overview\",\n            icon: Components::Icons::Home.new,\n            active: view_context.current_page?(view_context.root_path),\n            delay: \"40ms\"\n          )\n          if view_context.rodauth.logged_in?\n            render Components::NavItem.new(\n              path: view_context.trips_path,\n              label: \"Trips\",\n              icon: Components::Icons::Map.new,\n              active: %w[trips journal_entries trip_memberships\n                         comments reactions checklists\n                         checklist_sections checklist_items\n                         exports]\n                      .include?(view_context.controller_name),\n              delay: \"80ms\"\n            )\n          end\n          if view_context.allowed_to?(:index?, User)\n            render Components::NavItem.new(\n              path: view_context.users_path,\n              label: \"Users\",\n              icon: Components::Icons::Users.new,\n              active: view_context.controller_name == \"users\",\n              delay: \"120ms\"\n            )\n          end\n          if view_context.allowed_to?(:index?, AccessRequest)\n            render Components::NavItem.new(\n              path: view_context.access_requests_path,\n              label: \"Requests\",\n              icon: Components::Icons::Plus.new,\n              active: view_context.controller_name == \"access_requests\",\n              delay: \"160ms\"\n            )\n            render Components::NavItem.new(\n              path: view_context.invitations_path,\n              label: \"Invitations\",\n              icon: Components::Icons::CreateAccount.new,\n              active: view_context.controller_name == \"invitations\",\n              delay: \"200ms\"\n            )\n          end\n        end\n      end\n    end\n\n    def render_bottom_nav\n      div(class: \"mt-auto px-3 pb-4 pt-6\") do\n        div(class: \"border-t border-white/10 pt-4\") do\n          render_quick_actions_label\n          div(class: \"space-y-1\") do\n            render_new_user_link\n            render_theme_toggle\n            render_account_section\n          end\n        end\n      end\n    end\n\n    def render_quick_actions_label\n      div(class: \"ha-nav-label mb-3 px-2 text-[0.65rem] font-semibold uppercase \" \\\n                 \"tracking-[0.2em] text-[var(--ha-panel-muted)]\") { \"Quick Actions\" }\n    end\n\n    def render_new_user_link\n      return unless view_context.allowed_to?(:new?, User)\n\n      render Components::NavItem.new(\n        path: view_context.new_user_path,\n        label: \"New user\",\n        icon: Components::Icons::Plus.new,\n        delay: \"200ms\"\n      )\n    end\n\n    def render_theme_toggle\n      button(\n        type: \"button\",\n        class: \"ha-nav-item ha-rise flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 \" \\\n               \"text-sm font-medium text-[var(--ha-panel-muted)] transition hover:bg-white/10 \" \\\n               \"hover:text-[var(--ha-panel-text)]\",\n        style: \"animation-delay: 240ms;\",\n        data: { action: \"theme#toggle\" },\n        aria_label: \"Toggle dark mode\"\n      ) do\n        span(class: \"flex h-8 w-8 items-center justify-center rounded-xl bg-white/10\") do\n          render Components::Icons::Sun.new(css: \"h-4 w-4\", data: { theme_target: \"iconLight\" })\n          render Components::Icons::Moon.new(css: \"h-4 w-4 hidden\", data: { theme_target: \"iconDark\" })\n        end\n        span(class: \"ha-nav-label\", data: { theme_target: \"label\" }) { \"Dark mode\" }\n      end\n    end\n\n    def render_account_section\n      div(class: \"mt-4 border-t border-white/10 pt-4\") do\n        div(class: \"ha-nav-label mb-3 px-2 text-[0.65rem] font-semibold uppercase \" \\\n                   \"tracking-[0.2em] text-[var(--ha-panel-muted)]\") { \"Account\" }\n        div(class: \"space-y-1\") do\n          if view_context.rodauth.logged_in?\n            render_logged_in_links\n          else\n            render_logged_out_links\n          end\n        end\n      end\n    end\n\n    def render_logged_in_links\n      render Components::NavItem.new(\n        path: view_context.account_path,\n        label: \"My account\",\n        icon: Components::Icons::Person.new,\n        delay: \"260ms\"\n      )\n      render Components::NavItem.new(\n        path: view_context.rodauth.webauthn_setup_path,\n        label: \"Add passkey\",\n        icon: Components::Icons::Key.new,\n        delay: \"300ms\"\n      )\n      if view_context.rodauth.webauthn_setup?\n        render Components::NavItem.new(\n          path: view_context.rodauth.webauthn_remove_path,\n          label: \"Manage passkeys\",\n          icon: Components::Icons::KeyRemove.new,\n          delay: \"340ms\"\n        )\n      end\n      render_logout_button\n    end\n\n    def render_logout_button\n      button_to(\n        view_context.rodauth.logout_path,\n        method: :post,\n        form: { class: \"w-full\" },\n        class: \"#{NAV_BASE} ha-rise w-full text-left\",\n        style: \"animation-delay: 380ms;\"\n      ) do\n        span(class: \"flex h-8 w-8 items-center justify-center rounded-xl bg-white/10\") do\n          render Components::Icons::SignOut.new\n        end\n        span(class: \"ha-nav-label\") { \"Sign out\" }\n      end\n    end\n\n    def render_logged_out_links\n      render Components::NavItem.new(\n        path: view_context.rodauth.login_path,\n        label: \"Sign in\",\n        icon: Components::Icons::SignIn.new,\n        delay: \"300ms\"\n      )\n      render Components::NavItem.new(\n        path: view_context.rodauth.create_account_path,\n        label: \"Create account\",\n        icon: Components::Icons::CreateAccount.new,\n        delay: \"340ms\"\n      )\n    end\n  end\nend\n","trip_card":"# frozen_string_literal: true\n\nmodule Components\n  class TripCard < Components::Base\n    include Phlex::Rails::Helpers::LinkTo\n    include Phlex::Rails::Helpers::DOMID\n\n    def initialize(trip:)\n      @trip = trip\n    end\n\n    def view_template\n      div(id: dom_id(@trip), class: \"ha-card p-6\") do\n        div(class: \"flex items-start justify-between gap-4\") do\n          div do\n            p(class: \"ha-overline\") { plain \"Trip\" }\n            p(class: \"mt-2 text-lg font-semibold \" \\\n                     \"text-[var(--ha-text)]\") do\n              plain @trip.name\n            end\n            render_dates if @trip.effective_start_date\n            render_description if @trip.description.present?\n          end\n          render Components::TripStateBadge.new(state: @trip.state)\n        end\n        render_actions\n      end\n    end\n\n    private\n\n    def render_dates\n      div(class: \"mt-2 text-xs text-[var(--ha-muted)]\") do\n        plain @trip.effective_start_date&.to_fs(:long)\n        plain \" — #{@trip.effective_end_date.to_fs(:long)}\" if @trip.effective_end_date\n      end\n    end\n\n    def render_description\n      p(class: \"mt-2 text-sm text-[var(--ha-muted)] \" \\\n               \"line-clamp-2\") do\n        plain @trip.description\n      end\n    end\n\n    def render_actions\n      div(class: \"ha-card-actions\") do\n        link_to(\"View\", view_context.trip_path(@trip),\n                class: \"ha-button ha-button-primary\")\n        if view_context.allowed_to?(:edit?, @trip)\n          link_to(\"Edit\", view_context.edit_trip_path(@trip),\n                  class: \"ha-button ha-button-secondary\")\n        end\n      end\n    end\n  end\nend\n","trip_state_badge":"# frozen_string_literal: true\n\nmodule Components\n  class TripStateBadge < Components::Base\n    STATE_COLORS = {\n      \"planning\" => \"bg-sky-100 text-sky-800 \" \\\n                    \"dark:bg-sky-500/10 dark:text-sky-300\",\n      \"started\" => \"bg-emerald-100 text-emerald-800 \" \\\n                   \"dark:bg-emerald-500/10 dark:text-emerald-300\",\n      \"cancelled\" => \"bg-red-100 text-red-800 \" \\\n                     \"dark:bg-red-500/10 dark:text-red-300\",\n      \"finished\" => \"bg-indigo-100 text-indigo-800 \" \\\n                    \"dark:bg-indigo-500/10 dark:text-indigo-300\",\n      \"archived\" => \"bg-zinc-100 text-zinc-800 \" \\\n                    \"dark:bg-zinc-500/10 dark:text-zinc-300\"\n    }.freeze\n\n    def initialize(state:)\n      @state = state.to_s\n    end\n\n    def view_template\n      css = STATE_COLORS[@state]\n      span(\n        class: \"rounded-full px-3 py-1 text-xs font-medium #{css}\"\n      ) do\n        plain @state.capitalize\n      end\n    end\n  end\nend\n"};
+const META = {"comment_card":{"component":"Components::CommentCard","file":"app/components/comment_card.rb","library_source":"application_ui/lists/feeds","library_variant":null,"description":"Comment card with author name, timestamp, body text, and inline delete button. Uses surface background with border, not ha-card.","design_tokens":[],"tailwind_classes":["rounded-xl, border, p-4","mt-3, gap-2","text-sm, text-xs, font-semibold","flex, items-center, justify-between","transition-colors, duration-150"]},"export_card":{"component":"Components::ExportCard","file":"app/components/export_card.rb","library_source":"application_ui/layout/cards","library_variant":null,"description":"Export card with format icon (MD/EP), overline, title, timestamp, requester (superadmin), status badge, and Download/Details action buttons.","design_tokens":["ha-card","ha-card-actions","ha-overline","ha-rise (entrance animation with staggered delay)","ha-button, ha-button-primary, ha-button-secondary"],"tailwind_classes":["p-6, mt-1, gap-3, gap-4","text-base, text-xs, font-semibold, font-mono, tracking-wider","rounded-2xl","flex, items-start, justify-between"]},"page_header":{"component":"Components::PageHeader","file":"app/components/page_header.rb","library_source":"application_ui/headings/page_headings","library_variant":null,"description":"Page header with section overline, title, optional subtitle, and block for action buttons.","design_tokens":["ha-overline"],"tailwind_classes":["text-2xl, font-semibold, text-sm","flex, flex-col, gap-4, sm:flex-row, sm:items-center, sm:justify-between"]},"sidebar":{"component":"Components::Sidebar","file":"app/components/sidebar.rb","library_source":"application_ui/navigation/sidebar_navigation","library_variant":null,"description":"Full-height sidebar with brand logo, main nav, quick actions, account section, theme toggle. Uses details/summary for collapse.","design_tokens":["ha-nav (custom flex column)","ha-nav-item (nav link styling)","ha-nav-label (collapsible label)","ha-rise (entrance animation)"],"tailwind_classes":["flex, h-screen, flex-shrink-0, flex-col, overflow-hidden","px-3, px-4, pb-3, pt-4, py-2.5","text-sm, text-base, font-medium, font-semibold","rounded-2xl, rounded-xl","bg-white/10, text-white/70"]},"trip_card":{"component":"Components::TripCard","file":"app/components/trip_card.rb","library_source":"application_ui/layout/cards","library_variant":null,"description":"Trip card with overline label, title, dates, description (line-clamp-2), state badge, and View/Edit action buttons.","design_tokens":["ha-card","ha-card-actions","ha-overline","ha-button, ha-button-primary, ha-button-secondary"],"tailwind_classes":["p-6, mt-2, gap-4","text-lg, text-xs, text-sm","font-semibold, line-clamp-2","flex, items-start, justify-between"]},"trip_state_badge":{"component":"Components::TripStateBadge","file":"app/components/trip_state_badge.rb","library_source":"application_ui/elements/badges","library_variant":"flat.html","description":"Rounded-full status badge with semantic colors per trip state (planning=sky, started=emerald, cancelled=red, finished=indigo, archived=zinc).","design_tokens":[],"tailwind_classes":["rounded-full, px-3, py-1, text-xs, font-medium","bg-sky-100, text-sky-800, dark:bg-sky-500/10, dark:text-sky-300","bg-emerald-100, bg-red-100, bg-indigo-100, bg-zinc-100"]}};
+
+const allFiles = Object.values(COMPONENTS).flat();
+const treeEl = document.getElementById('tree');
+const searchEl = document.getElementById('search');
+const countEl = document.getElementById('count');
+const welcomeEl = document.getElementById('welcome');
+const detailEl = document.getElementById('detail');
+const compNameEl = document.getElementById('comp-name');
+const compFileEl = document.getElementById('comp-file');
+const sourceCodeEl = document.getElementById('source-code');
+const viewSourceEl = document.getElementById('view-source');
+const viewMetaEl = document.getElementById('view-meta');
+const btnSource = document.getElementById('btn-source');
+const btnMeta = document.getElementById('btn-meta');
+
+countEl.textContent = allFiles.length + ' components';
+
+function humanize(s) {
+  return s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function buildTree(data, container) {
+  for (const [group, files] of Object.entries(data)) {
+    const header = document.createElement('div');
+    header.className = 'px-2 pt-3 pb-1 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider';
+    header.textContent = group + ' (' + files.length + ')';
+    container.appendChild(header);
+
+    for (const file of files) {
+      const link = document.createElement('a');
+      link.href = '#' + file;
+      link.className = 'nav-link block py-1.5 px-3 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 truncate';
+      link.textContent = humanize(file);
+      link.dataset.file = file;
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        loadComponent(file);
+        history.replaceState(null, '', '#' + file);
+      });
+      container.appendChild(link);
+    }
+  }
+}
+
+function loadComponent(file) {
+  const code = CONTENT[file];
+  const m = META[file];
+  if (!code || !m) return;
+
+  treeEl.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+  const active = treeEl.querySelector('[data-file="' + file + '"]');
+  if (active) { active.classList.add('active'); active.scrollIntoView({ block: 'nearest' }); }
+
+  compNameEl.textContent = m.component;
+  compFileEl.textContent = m.file;
+  sourceCodeEl.textContent = code;
+
+  document.getElementById('meta-desc').textContent = m.description || 'No description';
+  document.getElementById('meta-lib').textContent = m.library_source ? m.library_source + (m.library_variant ? '/' + m.library_variant : '') : 'Custom (no library source)';
+
+  const tokensEl = document.getElementById('meta-tokens');
+  tokensEl.innerHTML = '';
+  (m.design_tokens || []).forEach(t => {
+    const badge = document.createElement('span');
+    badge.className = 'token-badge bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300';
+    badge.textContent = t;
+    tokensEl.appendChild(badge);
+  });
+  if (!m.design_tokens || m.design_tokens.length === 0) {
+    tokensEl.innerHTML = '<span class="text-sm text-gray-400">None</span>';
+  }
+
+  const twEl = document.getElementById('meta-tw');
+  twEl.innerHTML = '';
+  (m.tailwind_classes || []).forEach(t => {
+    const badge = document.createElement('span');
+    badge.className = 'token-badge bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300';
+    badge.textContent = t;
+    twEl.appendChild(badge);
+  });
+
+  welcomeEl.classList.add('hidden');
+  detailEl.classList.remove('hidden');
+  showSource();
+}
+
+function showSource() {
+  viewSourceEl.classList.remove('hidden');
+  viewMetaEl.classList.add('hidden');
+  btnSource.className = 'px-3 py-1.5 text-sm font-medium rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300';
+  btnMeta.className = 'px-3 py-1.5 text-sm font-medium rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700';
+}
+
+function showMeta() {
+  viewSourceEl.classList.add('hidden');
+  viewMetaEl.classList.remove('hidden');
+  btnMeta.className = 'px-3 py-1.5 text-sm font-medium rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300';
+  btnSource.className = 'px-3 py-1.5 text-sm font-medium rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700';
+}
+
+btnSource.addEventListener('click', showSource);
+btnMeta.addEventListener('click', showMeta);
+
+searchEl.addEventListener('input', function() {
+  const q = searchEl.value.trim().toLowerCase();
+  treeEl.innerHTML = '';
+  if (!q) { buildTree(COMPONENTS, treeEl); countEl.textContent = allFiles.length + ' components'; return; }
+
+  const matches = allFiles.filter(f => f.replace(/_/g, ' ').toLowerCase().includes(q));
+  countEl.textContent = matches.length + ' of ' + allFiles.length;
+
+  if (matches.length === 0) { treeEl.innerHTML = '<p class="text-gray-400 px-2 py-4 text-center text-sm">No matches</p>'; return; }
+  const grouped = {};
+  for (const f of matches) {
+    for (const [g, files] of Object.entries(COMPONENTS)) {
+      if (files.includes(f)) { (grouped[g] = grouped[g] || []).push(f); break; }
+    }
+  }
+  buildTree(grouped, treeEl);
+});
+
+buildTree(COMPONENTS, treeEl);
+
+if (location.hash) { loadComponent(location.hash.slice(1)); }
+</script>
+</body>
+</html>
