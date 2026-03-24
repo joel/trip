@@ -29,7 +29,11 @@ RSpec.describe JournalEntries::AttachImages do
     end
   end
 
-  before { stub_download }
+  before do
+    stub_download
+    allow(Resolv).to receive(:getaddress)
+      .and_return("93.184.216.34")
+  end
 
   describe "#call" do
     before do
@@ -43,6 +47,26 @@ RSpec.describe JournalEntries::AttachImages do
 
       expect(result).to be_success
       expect(entry.images).to have_received(:attach).twice
+    end
+
+    it "does not attach if a later download fails" do
+      call_count = 0
+      allow(URI).to receive(:open) do
+        call_count += 1
+        raise Timeout::Error if call_count > 1
+
+        io = StringIO.new(File.binread(fixture_path))
+        io.define_singleton_method(:content_type) { "image/jpeg" }
+        io.define_singleton_method(:size) { 1024 }
+        io
+      end
+
+      result = described_class.new.call(
+        journal_entry: entry, urls: valid_urls
+      )
+
+      expect(result).to be_failure
+      expect(entry.images).not_to have_received(:attach)
     end
 
     it "emits journal_entry.images_added event" do
@@ -149,6 +173,56 @@ RSpec.describe JournalEntries::AttachImages do
         )
         expect(result).to be_failure
         expect(result.failure).to include("Cannot connect")
+      end
+    end
+
+    context "with SSRF protection" do
+      it "rejects localhost URLs" do
+        allow(Resolv).to receive(:getaddress)
+          .and_return("127.0.0.1")
+
+        result = described_class.new.call(
+          journal_entry: entry,
+          urls: ["https://localhost/secret"]
+        )
+        expect(result).to be_failure
+        expect(result.failure).to include("Blocked host")
+      end
+
+      it "rejects private network URLs" do
+        allow(Resolv).to receive(:getaddress)
+          .and_return("192.168.1.1")
+
+        result = described_class.new.call(
+          journal_entry: entry,
+          urls: ["https://internal.corp/img.jpg"]
+        )
+        expect(result).to be_failure
+        expect(result.failure).to include("Blocked host")
+      end
+
+      it "rejects cloud metadata endpoint" do
+        allow(Resolv).to receive(:getaddress)
+          .and_return("169.254.169.254")
+
+        result = described_class.new.call(
+          journal_entry: entry,
+          urls: ["https://metadata.internal/latest"]
+        )
+        expect(result).to be_failure
+        expect(result.failure).to include("Blocked host")
+      end
+
+      it "rejects unresolvable hosts" do
+        allow(Resolv).to receive(:getaddress)
+          .and_raise(Resolv::ResolvError)
+
+        result = described_class.new.call(
+          journal_entry: entry,
+          urls: ["https://doesnotexist.invalid/x"]
+        )
+        expect(result).to be_failure
+        expect(result.failure).to include("Cannot resolve")
       end
     end
 
