@@ -60,11 +60,13 @@ module Components
     end
 
     def render_edit_toggle
-      details(class: "mt-3") do
+      details(class: "mt-3",
+              data: { controller: "inline-edit" }) do
         summary(
           class: "text-xs text-[var(--ha-accent)] " \
                  "hover:text-[var(--ha-accent-strong)] " \
-                 "cursor-pointer list-none"
+                 "cursor-pointer " \
+                 "transition-colors duration-150"
         ) { "Edit" }
         render_edit_form
       end
@@ -76,8 +78,14 @@ module Components
           model: [@trip, @entry, @comment],
           class: "space-y-3"
         ) do |form|
+          form.label(
+            :body, "Edit comment",
+            class: "sr-only",
+            for: edit_field_id
+          )
           form.text_area(
             :body,
+            id: edit_field_id,
             rows: 3,
             class: "ha-input w-full text-sm"
           )
@@ -85,9 +93,24 @@ module Components
             form.submit "Save",
                         class: "ha-button ha-button-primary " \
                                "text-sm"
+            render_cancel_button
           end
         end
       end
+    end
+
+    def render_cancel_button
+      button(
+        type: "button",
+        data: {
+          action: "click->inline-edit#close"
+        },
+        class: "ha-button text-sm"
+      ) { "Cancel" }
+    end
+
+    def edit_field_id
+      "comment_body_#{@comment.id}"
     end
 
     def can_edit?
