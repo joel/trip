@@ -39,6 +39,9 @@ Rails.application.routes.draw do
       patch :transition
     end
   end
+  # MCP (Model Context Protocol) server endpoint
+  post "/mcp", to: "mcp#handle"
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
