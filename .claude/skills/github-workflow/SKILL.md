@@ -114,6 +114,8 @@ Branch naming: `feature/*` for features, `fix/*` for bugs, `docs/*` for document
 
 Write code, following project conventions. Use `mise x --` to prefix all Ruby commands.
 
+**For any UI work** (new views, components, forms, layouts, styling changes), use the `/ui-designer` skill. It provides access to the 657-component Tailwind CSS reference library and ensures consistency with the project design system. Always check the library before building new components from scratch.
+
 ### Step 6: Pre-Commit Validation
 
 Run these and ensure they all pass before committing:

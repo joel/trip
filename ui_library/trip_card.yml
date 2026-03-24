@@ -1,0 +1,15 @@
+component: Components::TripCard
+file: app/components/trip_card.rb
+library_source: application_ui/layout/cards
+library_variant: null
+description: Trip card with overline label, title, dates, description (line-clamp-2), state badge, and View/Edit action buttons.
+design_tokens:
+  - ha-card
+  - ha-card-actions
+  - ha-overline
+  - ha-button, ha-button-primary, ha-button-secondary
+tailwind_classes:
+  - p-6, mt-2, gap-4
+  - text-lg, text-xs, text-sm
+  - font-semibold, line-clamp-2
+  - flex, items-start, justify-between

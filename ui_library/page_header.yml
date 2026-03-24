@@ -1,0 +1,10 @@
+component: Components::PageHeader
+file: app/components/page_header.rb
+library_source: application_ui/headings/page_headings
+library_variant: null
+description: Page header with section overline, title, optional subtitle, and block for action buttons.
+design_tokens:
+  - ha-overline
+tailwind_classes:
+  - text-2xl, font-semibold, text-sm
+  - flex, flex-col, gap-4, sm:flex-row, sm:items-center, sm:justify-between

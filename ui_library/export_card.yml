@@ -1,0 +1,16 @@
+component: Components::ExportCard
+file: app/components/export_card.rb
+library_source: application_ui/layout/cards
+library_variant: null
+description: Export card with format icon (MD/EP), overline, title, timestamp, requester (superadmin), status badge, and Download/Details action buttons.
+design_tokens:
+  - ha-card
+  - ha-card-actions
+  - ha-overline
+  - ha-rise (entrance animation with staggered delay)
+  - ha-button, ha-button-primary, ha-button-secondary
+tailwind_classes:
+  - p-6, mt-1, gap-3, gap-4
+  - text-base, text-xs, font-semibold, font-mono, tracking-wider
+  - rounded-2xl
+  - flex, items-start, justify-between

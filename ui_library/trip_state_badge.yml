@@ -1,0 +1,10 @@
+component: Components::TripStateBadge
+file: app/components/trip_state_badge.rb
+library_source: application_ui/elements/badges
+library_variant: flat.html
+description: Rounded-full status badge with semantic colors per trip state (planning=sky, started=emerald, cancelled=red, finished=indigo, archived=zinc).
+design_tokens: []
+tailwind_classes:
+  - rounded-full, px-3, py-1, text-xs, font-medium
+  - bg-sky-100, text-sky-800, dark:bg-sky-500/10, dark:text-sky-300
+  - bg-emerald-100, bg-red-100, bg-indigo-100, bg-zinc-100
