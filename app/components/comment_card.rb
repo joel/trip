@@ -16,15 +16,13 @@ module Components
       div(id: dom_id(@comment),
           class: "rounded-xl border " \
                  "border-[var(--ha-border)] " \
-                 "bg-[var(--ha-surface)] p-5 " \
+                 "bg-[var(--ha-surface)] p-4 " \
                  "transition-colors duration-150 " \
                  "hover:bg-[var(--ha-surface-hover)]") do
         render_header
-        p(class: "mt-3 text-sm leading-relaxed " \
-                 "text-[var(--ha-text)]") do
+        p(class: "mt-3 text-sm text-[var(--ha-text)]") do
           plain @comment.body
         end
-        render_actions
       end
     end
 
@@ -57,10 +55,6 @@ module Components
                "hover:text-[var(--ha-danger-strong)]",
         form: { class: "inline-flex" }
       )
-    end
-
-    def render_actions
-      # Reserved for future inline actions (edit, reply)
     end
 
     def can_modify?
