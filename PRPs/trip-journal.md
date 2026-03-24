@@ -1411,7 +1411,7 @@ eval "$(rbenv init -)" && bundle exec rake project:system-tests
 
 ### Runtime Test (Before Push)
 
-Follow the `/runtime-test` skill:
+Follow the `/product-review` skill:
 
 ```bash
 bin/cli app rebuild

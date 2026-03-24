@@ -12,7 +12,7 @@ Fix one by one (commit) the comments
 Reply to the comments so we leave a clear trace
 Mark Comversation as resolved.
 
-Use the project skill /runtime-test and check that everything is working as expected.
+Use the project skill /product-review and check that everything is working as expected.
 
 # Phase 2: Access and Onboarding Flow
 
@@ -469,9 +469,9 @@ Phase 2 complete. Here's the summary:
 
 # Runtime Tests
 
-Use the project skill /runtime-test and check that everything is working as expected.
+Use the project skill /product-review and check that everything is working as expected.
 
-● Skill(runtime-test)
+● Skill(product-review)
   ⎿  Successfully loaded skill
 
 ● Step 1: Rebuild and Restart
@@ -560,7 +560,7 @@ Use the project skill /runtime-test and check that everything is working as expe
      Run 'bin/rails runner -h' for help.
 
      /usr/local/bundle/ruby/4.0.0/gems/railties-8.1.2/lib/rails/commands/runner/runner_command.rb:49: syntax errors found
-     > 49 | admin = User.find_by\!(email: "admin@tripjournal.app"); inv = Invitation.create\!(inviter: admin, email: "runtime-test-p2@example.com", expires_at: 7.days.from_now); puts
+     > 49 | admin = User.find_by\!(email: "admin@tripjournal.app"); inv = Invitation.create\!(inviter: admin, email: "product-review-p2@example.com", expires_at: 7.days.from_now); puts
      "TOKEN=#{inv.token}"
           |                     ^ unexpected backslash, ignoring it
           |                        ^~~~~~ unexpected label, ignoring it
@@ -605,7 +605,7 @@ Use the project skill /runtime-test and check that everything is working as expe
      - link "Sign in" [ref=e3]
      … +3 lines (ctrl+o to expand)
 
-● Bash(agent-browser fill @e5 "runtime-test-p2@example.com" && agent-browser click @e6 && agent-browser wait --load networkidle && agent-browser screenshot /tmp/rt-aft…)
+● Bash(agent-browser fill @e5 "product-review-p2@example.com" && agent-browser click @e6 && agent-browser wait --load networkidle && agent-browser screenshot /tmp/rt-aft…)
   ⎿  PreToolUse:Bash hook error
   ⎿  ✓ Done
      ✓ Done
@@ -680,7 +680,7 @@ Use the project skill /runtime-test and check that everything is working as expe
      ✓ Done
      … +6 lines (ctrl+o to expand)
 
-● Bash(agent-browser fill @e5 "runtime-test-p2b@example.com" && agent-browser click @e6 && agent-browser wait --load networkidle && agent-browser screenshot /tmp/rt-af…)
+● Bash(agent-browser fill @e5 "product-review-p2b@example.com" && agent-browser click @e6 && agent-browser wait --load networkidle && agent-browser screenshot /tmp/rt-af…)
   ⎿  PreToolUse:Bash hook error
   ⎿  ✓ Done
      ✓ Done
@@ -710,8 +710,8 @@ Use the project skill /runtime-test and check that everything is working as expe
 
 ● Bash(curl -sk https://mail.workeverywhere.docker/messages 2>&1 | python3 -c "import json,sys; msgs=json.load(sys.stdin); [print(m['id'], m['subject'], m['recipients'…)
   ⎿  PreToolUse:Bash hook error
-  ⎿  1 New user signed up: [FILTERED] ['<joel@acme.org>', '<runtime-test@example.com>', '<admin@example.com>', '<admin@tripjournal.app>']
-     2 Verify Account ['<runtime-test-p2b@example.com>']
+  ⎿  1 New user signed up: [FILTERED] ['<joel@acme.org>', '<product-review@example.com>', '<admin@example.com>', '<admin@tripjournal.app>']
+     2 Verify Account ['<product-review-p2b@example.com>']
 
 ● Both emails sent: the signup notification to admins (message 1) and the verify account email to the new user (message 2).
 

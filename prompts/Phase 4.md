@@ -929,4 +929,4 @@ Phase 4 Complete
   Remaining:
 
   1. Kanban board update — needs gh auth refresh with project scope (interactive)
-  2. Runtime test — ready to run with /runtime-test
+  2. Runtime test — ready to run with /product-review

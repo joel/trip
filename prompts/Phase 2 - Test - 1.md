@@ -119,7 +119,7 @@ I am unable to log in with that account either.
 
 ● Bash(curl -sk https://mail.workeverywhere.docker/messages 2>&1 | python3 -c "import json,sys; msgs=json.load(sys.stdin); [print(m['id'], m['subject'], m['recipients'…)
   ⎿  PreToolUse:Bash hook error
-  ⎿  1 New access request from john.doe@acme.org ['<joel@acme.org>', '<runtime-test@example.com>', '<admin@example.com>', '<admin@tripjournal.app>']
+  ⎿  1 New access request from john.doe@acme.org ['<joel@acme.org>', '<product-review@example.com>', '<admin@example.com>', '<admin@tripjournal.app>']
 
 ● Admin notified. Step 2: Log in as admin and approve
 
@@ -180,7 +180,7 @@ I am unable to log in with that account either.
 
 ● Bash(curl -sk https://mail.workeverywhere.docker/messages 2>&1 | python3 -c "import json,sys; msgs=json.load(sys.stdin); [print(m['id'], m['subject'], m['recipients'…)
   ⎿  PreToolUse:Bash hook error
-  ⎿  1 New access request from john.doe@acme.org ['<joel@acme.org>', '<runtime-test@example.com>', '<admin@example.com>', '<admin@tripjournal.app>']
+  ⎿  1 New access request from john.doe@acme.org ['<joel@acme.org>', '<product-review@example.com>', '<admin@example.com>', '<admin@tripjournal.app>']
      2 Login Link ['<admin@tripjournal.app>']
      3 You've been invited to Trip Journal ['<john.doe@acme.org>']
 
@@ -221,7 +221,7 @@ I am unable to log in with that account either.
 ● Bash(curl -sk https://mail.workeverywhere.docker/messages 2>&1 | python3 -c "import json,sys; msgs=json.load(sys.stdin); [print(m['id'], m['subject'], m['recipients'…)
   ⎿  PreToolUse:Bash hook error
   ⎿  3 You've been invited to Trip Journal ['<john.doe@acme.org>']
-     4 New user signed up: [FILTERED] ['<joel@acme.org>', '<runtime-test@example.com>', '<admin@example.com>', '<admin@tripjournal.app>']
+     4 New user signed up: [FILTERED] ['<joel@acme.org>', '<product-review@example.com>', '<admin@example.com>', '<admin@tripjournal.app>']
      5 Verify Account ['<john.doe@acme.org>']
 
 ● Both emails sent — admin got signup notification (message 4), and john.doe got verify email (message 5). Let me verify the account.

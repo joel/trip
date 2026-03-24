@@ -31,5 +31,5 @@ PRP generated and saved to PRPs/trip-journal.md.
   - Complete data model (13 tables)
   - Full permission matrix
   - State machine definition
-  - Validation gates tied to existing project skills (/github-workflow, /runtime-test)
+  - Validation gates tied to existing project skills (/github-workflow, /product-review)
   - All external documentation URLs included

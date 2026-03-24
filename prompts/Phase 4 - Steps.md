@@ -246,7 +246,7 @@ Once authorized, move issue through: Backlog -> Ready -> In Progress -> In Revie
 
 ## Step 12: Runtime Test
 
-**Pending.** To be executed with `/runtime-test` skill after Kanban auth is resolved.
+**Pending.** To be executed with `/product-review` skill after Kanban auth is resolved.
 
 ---
 

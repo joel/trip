@@ -10,9 +10,9 @@ Follow these steps:
 Steps:
 - Read `PRPs/trip-journal.md`
 - Read CLAUDE.md
-- Use the project skill /github-workflow to execute the PLAN `prompts/Phase 6.md`
-- Write the Steps taken in `prompts/Phase X - Steps.md` for trail and audit
-- QA at runtime is everything works, use the project skill /runtime-test
+- Use the project skill /github-workflow to execute the PLAN `prompts/Phase 7.md`
+- Write the Steps taken in `prompts/Phase 7 - Steps.md` for trail and audit
+- QA at runtime is everything works, use the project skill /product-review
 
 Use the Task tool to spin up parallel sub-agents for review. Each agent must work independently and write its report to disk before exiting. Do not wait for one to finish before starting the next.
 
@@ -40,7 +40,7 @@ Fix one by one (commit) the comments
 Reply to the comments so we leave a clear trace
 Mark Comversation as resolved.
 
-Use the project skill /runtime-test and check that everything is working as expected.
+Use the project skill /product-review and check that everything is working as expected.
 
 # When finished
 
