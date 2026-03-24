@@ -21,7 +21,7 @@ module Components
                  "hover:bg-[var(--ha-surface-hover)]") do
         div(class: "flex-1") do
           render_header
-          p(class: "mt-1 text-sm text-[var(--ha-text)]") do
+          p(class: "mt-2 text-sm text-[var(--ha-text)]") do
             plain @comment.body
           end
         end

@@ -102,14 +102,14 @@ module Views
       end
 
       def render_comments
-        div(class: "space-y-4") do
+        div(class: "space-y-6") do
           h3(class: "text-lg font-semibold " \
                     "text-[var(--ha-text)]") do
             plain "Comments"
           end
 
           div(id: "comments_#{@entry.id}",
-              class: "space-y-4") do
+              class: "space-y-3") do
             comments = @entry.comments.chronological
                              .includes(:user)
             if comments.any?

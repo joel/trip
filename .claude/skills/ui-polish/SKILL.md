@@ -65,10 +65,25 @@ The arrangement of elements within and between components. Look for opportunitie
 - Is negative space used deliberately — either generous breathing room OR controlled density — rather than accidentally?
 - Do grid breaks or diagonal flows make sense here? (e.g., a staggered card layout instead of a strict 2x2 grid)
 
+**Internal spacing audit (critical — check every component):**
+- Does each card/component have consistent internal padding? The project convention is `p-6` for list-level cards, `p-4` for compact inline widgets.
+- Are section headings separated from their content? A heading directly touching the first card below it is a spacing bug. Use `mb-4` or `mb-6` between section heading rows and their content grids.
+- Are card action buttons (`ha-card-actions`) visually separated from content above? The CSS class provides `margin-top: 1.5rem` and a `border-top` — verify it's actually being used and not replaced with inline layout.
+- Inside cards, is there vertical breathing room between: overline → title → metadata → description → actions? Use `mt-1` for tight relationships (overline→title), `mt-2` for moderate (title→metadata), `mt-3` for loose (description→actions).
+- In comment/reaction/list areas, is `space-y-3` or `space-y-4` applied to the container? Comments with zero gap between cards look broken.
+- Are form elements (inputs, buttons) separated from their labels and from each other? `space-y-4` minimum for form field groups.
+
+**Cross-component spacing conventions:**
+- Page-level sections: `space-y-8` (standard for all views)
+- Within a card: content groups use `space-y-4`
+- Grid of cards: `gap-4` (standard)
+- Section heading + content below: heading row should have `mb-4` or `mb-6` before the content grid
+
 **What to avoid:**
 - Recommending chaos for its own sake — composition should serve readability
 - Overlapping that creates confusion about interactive boundaries
 - Density that overwhelms or whitespace that feels empty rather than intentional
+- Elements that visually "touch" — headings flush against cards, buttons flush against text, comments with no gap between them
 
 ### 2. Typography
 

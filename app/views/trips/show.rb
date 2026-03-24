@@ -139,7 +139,7 @@ module Views
       end
 
       def render_journal_entries
-        div(class: "space-y-4") do
+        div(class: "space-y-6") do
           div(class: "flex items-center justify-between") do
             h2(class: "text-xl font-semibold " \
                       "text-[var(--ha-text)]") do
