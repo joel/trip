@@ -38,7 +38,7 @@ RSpec.describe JournalEntryPolicy do
   end
 
   describe "#create?" do
-    it "allows superadmin" do
+    it "allows superadmin on writable trip" do
       expect(described_class.new(entry, user: admin)
         .apply(:create?)).to be(true)
     end
@@ -54,6 +54,24 @@ RSpec.describe JournalEntryPolicy do
         .apply(:create?)).to be(false)
     end
 
+    it "denies superadmin on finished trip" do
+      trip.update!(state: :finished)
+      expect(described_class.new(entry, user: admin)
+        .apply(:create?)).to be(false)
+    end
+
+    it "denies superadmin on cancelled trip" do
+      trip.update!(state: :cancelled)
+      expect(described_class.new(entry, user: admin)
+        .apply(:create?)).to be(false)
+    end
+
+    it "denies superadmin on archived trip" do
+      trip.update!(state: :archived)
+      expect(described_class.new(entry, user: admin)
+        .apply(:create?)).to be(false)
+    end
+
     it "denies viewer" do
       expect(described_class.new(entry, user: viewer_user)
         .apply(:create?)).to be(false)
@@ -61,7 +79,7 @@ RSpec.describe JournalEntryPolicy do
   end
 
   describe "#edit?" do
-    it "allows superadmin" do
+    it "allows superadmin on writable trip" do
       expect(described_class.new(entry, user: admin)
         .apply(:edit?)).to be(true)
     end
@@ -82,6 +100,12 @@ RSpec.describe JournalEntryPolicy do
         .apply(:edit?)).to be(false)
     end
 
+    it "denies superadmin on archived trip" do
+      trip.update!(state: :archived)
+      expect(described_class.new(entry, user: admin)
+        .apply(:edit?)).to be(false)
+    end
+
     it "denies viewer" do
       expect(described_class.new(entry, user: viewer_user)
         .apply(:edit?)).to be(false)
@@ -89,7 +113,7 @@ RSpec.describe JournalEntryPolicy do
   end
 
   describe "#destroy?" do
-    it "allows superadmin" do
+    it "allows superadmin on writable trip" do
       expect(described_class.new(entry, user: admin)
         .apply(:destroy?)).to be(true)
     end
@@ -107,6 +131,12 @@ RSpec.describe JournalEntryPolicy do
     it "denies author on finished trip" do
       trip.update!(state: :finished)
       expect(described_class.new(entry, user: author)
+        .apply(:destroy?)).to be(false)
+    end
+
+    it "denies superadmin on cancelled trip" do
+      trip.update!(state: :cancelled)
+      expect(described_class.new(entry, user: admin)
         .apply(:destroy?)).to be(false)
     end
   end
