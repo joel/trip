@@ -3,9 +3,9 @@
 class JournalEntrySubscriber
   def emit(event)
     case event[:name]
-    when "journal_entry.created"
+    when "journal_entry.created", "journal_entry.images_added"
       Rails.logger.info(
-        "Journal entry created: " \
+        "#{event[:name]}: " \
         "#{event[:payload][:journal_entry_id]}"
       )
       ProcessJournalImagesJob.perform_later(
