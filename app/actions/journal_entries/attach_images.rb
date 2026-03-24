@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require "open-uri"
+require "resolv"
+require "ipaddr"
 
 module JournalEntries
   class AttachImages < BaseAction
@@ -13,11 +15,22 @@ module JournalEntries
     OPEN_TIMEOUT = 5
     READ_TIMEOUT = 15
 
+    BLOCKED_NETWORKS = [
+      IPAddr.new("127.0.0.0/8"),
+      IPAddr.new("10.0.0.0/8"),
+      IPAddr.new("172.16.0.0/12"),
+      IPAddr.new("192.168.0.0/16"),
+      IPAddr.new("169.254.0.0/16"),
+      IPAddr.new("::1/128"),
+      IPAddr.new("fc00::/7")
+    ].freeze
+
     def call(journal_entry:, urls:)
       yield validate_urls(urls)
       yield validate_image_count(journal_entry, urls)
-      count = yield download_and_attach(journal_entry, urls)
-      yield emit_event(journal_entry, count)
+      staged = yield download_all(urls)
+      yield attach_all(journal_entry, staged)
+      yield emit_event(journal_entry, staged.size)
       Success(journal_entry)
     end
 
@@ -35,46 +48,64 @@ module JournalEntries
 
       urls.each do |url|
         uri = URI.parse(url)
-        unless uri.scheme == "https"
-          return Failure(
-            "Only HTTPS URLs are allowed: #{url}"
-          )
-        end
+        return Failure("Only HTTPS URLs are allowed: #{url}") unless uri.scheme == "https"
+
+        validate_host!(uri)
       rescue URI::InvalidURIError
         return Failure("Invalid URL: #{url}")
+      rescue DownloadError => e
+        return Failure(e.message)
       end
 
       Success()
+    end
+
+    def validate_host!(uri)
+      ip = Resolv.getaddress(uri.host)
+      addr = IPAddr.new(ip)
+      return unless BLOCKED_NETWORKS.any? { |net| net.include?(addr) }
+
+      raise DownloadError,
+            "Blocked host (internal network): #{uri.host}"
+    rescue Resolv::ResolvError
+      raise DownloadError,
+            "Cannot resolve host: #{uri.host}"
     end
 
     def validate_image_count(journal_entry, urls)
       current = journal_entry.images.count
       if current + urls.size > MAX_IMAGES_PER_ENTRY
         return Failure(
-          "Would exceed maximum of #{MAX_IMAGES_PER_ENTRY} " \
-          "images (current: #{current}, adding: #{urls.size})"
+          "Would exceed maximum of " \
+          "#{MAX_IMAGES_PER_ENTRY} images " \
+          "(current: #{current}, adding: #{urls.size})"
         )
       end
 
       Success()
     end
 
-    def download_and_attach(journal_entry, urls)
-      count = 0
-      urls.each do |url|
+    def download_all(urls)
+      staged = urls.each_with_index.map do |url, idx|
         io = download(url)
         validate_content_type!(io, url)
         validate_file_size!(io, url)
-        journal_entry.images.attach(
+        {
           io: io,
-          filename: derive_filename(url, count),
+          filename: derive_filename(url, idx),
           content_type: io.content_type
-        )
-        count += 1
+        }
       end
-      Success(count)
+      Success(staged)
     rescue DownloadError => e
       Failure(e.message)
+    end
+
+    def attach_all(journal_entry, staged)
+      staged.each do |attachment|
+        journal_entry.images.attach(attachment)
+      end
+      Success()
     end
 
     def download(url)
@@ -96,16 +127,17 @@ module JournalEntries
       return if ALLOWED_CONTENT_TYPES.include?(io.content_type)
 
       raise DownloadError,
-            "Invalid content type \"#{io.content_type}\" " \
-            "for #{url}. Allowed: #{ALLOWED_CONTENT_TYPES.join(", ")}"
+            "Invalid content type " \
+            "\"#{io.content_type}\" for #{url}. " \
+            "Allowed: #{ALLOWED_CONTENT_TYPES.join(", ")}"
     end
 
     def validate_file_size!(io, url)
       return if io.size <= MAX_FILE_SIZE
 
       raise DownloadError,
-            "File too large (#{io.size} bytes) for #{url}. " \
-            "Maximum is #{MAX_FILE_SIZE} bytes"
+            "File too large (#{io.size} bytes) " \
+            "for #{url}. Maximum is #{MAX_FILE_SIZE} bytes"
     end
 
     def derive_filename(url, index)
