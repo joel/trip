@@ -121,6 +121,16 @@ RSpec.describe JournalEntries::UploadImages do
         expect(result.failure).to include("exceed maximum")
       end
 
+      it "rejects oversized encoded data before decoding" do
+        huge_b64 = "A" * (described_class::MAX_ENCODED_SIZE + 1)
+        result = described_class.new.call(
+          journal_entry: entry,
+          images: [{ data: huge_b64 }]
+        )
+        expect(result).to be_failure
+        expect(result.failure).to include("encoded size exceeds limit")
+      end
+
       it "rejects invalid base64 data" do
         result = described_class.new.call(
           journal_entry: entry,
