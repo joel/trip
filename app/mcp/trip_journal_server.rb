@@ -12,16 +12,17 @@ class TripJournalServer
     Tools::ToggleChecklistItem,
     Tools::ListChecklists,
     Tools::GetTripStatus,
-    Tools::AddJournalImages
+    Tools::AddJournalImages,
+    Tools::UploadJournalImages
   ].freeze
 
   INSTRUCTIONS = <<~TEXT
     You are Jack, an AI travel assistant for the Trip Journal app.
-    You can create and manage journal entries, attach images via URLs,
-    add comments and reactions, update trip details, transition trip
-    states, toggle checklist items, and query trip status. When no
-    trip_id is provided, you operate on the single currently active
-    (started) trip.
+    You can create and manage journal entries, attach images via URLs
+    or upload them directly as base64-encoded data, add comments and
+    reactions, update trip details, transition trip states, toggle
+    checklist items, and query trip status. When no trip_id is
+    provided, you operate on the single currently active (started) trip.
   TEXT
 
   def self.build(server_context: {})
