@@ -90,13 +90,15 @@
     transition: transform 150ms ease, box-shadow 150ms ease;
   }
 
-  .ha-card:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 26px 50px -30px rgba(15, 23, 42, 0.45);
-  }
+  @media (hover: hover) {
+    .ha-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 26px 50px -30px rgba(15, 23, 42, 0.45);
+    }
 
-  .dark .ha-card:hover {
-    box-shadow: 0 28px 55px -28px rgba(2, 6, 23, 0.85);
+    .dark .ha-card:hover {
+      box-shadow: 0 28px 55px -28px rgba(2, 6, 23, 0.85);
+    }
   }
 
   .ha-overline {
@@ -148,8 +150,10 @@
     transition: transform 150ms ease, box-shadow 150ms ease, background-color 150ms ease, color 150ms ease;
   }
 
-  .ha-button:hover {
-    transform: translateY(-1px);
+  @media (hover: hover) {
+    .ha-button:hover {
+      transform: translateY(-1px);
+    }
   }
 
   .ha-button:focus-visible {
