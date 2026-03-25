@@ -429,6 +429,188 @@ agent-browser eval "fetch('/manifest.json').then(r => r.json()).then(m => JSON.s
 
 Verify: `display` is `standalone`, `start_url` is `/`, `name` is set.
 
+## Step 16: MCP Server Verification (Mandatory)
+
+The app exposes 12 MCP tools at `POST /mcp`. The MCP server is stateless -- every request is independent, no initialize handshake required. Test it alongside the web UI.
+
+### MCP Connection
+
+```bash
+# Set the API key from .env.development
+MCP_KEY=$(grep MCP_API_KEY .env.development | cut -d= -f2)
+
+# Quick health check -- list all tools
+curl -s https://catalyst.workeverywhere.docker/mcp \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $MCP_KEY" \
+  -d '{"jsonrpc":"2.0","id":"1","method":"tools/list"}' \
+  | python3 -c "import json,sys; tools=json.load(sys.stdin)['result']['tools']; print(f'{len(tools)} tools'); [print(f'  - {t[\"name\"]}') for t in tools]"
+```
+
+Expected: 12 tools listed.
+
+### MCP Tool Tests
+
+Test each category of tool against the live Docker app:
+
+```bash
+# 1. Read operation -- get trip status (auto-resolves to started trip)
+curl -s https://catalyst.workeverywhere.docker/mcp \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $MCP_KEY" \
+  -d '{"jsonrpc":"2.0","id":"2","method":"tools/call","params":{"name":"get_trip_status","arguments":{}}}' \
+  | python3 -m json.tool
+
+# 2. Read operation -- list journal entries
+curl -s https://catalyst.workeverywhere.docker/mcp \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $MCP_KEY" \
+  -d '{"jsonrpc":"2.0","id":"3","method":"tools/call","params":{"name":"list_journal_entries","arguments":{"limit":3}}}' \
+  | python3 -m json.tool
+
+# 3. Write operation -- create a journal entry on the started trip
+curl -s https://catalyst.workeverywhere.docker/mcp \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $MCP_KEY" \
+  -d '{"jsonrpc":"2.0","id":"4","method":"tools/call","params":{"name":"create_journal_entry","arguments":{"name":"MCP Test Entry","entry_date":"2026-03-25","body":"<p>Created by product review.</p>","location_name":"Docker"}}}' \
+  | python3 -m json.tool
+
+# 4. Upload image -- use a real image (not a stub!)
+B64_IMG=$(curl -sL "https://picsum.photos/200/150.jpg" | base64 -w0)
+ENTRY_ID=<uuid-from-step-3>
+curl -s https://catalyst.workeverywhere.docker/mcp \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $MCP_KEY" \
+  -d "{\"jsonrpc\":\"2.0\",\"id\":\"5\",\"method\":\"tools/call\",\"params\":{\"name\":\"upload_journal_images\",\"arguments\":{\"journal_entry_id\":\"$ENTRY_ID\",\"images\":[{\"data\":\"$B64_IMG\",\"filename\":\"review_test.jpg\"}]}}}" \
+  | python3 -m json.tool
+
+# 5. Verify the uploaded image renders in the browser
+agent-browser open "https://catalyst.workeverywhere.docker/trips/$TRIP_ID/journal_entries/$ENTRY_ID" && agent-browser wait --load networkidle
+agent-browser eval "document.querySelectorAll('img[alt]').length"  # Count rendered images
+agent-browser screenshot /tmp/rt-mcp-entry.png
+
+# 6. State guard -- reject write on finished trip
+FINISHED_ENTRY_ID=$(docker exec catalyst-app-dev bin/rails runner "puts Trip.find_by(state: :finished).journal_entries.first.id" 2>&1 | tail -1)
+curl -s https://catalyst.workeverywhere.docker/mcp \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $MCP_KEY" \
+  -d "{\"jsonrpc\":\"2.0\",\"id\":\"6\",\"method\":\"tools/call\",\"params\":{\"name\":\"upload_journal_images\",\"arguments\":{\"journal_entry_id\":\"$FINISHED_ENTRY_ID\",\"images\":[{\"data\":\"$B64_IMG\"}]}}}" \
+  | python3 -m json.tool
+# Expected: isError: true, "not writable"
+
+# 7. Auth guard -- reject without API key
+curl -s -w "\nHTTP: %{http_code}\n" https://catalyst.workeverywhere.docker/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":"7","method":"tools/list"}'
+# Expected: HTTP 401
+```
+
+### MCP Verification Criteria
+
+- All 12 tools listed
+- Read tools return correct data matching seed data
+- Write tools create records visible in the web UI
+- Uploaded images render in the browser (not broken/stub)
+- State guards reject writes on non-writable trips
+- Auth rejects requests without valid API key
+- Invalid tool name returns JSON-RPC "Method not found"
+
+## Step 17: Mobile Viewport Verification (Mandatory)
+
+The app is a PWA used on mobile devices. Buttons and links that work on desktop may fail on mobile due to touch targets, overflow, or viewport issues. **Test at mobile width for every interactive element.**
+
+### Mobile Setup
+
+```bash
+# Set mobile viewport (iPhone 14 Pro dimensions)
+agent-browser eval "
+  Object.defineProperty(navigator, 'userAgent', {value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)'});
+"
+agent-browser viewport 393 852
+```
+
+### Mobile Page Tests
+
+Test every page at mobile width. Look for:
+- **Buttons/links cut off or overlapping** -- tap targets must be >= 44x44px
+- **Horizontal scrolling** -- no content should overflow the viewport
+- **Sidebar behavior** -- must collapse to hamburger/overlay, not push content off-screen
+- **Forms** -- inputs must be full-width, labels visible, submit buttons reachable
+- **Cards** -- must stack vertically, not overlap
+
+```bash
+# Home page (logged out)
+agent-browser open https://catalyst.workeverywhere.docker/ && agent-browser wait --load networkidle
+agent-browser screenshot /tmp/rt-mobile-home.png
+
+# Login page
+agent-browser open https://catalyst.workeverywhere.docker/login && agent-browser wait --load networkidle
+agent-browser screenshot /tmp/rt-mobile-login.png
+
+# After login -- trips index
+agent-browser screenshot /tmp/rt-mobile-trips.png
+
+# Trip show
+agent-browser screenshot /tmp/rt-mobile-trip-show.png
+
+# Journal entry (images, comments, reactions)
+agent-browser screenshot /tmp/rt-mobile-entry.png
+
+# Scroll to comments and reaction buttons
+agent-browser eval "window.scrollTo(0, document.body.scrollHeight)" && sleep 1
+agent-browser screenshot /tmp/rt-mobile-entry-bottom.png
+```
+
+### Mobile Button Tests (Critical)
+
+Every button must be tappable at mobile width. Test these explicitly:
+
+```bash
+# 1. Sidebar toggle (hamburger menu)
+agent-browser snapshot -i  # Find hamburger/menu button
+agent-browser click @eN  # Tap hamburger
+agent-browser screenshot /tmp/rt-mobile-sidebar.png
+
+# 2. Navigation links in mobile sidebar
+# Tap each nav item and verify navigation works
+
+# 3. Sign in button on home page
+# Must be visible and tappable without scrolling
+
+# 4. Reaction emoji buttons
+# Must be tappable (not too small, not overlapping)
+
+# 5. Comment form submit
+# Textarea and Post button must be usable
+
+# 6. Checklist toggle checkboxes
+# Must be tappable at mobile width
+
+# 7. Dark mode toggle
+# Must be accessible in mobile sidebar/header
+```
+
+### Mobile-Specific Defects to Watch For
+
+| Symptom | Likely Cause | Fix |
+|---------|-------------|-----|
+| Button doesn't respond to tap | Touch target too small (< 44px), or overlapping element intercepts tap | Add `min-h-[44px] min-w-[44px]` or fix z-index |
+| Link works on desktop, not mobile | `hover:` styles hiding the clickable area, or `pointer-events-none` on a parent | Use `@media (hover: hover)` for hover effects |
+| Horizontal scroll on mobile | Fixed-width element or `whitespace-nowrap` without `overflow-hidden` | Add `overflow-hidden` or `max-w-full` |
+| Sidebar pushes content off-screen | Sidebar not using `fixed`/`absolute` positioning on mobile | Use responsive `lg:` breakpoint for sidebar layout |
+| Form input zooms on iOS | Font size < 16px on input | Set `text-base` (16px) on form inputs |
+
+### Viewport Overflow Check
+
+After loading each page at mobile width, run:
+
+```bash
+# Check for horizontal overflow
+agent-browser eval "document.documentElement.scrollWidth > document.documentElement.clientWidth ? 'OVERFLOW: ' + document.documentElement.scrollWidth + ' > ' + document.documentElement.clientWidth : 'OK: no overflow'"
+```
+
+**Any overflow is a defect.**
+
 ## Checklist
 
 Report results using this checklist:
@@ -436,9 +618,12 @@ Report results using this checklist:
 ```
 ## Product Review Results
 
+### Infrastructure
 - [ ] App rebuild succeeds
 - [ ] App restart health check passes
 - [ ] Mail service running
+
+### Desktop Pages
 - [ ] Home page (logged out) renders correctly
 - [ ] Login via email auth works (joel@acme.org)
 - [ ] Home page (logged in) renders correctly
@@ -454,13 +639,40 @@ Report results using this checklist:
 - [ ] Dark mode toggle works
 - [ ] No runtime errors on any page
 - [ ] No Bullet N+1 alerts on any page
+
+### User Journeys
 - [ ] Access request → approval → invitation email journey works
-- [ ] PWA: Reaction button works (toggles emoji count)
-- [ ] PWA: Comment Post button works (appends via Turbo Stream)
-- [ ] PWA: Comment Delete button works (removes via Turbo Stream)
-- [ ] PWA: Comment Edit works (inline form, saves via Turbo Stream)
-- [ ] PWA: Checklist toggle works
-- [ ] PWA: Sign out button works
-- [ ] PWA: Service worker skips non-GET requests
-- [ ] PWA: No stale caches blocking functionality
+
+### MCP Server
+- [ ] MCP tools/list returns 12 tools
+- [ ] MCP get_trip_status returns correct data
+- [ ] MCP create_journal_entry creates entry visible in web UI
+- [ ] MCP upload_journal_images attaches image that renders in browser
+- [ ] MCP state guards reject writes on non-writable trips
+- [ ] MCP rejects unauthenticated requests (401)
+
+### PWA & Buttons (Desktop)
+- [ ] Reaction button works (toggles emoji count)
+- [ ] Comment Post button works (appends via Turbo Stream)
+- [ ] Comment Delete button works (removes via Turbo Stream)
+- [ ] Comment Edit works (inline form, saves via Turbo Stream)
+- [ ] Checklist toggle works
+- [ ] Sign out button works
+- [ ] Service worker skips non-GET requests
+- [ ] No stale caches blocking functionality
+
+### Mobile (393x852 viewport)
+- [ ] No horizontal overflow on any page
+- [ ] Sidebar collapses and hamburger menu works
+- [ ] Home page buttons tappable (Sign in, Request Access)
+- [ ] Login form usable (input visible, submit tappable)
+- [ ] Trips index cards stack properly
+- [ ] Trip show buttons tappable (Edit, Members, etc.)
+- [ ] Journal entry images scale to viewport
+- [ ] Reaction buttons tappable (>= 44px touch target)
+- [ ] Comment form usable (textarea + Post button)
+- [ ] Checklist toggles tappable
+- [ ] Dark mode toggle accessible on mobile
+- [ ] Navigation links work from mobile sidebar
+- [ ] Sign out works on mobile
 ```
