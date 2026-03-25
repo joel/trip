@@ -5,7 +5,7 @@ module Components
     def view_template
       div(
         data: { controller: "pwa" },
-        class: "fixed bottom-6 left-6 right-6 z-50 sm:left-auto"
+        class: "pointer-events-none fixed bottom-6 left-6 right-6 z-50 sm:left-auto"
       ) do
         div(
           data: { pwa_target: "banner" },

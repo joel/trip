@@ -59,7 +59,8 @@ export default class extends Controller {
 
     this.bannerTarget.classList.remove("opacity-0", "translate-y-4",
       "pointer-events-none")
-    this.bannerTarget.classList.add("opacity-100", "translate-y-0")
+    this.bannerTarget.classList.add("opacity-100", "translate-y-0",
+      "pointer-events-auto")
   }
 
   hideBanner() {
@@ -67,7 +68,8 @@ export default class extends Controller {
 
     this.bannerTarget.classList.add("opacity-0", "translate-y-4",
       "pointer-events-none")
-    this.bannerTarget.classList.remove("opacity-100", "translate-y-0")
+    this.bannerTarget.classList.remove("opacity-100", "translate-y-0",
+      "pointer-events-auto")
   }
 
   showIosInstructions() {
