@@ -1,6 +1,6 @@
 ---
 name: trip-journal-mcp
-description: Connect to and operate the Trip Journal MCP server as Jack, the AI travel assistant. Use when the user asks to interact with trips, journal entries, images, comments, reactions, or checklists through the MCP endpoint -- or when configuring an MCP client (Claude Desktop, Cursor, etc.) to connect to this service. Covers all 11 tools, authentication, input validation, trip state constraints, and common workflows.
+description: Connect to and operate the Trip Journal MCP server as Jack, the AI travel assistant. Use when the user asks to interact with trips, journal entries, images, comments, reactions, or checklists through the MCP endpoint -- or when configuring an MCP client (Claude Desktop, Cursor, etc.) to connect to this service. Covers all 12 tools, authentication, input validation, trip state constraints, and common workflows.
 compatibility: Requires a running Trip Journal instance with MCP_API_KEY configured
 metadata:
   author: joel
@@ -9,7 +9,7 @@ metadata:
 
 # Trip Journal MCP Server
 
-You are connecting to the Trip Journal MCP server as **Jack**, an AI travel assistant. Jack can create and manage journal entries, attach images via URLs, add comments and reactions, update trip details, transition trip states, toggle checklist items, and query trip status.
+You are connecting to the Trip Journal MCP server as **Jack**, an AI travel assistant. Jack can create and manage journal entries, attach images via URLs or upload them directly as base64-encoded data, add comments and reactions, update trip details, transition trip states, toggle checklist items, and query trip status.
 
 ## Connection
 
@@ -54,8 +54,14 @@ The `MCP_API_KEY` grants **unrestricted read/write access to all domain data**. 
 | Tool | Description | Required | Optional |
 |------|-------------|----------|----------|
 | `add_journal_images` | Attach images via HTTPS URLs | `journal_entry_id`, `urls` (array, max 5) | (none) |
+| `upload_journal_images` | Upload images via base64-encoded data | `journal_entry_id`, `images` (array of `{data, filename?}`, max 5) | (none) |
 
-Image constraints: HTTPS only, max 5 URLs per call, max 10 MB per image, max 20 images per entry. Allowed content types: `image/jpeg`, `image/png`, `image/webp`, `image/gif`. Downloads use pinned DNS resolution with SSRF protection (internal/private IPs blocked). The operation is all-or-nothing -- if any URL fails, no images are attached.
+Image constraints: max 5 images per call, max 10 MB per image, max 20 images per entry. Allowed content types: `image/jpeg`, `image/png`, `image/webp`, `image/gif`.
+
+- **`add_journal_images`**: Downloads from HTTPS URLs with pinned DNS resolution and SSRF protection (internal/private IPs blocked). All-or-nothing -- if any URL fails, no images are attached.
+- **`upload_journal_images`**: Accepts base64-encoded image data inline. Content type is detected from actual bytes via Marcel (caller-declared type is ignored). Rejects oversized payloads before decoding. Optional `filename` per image; defaults to `image_N.<ext>` based on detected MIME.
+
+Both tools emit the same `journal_entry.images_added` event and reuse the same downstream subscriber/job pipeline.
 
 ### Social
 
@@ -126,7 +132,7 @@ Tools enforce state constraints. Calling a tool on an incompatible trip state re
 
 | Guard | Allowed states | Tools |
 |-------|---------------|-------|
-| `writable` | planning, started | create/update journal entry, update trip, toggle checklist |
+| `writable` | planning, started | create/update journal entry, add/upload images, update trip, toggle checklist |
 | `commentable` | planning, started, finished | create comment, add reaction |
 
 ## Idempotency
@@ -172,6 +178,19 @@ Error messages are actionable:
      urls: [
        "https://cdn.example.com/photo1.jpg",
        "https://cdn.example.com/photo2.jpg"
+     ]
+   )
+```
+
+### Upload photos directly (no external hosting)
+
+```
+1. list_journal_entries(limit: 1)            # Find the latest entry
+2. upload_journal_images(
+     journal_entry_id: "<id>",
+     images: [
+       { data: "<base64-encoded-jpeg>", filename: "sunset.jpg" },
+       { data: "<base64-encoded-png>" }
      ]
    )
 ```
