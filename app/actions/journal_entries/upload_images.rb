@@ -8,6 +8,7 @@ module JournalEntries
     MAX_IMAGES_PER_CALL = 5
     MAX_IMAGES_PER_ENTRY = 20
     MAX_FILE_SIZE = 10.megabytes
+    MAX_ENCODED_SIZE = (MAX_FILE_SIZE * 4 / 3) + 4
 
     MIME_TO_EXT = {
       "image/jpeg" => "jpg",
@@ -75,6 +76,12 @@ module JournalEntries
       data = img[:data]
       raise DecodeError, "Missing data for image #{index}" if data.blank?
 
+      if data.bytesize > MAX_ENCODED_SIZE
+        raise DecodeError,
+              "Image #{index} data too large " \
+              "(encoded size exceeds limit)"
+      end
+
       bytes = Base64.strict_decode64(data)
       content_type = validate_decoded!(bytes, index)
       filename = img[:filename].presence ||
@@ -111,8 +118,10 @@ module JournalEntries
     end
 
     def attach_all(journal_entry, staged)
-      staged.each do |attachment|
-        journal_entry.images.attach(attachment)
+      ActiveRecord::Base.transaction do
+        staged.each do |attachment|
+          journal_entry.images.attach(attachment)
+        end
       end
       Success()
     end
