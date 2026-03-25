@@ -113,7 +113,7 @@ When a PR receives code review comments:
 
 ## MCP API Key Scope
 
-The `MCP_API_KEY` environment variable controls access to the MCP endpoint (`POST /mcp`). A valid key grants **unrestricted read/write access to all domain data** through the 11 registered MCP tools (journal entries, images, comments, reactions, trips, checklists). All MCP actions are attributed to the **Jack** system actor (`jack@system.local`). This is by design — Jack is the AI travel assistant and needs full access to operate on behalf of the user.
+The `MCP_API_KEY` environment variable controls access to the MCP endpoint (`POST /mcp`). A valid key grants **unrestricted read/write access to all domain data** through the 12 registered MCP tools (journal entries, images, comments, reactions, trips, checklists). All MCP actions are attributed to the **Jack** system actor (`jack@system.local`). This is by design — Jack is the AI travel assistant and needs full access to operate on behalf of the user.
 
 ---
 
