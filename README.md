@@ -211,17 +211,19 @@ end
 The app exposes an [MCP](https://modelcontextprotocol.io) endpoint at `POST /mcp` that lets AI clients (Claude, Cursor, etc.) interact with the trip journal as **Jack**, the AI travel assistant.
 
 ```
-MCP Client  --POST /mcp-->  McpController  -->  TripJournalServer  -->  10 Tools  -->  Actions  -->  DB
+MCP Client  --POST /mcp-->  McpController  -->  TripJournalServer  -->  12 Tools  -->  Actions  -->  DB
               Bearer token     (auth + validate)    (JSON-RPC router)      (BaseTool)
 ```
 
-### 10 Tools
+### 12 Tools
 
 | Tool | Description |
 |------|-------------|
 | `create_journal_entry` | Create a journal entry for a trip |
 | `update_journal_entry` | Update an existing journal entry |
 | `list_journal_entries` | List entries with pagination (limit 1-100) |
+| `add_journal_images` | Attach images via HTTPS URLs (max 5/call, 10MB each) |
+| `upload_journal_images` | Upload images via base64-encoded data (max 5/call, 10MB each) |
 | `create_comment` | Add a comment to a journal entry |
 | `add_reaction` | Toggle an emoji reaction (thumbsup, heart, tada, eyes, fire, rocket) |
 | `update_trip` | Update a trip's name or description |
@@ -325,7 +327,7 @@ app/
   controllers/     # Thin controllers (delegate to actions)
   jobs/            # Background jobs (Solid Queue)
   mailers/         # Email delivery
-  mcp/             # MCP server + 10 tools (AI integration)
+  mcp/             # MCP server + 12 tools (AI integration)
     tools/         # Tool classes inheriting BaseTool
   models/          # ActiveRecord models
   policies/        # ActionPolicy authorization
