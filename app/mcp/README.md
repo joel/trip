@@ -25,7 +25,7 @@ The Model Context Protocol (MCP) server exposes trip journaling capabilities to 
        | validate_actor_type!
        | success_response / error_response
        v
-  11 MCP Tools  -->  Actions (Dry::Monads)  -->  ActiveRecord
+  12 MCP Tools  -->  Actions (Dry::Monads)  -->  ActiveRecord
 ```
 
 ## Endpoint
@@ -39,7 +39,7 @@ The Model Context Protocol (MCP) server exposes trip journaling capabilities to 
 
 ## API Key Scope
 
-The `MCP_API_KEY` grants **unrestricted read/write access to all domain data** through the 11 registered tools. All actions are attributed to the **Jack** system actor (`jack@system.local`). This is by design -- Jack is the AI travel assistant and needs full access to operate.
+The `MCP_API_KEY` grants **unrestricted read/write access to all domain data** through the 12 registered tools. All actions are attributed to the **Jack** system actor (`jack@system.local`). This is by design -- Jack is the AI travel assistant and needs full access to operate.
 
 Set the key in `.env.development`:
 
@@ -62,8 +62,9 @@ MCP_API_KEY=your-secret-key
 | Tool | Description | Required Params |
 |------|-------------|-----------------|
 | `add_journal_images` | Attach images via HTTPS URLs (max 5/call, 10MB each) | `journal_entry_id`, `urls` |
+| `upload_journal_images` | Upload images via base64-encoded data (max 5/call, 10MB each) | `journal_entry_id`, `images` |
 
-Allowed types: jpeg, png, webp, gif. Max 20 images per entry. Downloads use pinned DNS with SSRF protection. All-or-nothing: if any URL fails, no images are attached.
+Allowed types: jpeg, png, webp, gif. Max 20 images per entry. `add_journal_images` downloads from HTTPS URLs with pinned DNS and SSRF protection; all-or-nothing if any URL fails. `upload_journal_images` accepts base64-encoded data inline with optional filenames; content type is detected from bytes via Marcel (caller-declared type is ignored). Both emit the same `journal_entry.images_added` event.
 
 ### Social
 
@@ -108,7 +109,7 @@ Tools respect the trip state machine:
 
 | Guard | States allowed | Tools using it |
 |-------|---------------|----------------|
-| `require_writable!` | planning, started | create/update journal entries, add images, update trip, toggle checklist |
+| `require_writable!` | planning, started | create/update journal entries, add/upload images, update trip, toggle checklist |
 | `require_commentable!` | planning, started, finished | create comment, add reaction |
 
 ## Error Handling
@@ -137,6 +138,7 @@ app/mcp/
     list_checklists.rb
     get_trip_status.rb
     add_journal_images.rb
+    upload_journal_images.rb
 ```
 
 ## Testing
