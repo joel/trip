@@ -10,10 +10,10 @@ module Components
     def view_template
       nav(
         class: "ha-nav hidden md:flex h-screen flex-shrink-0 flex-col overflow-hidden " \
-               "rounded-r-[2rem] " \
-               "bg-[linear-gradient(180deg,var(--ha-panel),var(--ha-panel-strong))] " \
-               "text-[var(--ha-panel-text)] " \
-               "shadow-[0_20px_40px_-12px_rgba(11,18,32,0.5)]",
+               "rounded-r-[2rem] bg-white/80 backdrop-blur-xl " \
+               "text-[var(--ha-on-surface)] " \
+               "shadow-[0_20px_40px_-12px_rgba(11,18,32,0.5)] " \
+               "dark:bg-[var(--ha-surface)]/80 dark:backdrop-blur-[30px]",
         aria_label: "Main navigation"
       ) do
         render_user_profile
@@ -25,42 +25,41 @@ module Components
     private
 
     def render_user_profile
-      div(class: "px-4 pb-3 pt-5") do
+      div(class: "px-8 pb-3 pt-8") do
         if logged_in?
-          div(class: "flex items-center gap-3") do
+          div(class: "flex items-center gap-4") do
             render_avatar
             div do
-              p(class: "text-sm font-semibold text-white truncate") do
+              p(class: "text-xl font-bold tracking-tighter truncate") do
                 plain user_display_name
               end
-              p(class: "text-xs text-[var(--ha-panel-muted)] truncate") do
+              p(class: "text-xs text-[var(--ha-on-surface-variant)] truncate") do
                 plain user_role_label
               end
             end
           end
         else
-          div(class: "flex items-center gap-3") do
-            div(class: "flex h-10 w-10 items-center justify-center " \
-                       "rounded-2xl bg-white/10 text-lg font-semibold text-white") { "C" }
-            span(class: "text-base font-semibold tracking-tight " \
-                        "text-[var(--ha-panel-text)]") { "Catalyst" }
+          div(class: "flex items-center gap-4") do
+            div(class: "flex h-12 w-12 items-center justify-center " \
+                       "rounded-2xl ha-gradient-aura " \
+                       "text-2xl font-bold tracking-tighter text-white") { "C" }
+            span(class: "text-xl font-bold tracking-tighter") { "Catalyst" }
           end
         end
       end
     end
 
     def render_avatar
-      div(class: "flex h-10 w-10 items-center justify-center " \
-                 "rounded-2xl bg-[var(--ha-primary-container)]/20 " \
-                 "text-sm font-semibold text-[var(--ha-primary-container)]") do
+      div(class: "flex h-12 w-12 items-center justify-center " \
+                 "rounded-2xl ha-gradient-aura " \
+                 "text-sm font-bold text-white") do
         plain user_initials
       end
     end
 
     def render_main_nav
-      div(class: "flex-1 px-3 pt-4") do
-        nav_section_label("Main")
-        div(class: "space-y-1") do
+      div(class: "flex-1 px-4 pt-4") do
+        div(class: "space-y-2") do
           render Components::NavItem.new(
             path: view_context.root_path,
             label: "Overview",
@@ -107,46 +106,35 @@ module Components
     end
 
     def render_bottom_nav
-      div(class: "mt-auto px-3 pb-4 pt-6") do
-        div(class: "pt-4") do
-          nav_section_label("Quick Actions")
-          div(class: "space-y-1") do
-            if logged_in? && view_context.allowed_to?(:new?, User)
-              render Components::NavItem.new(
-                path: view_context.new_user_path, label: "New user",
-                icon: Components::Icons::Plus.new, delay: "200ms"
-              )
-            end
-            render_theme_toggle
-            render_account_section
+      div(class: "mt-auto px-4 pb-4 pt-6") do
+        div(class: "space-y-2") do
+          if logged_in? && view_context.allowed_to?(:new?, User)
+            render Components::NavItem.new(
+              path: view_context.new_user_path, label: "New user",
+              icon: Components::Icons::Plus.new, delay: "200ms"
+            )
           end
+          render_theme_toggle
+          render_account_section
         end
+        render_status_footer
       end
-    end
-
-    def nav_section_label(text)
-      p(class: "mb-3 px-2 text-[0.65rem] font-semibold uppercase " \
-               "tracking-[0.2em] text-[var(--ha-panel-muted)]") { text }
     end
 
     def render_theme_toggle
       button(
         type: "button",
-        class: "ha-nav-item ha-rise flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 " \
-               "text-sm font-medium text-[var(--ha-panel-muted)] transition hover:bg-white/10 " \
-               "hover:text-[var(--ha-panel-text)]",
+        class: "#{NAV_BASE} ha-rise w-full",
         style: "animation-delay: 240ms;",
         data: { action: "theme#toggle" },
         aria_label: "Toggle dark mode"
       ) do
-        span(class: "flex h-8 w-8 items-center justify-center rounded-xl bg-white/10") do
-          render Components::Icons::Sun.new(
-            css: "h-4 w-4", data: { theme_target: "iconLight" }
-          )
-          render Components::Icons::Moon.new(
-            css: "h-4 w-4 hidden", data: { theme_target: "iconDark" }
-          )
-        end
+        render Components::Icons::Sun.new(
+          css: "h-4 w-4", data: { theme_target: "iconLight" }
+        )
+        render Components::Icons::Moon.new(
+          css: "h-4 w-4 hidden", data: { theme_target: "iconDark" }
+        )
         span(class: "ha-nav-label", data: { theme_target: "label" }) do
           plain "Dark mode"
         end
@@ -154,9 +142,8 @@ module Components
     end
 
     def render_account_section
-      div(class: "mt-4 pt-4") do
-        nav_section_label("Account")
-        div(class: "space-y-1") do
+      div(class: "mt-2") do
+        div(class: "space-y-2") do
           if logged_in?
             render_logged_in_links
           else
@@ -198,9 +185,7 @@ module Components
         class: "#{NAV_BASE} ha-rise w-full text-left",
         style: "animation-delay: 380ms;"
       ) do
-        span(class: "flex h-8 w-8 items-center justify-center rounded-xl bg-white/10") do
-          render Components::Icons::SignOut.new
-        end
+        render Components::Icons::SignOut.new
         span(class: "ha-nav-label") { "Sign out" }
       end
     end
@@ -218,6 +203,23 @@ module Components
         icon: Components::Icons::CreateAccount.new,
         delay: "340ms"
       )
+    end
+
+    def render_status_footer
+      return unless logged_in?
+
+      div(class: "mt-4 pt-4") do
+        div(class: "rounded-2xl bg-[var(--ha-surface-low)] p-4") do
+          p(class: "text-[10px] font-bold uppercase tracking-widest " \
+                   "text-[var(--ha-on-surface-variant)] mb-1") do
+            plain "Status"
+          end
+          p(class: "text-sm font-medium") do
+            count = current_user&.trips&.count || 0
+            plain "#{count} Trip#{"s" if count != 1}"
+          end
+        end
+      end
     end
 
     def logged_in? = view_context.rodauth.logged_in?
