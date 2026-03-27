@@ -19,6 +19,7 @@ Steps:
 - QA at runtime is everything works, use the project skill /product-review, it is critical to use the agent-browser to verify that the integration and design proceed as expected. This is a highly visual re-design task that requires a visual check.
 
 
+# Team Agent Review
 
 Use the Task tool to spin up parallel sub-agents for review. Each agent must work independently and write its report to disk before exiting. Do not wait for one to finish before starting the next.
 
