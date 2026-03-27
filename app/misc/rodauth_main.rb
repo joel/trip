@@ -6,7 +6,7 @@ class RodauthMain < Rodauth::Rails::Auth
   unless BuildTasks.assets_precompile?
     configure do # rubocop:disable Metrics/BlockLength
       enable :create_account, :verify_account, :login, :logout,
-             :email_auth, :webauthn, :webauthn_login
+             :email_auth, :webauthn, :webauthn_login, :omniauth
 
       db Sequel.sqlite(extensions: :activerecord_connection, keep_reference: false)
 
@@ -16,6 +16,21 @@ class RodauthMain < Rodauth::Rails::Auth
       webauthn_keys_table :user_webauthn_keys
       webauthn_user_ids_table :user_webauthn_user_ids
       webauthn_keys_account_id_column :user_id
+
+      # OmniAuth (Google social login)
+      omniauth_identities_table :user_omniauth_identities
+      omniauth_identities_account_id_column :user_id
+
+      if ENV["GOOGLE_CLIENT_ID"].present?
+        omniauth_provider :google_oauth2,
+                          ENV["GOOGLE_CLIENT_ID"],
+                          ENV.fetch("GOOGLE_CLIENT_SECRET", nil),
+                          name: :google,
+                          scope: "email,profile"
+      end
+
+      omniauth_create_account? false
+      omniauth_verify_account? true
 
       rails_controller { RodauthController }
       title_instance_variable :@page_title
@@ -106,6 +121,16 @@ class RodauthMain < Rodauth::Rails::Auth
         return unless token
 
         ::Invitations::Accept.new.call(token: token, email: account[login_column])
+      end
+
+      # OmniAuth hooks
+      omniauth_login_failure_redirect { login_path }
+
+      before_omniauth_callback_route do
+        return if omniauth_email.blank?
+
+        user = ::User.find_by(id: account_id)
+        user&.update!(name: omniauth_name) if user&.name.blank? && omniauth_name.present?
       end
 
       logout_redirect "/"
