@@ -38,12 +38,14 @@ module Views
 
       def render_quick_actions
         section(class: "flex flex-wrap gap-3") do
-          link_to(
-            view_context.new_trip_path,
-            class: "ha-button ha-button-primary"
-          ) do
-            render Components::Icons::Plus.new(css: "h-5 w-5")
-            plain "New Trip"
+          if view_context.allowed_to?(:create?, Trip)
+            link_to(
+              view_context.new_trip_path,
+              class: "ha-button ha-button-primary"
+            ) do
+              render Components::Icons::Plus.new(css: "h-5 w-5")
+              plain "New Trip"
+            end
           end
           if active_trip
             link_to(
