@@ -8,6 +8,7 @@ class NotificationsController < ApplicationController
     authorize!(Notification)
     @notifications = current_user.notifications.recent
                                  .includes(:actor)
+                                 .limit(50)
     render Views::Notifications::Index.new(
       notifications: @notifications
     )
