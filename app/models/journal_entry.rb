@@ -8,6 +8,9 @@ class JournalEntry < ApplicationRecord
   has_many_attached :images
   has_many :comments, dependent: :destroy
   has_many :reactions, as: :reactable, dependent: :destroy
+  has_many :journal_entry_subscriptions, dependent: :destroy
+  has_many :subscribers, through: :journal_entry_subscriptions,
+                         source: :user
 
   validates :name, presence: true
   validates :entry_date, presence: true
