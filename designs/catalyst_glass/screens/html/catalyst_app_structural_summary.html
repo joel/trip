@@ -1,0 +1,62 @@
+# Catalyst (Trip Journal) - Structural Blueprint
+
+## Overview
+A modern trip journaling application featuring AI assistance, offline-ready PWA capabilities, and secure authentication via WebAuthn/Passkeys.
+
+## 1. Information Architecture & Primary Navigation
+The app uses a collapsible sidebar as its primary navigation anchor (4.5rem to 16rem).
+
+- **Home / Dashboard**: Overview of current trips, quick actions, and AI interactions.
+- **Trips (CRUD)**: The central hub for managing journey data.
+- **Journal Entries**: A global or trip-specific view of story content.
+- **Users (Admin)**: Management interface for user accounts and permissions.
+- **Account / Profile**: Personal settings and security management.
+
+---
+
+## 2. Core User Flows
+
+### A. Authentication & Onboarding (Rodauth + WebAuthn)
+- **Landing (Public)** -> Create Account -> Email Verification -> Dashboard.
+- **Login (Standard)** -> Password Input -> Dashboard.
+- **Login (Biometric)** -> Passkey/WebAuthn -> Dashboard.
+- **Invitation Flow** -> Invitation Link -> Pre-filled Signup -> Verified Access.
+
+### B. Trip & Journaling Lifecycle
+1. **Trips Index** -> New Trip -> **Trip Show** (The "Hub").
+2. **From Trip Show**:
+   - Manage Details (Edit/Delete).
+   - **Journaling**: New Entry -> Show Entry -> Add Images/Comments/Reactions.
+   - **Planning**: New Checklist -> Manage Items (Toggle/Add/Delete).
+   - **Collaboration**: Invite Users -> Manage Permissions.
+
+### C. Admin & Account Management
+- **User Directory**: View all users -> Edit/Delete/Manage Roles.
+- **Account Settings**: Update Profile -> Security (Passkeys/Password) -> Export Data.
+
+---
+
+## 3. Data Schema & Relationships
+
+- **User**: The root entity. Has many Trips and Exports.
+- **Trip**: BELONGS TO User. HAS MANY Journal Entries and Checklists.
+- **Journal Entry**: BELONGS TO Trip. HAS MANY Images, Comments, and Reactions.
+- **Checklist**: BELONGS TO Trip. HAS MANY Checklist Items.
+- **Comment/Reaction**: BELONGS TO Journal Entry and User.
+- **Export**: BELONGS TO User (EPUB/ZIP formats).
+
+---
+
+## 4. Shared UI & Interaction Patterns
+- **Flash Toasts**: Real-time feedback for all CRUD operations.
+- **Dark Mode**: System-aware with manual override (class-based).
+- **Collapsible Sidebar**: Adaptive layout (fixed overlay on mobile).
+- **PWA Install**: Persistent banner for app installation.
+- **Turbo/Stimulus**: seamless, SPA-like transitions without full page reloads.
+
+---
+
+## 5. AI Integration (Jack)
+- **Actor**: `jack@system.local`.
+- **Capability**: Full read/write access to domain entities via 12 specialized MCP tools.
+- **Interface**: Integrated into Dashboard and Entry views for contextual assistance.

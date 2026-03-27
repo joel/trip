@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "error": "#ba1a1a",
+              "inverse-primary": "#ffb4a3",
+              "inverse-on-surface": "#f7efec",
+              "primary-fixed-dim": "#ffb4a3",
+              "on-primary-container": "#120100",
+              "surface-container-low": "#faf2ef",
+              "on-tertiary-container": "#ffffff",
+              "surface-container-lowest": "#ffffff",
+              "on-tertiary": "#ffffff",
+              "surface-container-highest": "#e8e1de",
+              "on-surface-variant": "#56423d",
+              "tertiary-fixed": "#f9dec3",
+              "background": "#fff8f5",
+              "tertiary-fixed-dim": "#dcc2a9",
+              "surface-bright": "#fff8f5",
+              "on-tertiary-fixed": "#261909",
+              "on-tertiary-fixed-variant": "#554430",
+              "inverse-surface": "#33302e",
+              "secondary-fixed-dim": "#adcfb4",
+              "on-error": "#ffffff",
+              "on-surface": "#1e1b19",
+              "secondary": "#466550",
+              "surface": "#fff8f5",
+              "primary": "#a03f28",
+              "surface-tint": "#a03f29",
+              "surface-variant": "#e8e1de",
+              "primary-container": "#c0573e",
+              "on-secondary-container": "#4b6a54",
+              "primary-fixed": "#ffdad2",
+              "surface-container-high": "#eee7e4",
+              "error-container": "#ffdad6",
+              "on-secondary-fixed": "#022110",
+              "outline-variant": "#ddc0ba",
+              "secondary-container": "#c5e8cd",
+              "surface-container": "#f4ece9",
+              "on-secondary-fixed-variant": "#2f4d39",
+              "on-secondary": "#ffffff",
+              "surface-dim": "#e0d9d6",
+              "on-error-container": "#93000a",
+              "on-background": "#1e1b19",
+              "on-primary": "#ffffff",
+              "secondary-fixed": "#c8ebd0",
+              "outline": "#8a726c",
+              "on-primary-fixed": "#3d0700",
+              "on-primary-fixed-variant": "#812914",
+              "tertiary-container": "#88735d",
+              "tertiary": "#6e5b46"
+            },
+            fontFamily: {
+              "headline": ["Noto Serif"],
+              "body": ["Plus Jakarta Sans"],
+              "label": ["Plus Jakarta Sans"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(255, 248, 245, 0.8);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        .hero-gradient {
+            background: linear-gradient(to bottom, rgba(30, 27, 25, 0.2), rgba(30, 27, 25, 0.6));
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Top Navigation Anchor -->
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-6 py-4 w-full bg-white/80 dark:bg-stone-900/80 backdrop-blur-xl no-line tonal-shift bg-stone-50/50 dark:bg-stone-950/50">
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-stone-100/50 transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined text-stone-500" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-serif italic text-xl text-stone-900 dark:text-stone-50">Trip Journal</h1>
+</div>
+<button class="flex items-center justify-center w-10 h-10 rounded-full bg-surface-container-high/50 hover:bg-surface-container-highest transition-colors active:scale-95">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="edit">edit</span>
+</button>
+</header>
+<main class="relative min-h-screen pt-0 pb-24 md:pb-0 overflow-hidden">
+<!-- Full Screen Hero Immersive Content -->
+<div class="absolute inset-0 z-0">
+<img alt="Majestic Swiss Alps" class="w-full h-full object-cover" data-alt="cinematic wide angle shot of the swiss alps at sunrise with dramatic peaks covered in snow and soft morning mist in the valleys" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCulm-CbI0IkGAlMXW2yx_elx_AHU5xrz6jxMuHI5Go781usqwEkI0J4slzG2NOm641zpeOzNCnARXhOcyX7vd4OjE4V-BTwGqIx_hFwE7uqIX_np0V-5k1LiVtlUfIheh7VSFs-zvBdyuN9zTe7puGcjTsAbzYI2Y063a-yyaspj1fclfuyAcVYjn4skYGgkGFvvk2yXP9xVGzmf_Uc3pGfuLQjwvEPb5Cs2xXi8OR8so1KL0Nw0WcHrk9_vSFEjnWYa4GxO-gjLk"/>
+<div class="absolute inset-0 hero-gradient"></div>
+</div>
+<!-- Editorial Content Layout -->
+<div class="relative z-10 flex flex-col justify-end min-h-screen px-6 pb-32 md:pb-20 md:px-12 max-w-6xl mx-auto">
+<div class="max-w-2xl animate-fade-in">
+<!-- Location & Date Chips -->
+<div class="flex flex-wrap gap-3 mb-8">
+<span class="glass-panel px-4 py-1.5 rounded-full text-on-surface text-[11px] font-medium tracking-widest uppercase flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]" data-icon="location_on">location_on</span>
+                        Switzerland
+                    </span>
+<span class="glass-panel px-4 py-1.5 rounded-full text-on-surface text-[11px] font-medium tracking-widest uppercase flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]" data-icon="calendar_today">calendar_today</span>
+                        July 12-24, 2026
+                    </span>
+</div>
+<!-- Main Headline -->
+<h2 class="font-headline text-5xl md:text-7xl lg:text-8xl text-white mb-6 leading-[1.1] tracking-tight">
+                    Exploring the <span class="italic font-normal">Swiss Alps</span>
+</h2>
+<!-- Pull Quote / Summary -->
+<div class="relative pl-6 mb-12 border-l-2 border-primary-fixed">
+<p class="font-body text-white/90 text-lg md:text-xl leading-relaxed max-w-lg italic">
+                        "The mountains are calling and I must go. Discovering the quiet grandeur of the Matterhorn and the hidden lakes of Zermatt."
+                    </p>
+</div>
+<!-- Action Area -->
+<div class="flex flex-col sm:flex-row items-center gap-6">
+<button class="w-full sm:w-auto px-10 py-5 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-xl font-bold tracking-wide text-sm flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-transform">
+                        OPEN JOURNAL
+                        <span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+</button>
+<div class="flex items-center gap-4">
+<div class="flex -space-x-3">
+<img class="w-10 h-10 rounded-full border-2 border-white object-cover" data-alt="portrait of a man with sunglasses in travel attire" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARMQ-gZc8MFgx6Xtczh9CrIIyKAHALzMOrGgtMlqMVNjNh8ZmXpwnnqici-dDsn7nC-3f-_LTrb_wNHKD-ujXTRe4nLoOxbYESUNh0wMONz1i9dlxlR0yzAhsEFfCBcnPKJ1wZj1dChfhaqqjvREm1MIzEsPNIhBDtr0mWDn_eBlT12s3nZME-76CtYuHd6KinBhYAZmLIj_BhsFn45x3kba7rH-LURgs4n58gBcgg4IKamNpQnhb4BrONELnnKbe_pgwSmkFGt5g"/>
+<img class="w-10 h-10 rounded-full border-2 border-white object-cover" data-alt="portrait of a smiling woman with a sun hat" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB310ZTWNfNqhTIh_yJB30MHUPzWzE_ArUzpP4A27agUKBbc89Qdop70z4f-t38JEDgO5yCOLgD9-KVdzPcK9snMi6k5yUsx8VhJNL-QTIleuKD9BseWQytZM5Q82B3EYWQyWppfEB0Ovye9vSIxm01ZE-htvipDD7gtI7MZIm_qirXNLv8-Elmb_OMF3gqEZVy_g1V5IXkiTer8g5_8D3L8ScY_eeegjOsI4S_QosMf5zsuM73cRSM8jqb4XadYO3CbgYWMvTSSWg"/>
+<div class="w-10 h-10 rounded-full border-2 border-white bg-surface-container-highest flex items-center justify-center text-[10px] font-bold text-on-surface-variant">
+                                +2
+                            </div>
+</div>
+<span class="text-white/80 text-xs font-medium uppercase tracking-widest">Shared Trip</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Decorative Elements -->
+<div class="absolute top-1/2 right-12 -translate-y-1/2 hidden lg:flex flex-col gap-12 z-10">
+<div class="flex flex-col items-center gap-4">
+<span class="[writing-mode:vertical-lr] text-white/40 uppercase tracking-[0.5em] text-[10px] font-bold">Scroll Details</span>
+<div class="w-px h-24 bg-gradient-to-b from-white/40 to-transparent"></div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Shell (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-white/80 dark:bg-stone-900/80 backdrop-blur-xl rounded-t-3xl z-50 shadow-[0_-10px_40px_rgba(30,27,25,0.04)] no-line tonal-shift">
+<a class="flex flex-col items-center justify-center text-orange-700 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 rounded-xl px-3 py-1 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="auto_stories" style="font-variation-settings: 'FILL' 1;">auto_stories</span>
+<span class="font-sans text-[11px] font-medium tracking-wide uppercase mt-1">Feed</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 px-3 py-1 hover:text-stone-900 dark:hover:text-stone-100 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span class="font-sans text-[11px] font-medium tracking-wide uppercase mt-1">Search</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 px-3 py-1 hover:text-stone-900 dark:hover:text-stone-100 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="font-sans text-[11px] font-medium tracking-wide uppercase mt-1">New</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 px-3 py-1 hover:text-stone-900 dark:hover:text-stone-100 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-sans text-[11px] font-medium tracking-wide uppercase mt-1">Profile</span>
+</a>
+</nav>
+<!-- Map Context Hint (Floating Bento Component) -->
+<div class="fixed right-6 bottom-32 md:bottom-12 z-20 hidden sm:block">
+<div class="glass-panel p-4 rounded-2xl w-48 shadow-xl">
+<div class="aspect-square w-full rounded-xl overflow-hidden mb-3 bg-stone-200">
+<img alt="Map of Switzerland" class="w-full h-full object-cover" data-alt="stylized map showing swiss mountain topography with soft sepia and sage green tones" data-location="Switzerland" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxy5u6T93UvqHEY0o8dBoHef5UviiUuXFWzcRGMM7KcdrNonxtS9jYZ1FRRbaBpZzpClkQgdjDJfcDB3F8HT7I6Pg3d4xApHivh3Ryni0_1Mz3eHuCCmVM3Oz3NHJWGp-xvGf9qjaiJ2EtBOcnF7ZzWcPzkCoRJ5vUtr-vxJb2tpIXn-AhdPdqMC5MuWKrRzfAFRwXl2hDQIOkdlK0jg6c_nV6K-X97laVPCoYfriAHbfN0FYy0ctqYfnCHdl0sFewmC-jNgSWZlY"/>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">12 Locations</span>
+<span class="material-symbols-outlined text-primary text-sm" data-icon="map">map</span>
+</div>
+</div>
+</div>
+</body></html>

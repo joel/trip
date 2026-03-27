@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "error": "#ba1a1a",
+              "inverse-primary": "#ffb4a3",
+              "inverse-on-surface": "#f7efec",
+              "primary-fixed-dim": "#ffb4a3",
+              "on-primary-container": "#120100",
+              "surface-container-low": "#faf2ef",
+              "on-tertiary-container": "#ffffff",
+              "surface-container-lowest": "#ffffff",
+              "on-tertiary": "#ffffff",
+              "surface-container-highest": "#e8e1de",
+              "on-surface-variant": "#56423d",
+              "tertiary-fixed": "#f9dec3",
+              "background": "#fff8f5",
+              "tertiary-fixed-dim": "#dcc2a9",
+              "surface-bright": "#fff8f5",
+              "on-tertiary-fixed": "#261909",
+              "on-tertiary-fixed-variant": "#554430",
+              "inverse-surface": "#33302e",
+              "secondary-fixed-dim": "#adcfb4",
+              "on-error": "#ffffff",
+              "on-surface": "#1e1b19",
+              "secondary": "#466550",
+              "surface": "#fff8f5",
+              "primary": "#a03f28",
+              "surface-tint": "#a03f29",
+              "surface-variant": "#e8e1de",
+              "primary-container": "#c0573e",
+              "on-secondary-container": "#4b6a54",
+              "primary-fixed": "#ffdad2",
+              "surface-container-high": "#eee7e4",
+              "error-container": "#ffdad6",
+              "on-secondary-fixed": "#022110",
+              "outline-variant": "#ddc0ba",
+              "secondary-container": "#c5e8cd",
+              "surface-container": "#f4ece9",
+              "on-secondary-fixed-variant": "#2f4d39",
+              "on-secondary": "#ffffff",
+              "surface-dim": "#e0d9d6",
+              "on-error-container": "#93000a",
+              "on-background": "#1e1b19",
+              "on-primary": "#ffffff",
+              "secondary-fixed": "#c8ebd0",
+              "outline": "#8a726c",
+              "on-primary-fixed": "#3d0700",
+              "on-primary-fixed-variant": "#812914",
+              "tertiary-container": "#88735d",
+              "tertiary": "#6e5b46"
+            },
+            fontFamily: {
+              "headline": ["Noto Serif"],
+              "body": ["Plus Jakarta Sans"],
+              "label": ["Plus Jakarta Sans"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .serif-italic { font-style: italic; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body selection:bg-primary-fixed selection:text-on-primary-fixed min-h-screen">
+<!-- TopAppBar Shell (Transactional) -->
+<header class="fixed top-0 w-full z-50 bg-white/80 dark:bg-stone-900/80 backdrop-blur-xl flex items-center justify-between px-6 py-4 w-full">
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-stone-100/50 transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined text-stone-500" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-serif italic text-xl text-stone-900">Trip Journal</h1>
+</div>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-xl font-label font-semibold tracking-wide text-sm shadow-sm hover:opacity-90 active:scale-95 transition-all">
+            Save Entry
+        </button>
+</header>
+<main class="pt-24 pb-32 px-6 max-w-2xl mx-auto min-h-screen">
+<!-- Editorial Header Section -->
+<div class="mb-12">
+<input class="w-full bg-transparent border-none focus:ring-0 font-headline text-4xl md:text-5xl font-bold tracking-tight text-on-surface placeholder:text-surface-container-highest p-0" placeholder="Entry Title" type="text"/>
+<div class="mt-6 flex items-center gap-4">
+<div class="relative group">
+<input class="bg-surface-container-low text-on-surface-variant text-sm font-medium px-4 py-2 rounded-full border-none focus:ring-0 cursor-pointer hover:bg-surface-container-high transition-colors" type="date" value="2023-10-24"/>
+</div>
+<div class="h-px flex-grow bg-outline-variant/20"></div>
+<span class="text-xs uppercase tracking-widest text-outline font-bold">New Draft</span>
+</div>
+</div>
+<!-- Media Upload Section (Asymmetric Editorial Style) -->
+<section class="mb-12 grid grid-cols-12 gap-4">
+<div class="col-span-8 group relative overflow-hidden rounded-xl aspect-[4/3] bg-surface-container-low flex flex-col items-center justify-center cursor-pointer hover:bg-surface-container-high transition-all">
+<div class="text-center p-6">
+<span class="material-symbols-outlined text-4xl text-primary mb-2" data-icon="add_a_photo">add_a_photo</span>
+<p class="font-label font-bold text-sm text-on-surface-variant">Upload Photos</p>
+<p class="text-xs text-outline mt-1">Drag and drop or click to browse</p>
+</div>
+<img class="hidden absolute inset-0 w-full h-full object-cover" data-alt="Soft ethereal lighting over a messy desk with a vintage camera, open journal, and travel photos scattered in an artistic layout" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkV-Ip5QEi1i_yDt6ODTDBC_Ro4P1G_pzEzGslwjzj3eUtVyAPlp-uvujuNK0QjKc9wtbWC1_MMywM8eUvYUVtD9-GMCJqZJ_DZ0EaKDHHYI3-j3zF_Fjvq4jwglB2eTjcx7Wd4a2yzRCzgxBiSeNgcofHynG3Zhp7VrZjbQmu4fVczFCeTCFK46bsYBekcJflKKXroXEbWwT4XoVN0kH9VWsMApKU6_rxzZ3nAuWOT5fYDzffOaeG-ECiaqVP1sVqU93KyA8FrU0"/>
+</div>
+<div class="col-span-4 flex flex-col gap-4">
+<div class="flex-grow rounded-xl bg-surface-container-lowest border border-outline-variant/10 p-4 flex items-center justify-center">
+<span class="material-symbols-outlined text-surface-container-highest text-3xl" data-icon="landscape">landscape</span>
+</div>
+<div class="h-24 rounded-xl bg-secondary-container/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" data-icon="push_pin">push_pin</span>
+</div>
+</div>
+</section>
+<!-- Main Content Area -->
+<section class="relative">
+<textarea class="w-full min-h-[400px] bg-transparent border-none focus:ring-0 font-body text-lg leading-relaxed text-on-surface-variant placeholder:text-surface-container-highest p-0 resize-none" placeholder="Tell your story here..."></textarea>
+<!-- Memory Map Chips (Floating Tags) -->
+<div class="mt-8 flex flex-wrap gap-2">
+<div class="flex items-center gap-1.5 bg-secondary-container text-on-secondary-container px-4 py-2 rounded-full text-xs font-semibold shadow-sm cursor-pointer hover:brightness-95 transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span>
+                    Add Location
+                </div>
+<div class="flex items-center gap-1.5 bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-full text-xs font-semibold cursor-pointer hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="mood">mood</span>
+                    Mood
+                </div>
+<div class="flex items-center gap-1.5 bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-full text-xs font-semibold cursor-pointer hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="label">label</span>
+                    Tags
+                </div>
+</div>
+</section>
+</main>
+<!-- Fixed Formatting Toolbar -->
+<div class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+<div class="bg-stone-900/90 dark:bg-stone-50/90 backdrop-blur-md px-6 py-3 rounded-2xl flex items-center gap-6 shadow-[0_20px_40px_rgba(30,27,25,0.15)] border border-white/10">
+<button class="text-white dark:text-stone-900 hover:text-primary transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-xl" data-icon="format_bold">format_bold</span>
+</button>
+<button class="text-white dark:text-stone-900 hover:text-primary transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-xl" data-icon="format_italic">format_italic</span>
+</button>
+<div class="w-px h-6 bg-white/20 dark:bg-stone-900/20"></div>
+<button class="text-white dark:text-stone-900 hover:text-primary transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-xl" data-icon="format_list_bulleted">format_list_bulleted</span>
+</button>
+<button class="text-white dark:text-stone-900 hover:text-primary transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-xl" data-icon="format_quote">format_quote</span>
+</button>
+<div class="w-px h-6 bg-white/20 dark:bg-stone-900/20"></div>
+<button class="text-white dark:text-stone-900 hover:text-primary transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-xl" data-icon="link">link</span>
+</button>
+<button class="text-white dark:text-stone-900 hover:text-primary transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-xl" data-icon="text_fields">text_fields</span>
+</button>
+</div>
+</div>
+<!-- Background Decorative Element (Subtle Grain/Texture) -->
+<div class="fixed inset-0 pointer-events-none opacity-[0.03] mix-blend-multiply z-[-1]" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDG2NmBhukOL4YnqHjixNG22gS0-1Ukaq0Xm6xC6SonpcRzWCZOpAUHWnx4XkVas4S1j6zx-DuNjEiIZNXHDyrmiGreYul8PCfbPAqbhSKkoQOjGb83XGzeoGDw9Kn5iECtO5GCNy_LIV1HAkbUr4P259X-VGaMgtLN6bO1ICDhCMkntIGtpdKGD4xQEkjpxoY1D3lrpFmtzfyCO5S6_hJF4bq_G-MejQutGgIGllKMKQrc1fGo0cw7_zPQilNGBzLFJhFneF7ChB0')"></div>
+</body></html>

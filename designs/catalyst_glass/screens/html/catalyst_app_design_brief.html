@@ -1,0 +1,64 @@
+Catalyst — Trip Journal App Design Brief
+What it is
+A trip journaling web app where users plan trips, write journal entries with images, collaborate with others (memberships, invitations, access requests), manage checklists, and export journals. It also has an AI travel assistant ("Jack") via MCP.
+
+Tech Stack
+- Ruby on Rails 8.1 / Ruby 4.0.1
+- Phlex 2.0 for all views (no ERB) — component-based rendering
+- Tailwind CSS (standalone CLI, no Node) with class-based dark mode
+- Hotwire (Turbo + Stimulus) for interactivity
+- Rodauth for authentication (email/password + WebAuthn/passkeys)
+- PWA-ready (manifest, service worker, install banner)
+
+Design Language
+- Style: Modern, clean, slightly glassy/frosted aesthetic with subtle depth
+- Shape language: Very rounded — cards use 24px radius, inputs 16px, buttons are fully pill-shaped (999px)
+- Depth: Soft shadows with hover lift effects (translateY -1px), decorative blurred gradient blobs in backgrounds
+- Motion: Fade-in + rise animations (600ms ease-out), staggered delays, respects prefers-reduced-motion
+
+Typography
+- Primary font: Space Grotesk (400/500/600/700)
+- Monospace: JetBrains Mono (400/500)
+- Scale: h1 3xl-4xl, h2 2xl, h3 lg, body sm-base, small xs
+
+Color System (CSS custom properties, --ha-* prefix)
+- --ha-bg: #f1f5f9 / #0b1120
+- --ha-surface: #ffffff / #0f172a
+- --ha-text: #0f172a / #e2e8f0
+- --ha-muted: #64748b / #94a3b8
+- --ha-accent: #38bdf8 (sky blue)
+- --ha-accent-2: #34d399 / #22c55e (green)
+- --ha-danger: #f87171
+- --ha-panel: #0b1220 (sidebar, always dark)
+
+Layout Structure
+- body (flex, min-h-screen)
+- Sidebar: 4.5rem collapsed / 16rem expanded, dark background (--ha-panel)
+- Main: flex-1, max-w-5xl, px-6 py-8
+- Decorative blurred blobs in background
+
+Key Pages & Screens
+- Home/Dashboard
+- Auth (Login, Account creation)
+- Trips (Index grid, Show detail)
+- Journal Entries (Show, New/Edit rich text)
+- Checklists (Index, Show toggleable)
+- Exports, Users, Collaboration, Error pages
+
+Component Library
+- Cards (Trip, Journal, User, etc.)
+- Forms (Login, Trip, Comment, etc.)
+- Badges (TripState, ExportStatus)
+- Layout (Sidebar, PageHeader, FlashToasts)
+- Interactive (ReactionSummary, ChecklistItemRow)
+
+Badge Color Mapping
+- Planning: Sky blue
+- Started: Emerald green
+- Finished: Indigo
+- Cancelled: Red
+- Archived: Zinc/gray
+- Pending: Amber
+- Processing: Sky blue (pulse)
+- Completed: Emerald
+- Failed: Red

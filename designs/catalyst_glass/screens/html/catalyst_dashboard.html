@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Catalyst Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-primary": "#ffffff",
+                        "surface-dim": "#d2d9f4",
+                        "tertiary-fixed-dim": "#ffb960",
+                        "outline-variant": "#bdc8d1",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "primary-fixed-dim": "#7bd0ff",
+                        "surface": "#faf8ff",
+                        "tertiary-container": "#f1a02b",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed": "#ffddb8",
+                        "inverse-on-surface": "#eef0ff",
+                        "secondary-fixed": "#68fcbf",
+                        "surface-container-highest": "#dae2fd",
+                        "inverse-surface": "#283044",
+                        "on-surface-variant": "#3e484f",
+                        "on-surface": "#131b2e",
+                        "surface-bright": "#faf8ff",
+                        "error": "#ba1a1a",
+                        "tertiary": "#855300",
+                        "on-tertiary-fixed": "#2a1700",
+                        "surface-tint": "#00668a",
+                        "secondary-container": "#64f9bc",
+                        "primary": "#00668a",
+                        "secondary": "#006c4b",
+                        "primary-fixed": "#c4e7ff",
+                        "on-primary-fixed": "#001e2c",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-container": "#613b00",
+                        "on-primary-container": "#004965",
+                        "secondary-fixed-dim": "#45dfa4",
+                        "outline": "#6e7980",
+                        "surface-container-low": "#f2f3ff",
+                        "on-tertiary": "#ffffff",
+                        "on-background": "#131b2e",
+                        "surface-container": "#eaedff",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed-variant": "#005137",
+                        "background": "#faf8ff",
+                        "on-primary-fixed-variant": "#004c69",
+                        "error-container": "#ffdad6",
+                        "inverse-primary": "#7bd0ff",
+                        "surface-container-high": "#e2e7ff",
+                        "surface-variant": "#dae2fd",
+                        "on-secondary-container": "#00714e",
+                        "primary-container": "#38bdf8",
+                        "on-secondary-fixed": "#002114",
+                        "on-error-container": "#93000a"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #faf8ff;
+            color: #131b2e;
+        }
+        .headline-font { font-family: 'Space Grotesk', sans-serif; }
+        .tonal-sculpting {
+            background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(242,243,255,0.6) 100%);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen flex overflow-hidden">
+<!-- NavigationDrawer (Shared Component) -->
+<nav class="fixed inset-y-0 left-0 z-50 flex flex-col bg-[#0b1220] dark:bg-[#0b1220] rounded-r-[2rem] h-full w-72 shadow-[0_20px_40px_-12px_rgba(11,18,32,0.5)] font-['Space_Grotesk'] antialiased tracking-tight hidden md:flex">
+<div class="p-8">
+<div class="flex flex-col gap-1 mb-10">
+<span class="text-2xl font-bold text-white tracking-tighter">Catalyst</span>
+</div>
+<!-- Profile Header -->
+<div class="flex items-center gap-4 mb-8">
+<div class="w-12 h-12 rounded-2xl overflow-hidden bg-sky-500/20">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="close-up portrait of a friendly professional man with short dark hair and a warm smile against a neutral studio background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnXlYXZoZHi7XaWFHJbmJCuL_yYSBLGiLOzrONSYg2boR2BRnVxKTN-sPVF2b8CVHlf7L5w2gAPAIggOSsareoQNqarlnLDMNWqEW7iiA8vwRcESmwzT2fhsKESAXdpT0a1J159ZJKZu2StPwkKg4lj0sw788Ksn7Z7KqNihlZ05NuqB1rz1Vvbk7cDedVqiEAkDAUk0PXXqYVfY7CMK5iiqtthffeekgV2uWuBSL1f_rFx22KFEzbRQfBE6J4S-yUpJDVD5bEmT0"/>
+</div>
+<div class="flex flex-col">
+<span class="text-white font-bold text-lg leading-tight">Alex Rivers</span>
+<span class="text-slate-400 text-xs">Global Explorer</span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<!-- Journal - Active -->
+<a class="bg-sky-500/10 text-sky-400 rounded-2xl mx-2 px-4 py-3 flex items-center gap-3 transition-all duration-300 active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined" data-icon="edit_note">edit_note</span>
+<span class="font-medium">Journal</span>
+</a>
+<!-- Map -->
+<a class="text-slate-400 hover:text-white hover:bg-white/5 rounded-2xl mx-2 px-4 py-3 flex items-center gap-3 transition-all duration-300 active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span class="font-medium">Map</span>
+</a>
+<!-- Memories -->
+<a class="text-slate-400 hover:text-white hover:bg-white/5 rounded-2xl mx-2 px-4 py-3 flex items-center gap-3 transition-all duration-300 active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined" data-icon="photo_library">photo_library</span>
+<span class="font-medium">Memories</span>
+</a>
+<!-- Discover -->
+<a class="text-slate-400 hover:text-white hover:bg-white/5 rounded-2xl mx-2 px-4 py-3 flex items-center gap-3 transition-all duration-300 active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+<span class="font-medium">Discover</span>
+</a>
+</div>
+</div>
+<div class="mt-auto p-8">
+<a class="text-slate-400 hover:text-white hover:bg-white/5 rounded-2xl mx-2 px-4 py-3 flex items-center gap-3 transition-all duration-300 active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-medium">Settings</span>
+</a>
+<div class="mt-4 px-6 text-[10px] text-slate-500 uppercase tracking-widest font-bold">
+                128 Entries
+            </div>
+</div>
+</nav>
+<!-- Main Canvas -->
+<main class="flex-1 relative overflow-y-auto ml-0 md:ml-72 bg-[#faf8ff]">
+<!-- Decorative Blurred Blobs -->
+<div class="absolute top-0 right-0 -z-10 w-[500px] h-[500px] bg-sky-200/30 rounded-full blur-[120px] -mr-48 -mt-48"></div>
+<div class="absolute bottom-0 left-0 -z-10 w-[400px] h-[400px] bg-indigo-100/40 rounded-full blur-[100px] -ml-24 -mb-24"></div>
+<!-- Top Bar (Mobile Only) -->
+<header class="md:hidden fixed top-0 w-full z-40 flex justify-between items-center px-6 h-16 bg-white/70 backdrop-blur-xl font-['Space_Grotesk']">
+<span class="material-symbols-outlined text-on-surface" data-icon="menu">menu</span>
+<h1 class="text-xl font-bold text-slate-900">Trip Journal</h1>
+<div class="w-8 h-8 rounded-full bg-sky-500/20 overflow-hidden">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="circular profile icon of a man with short hair and a warm expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCSrVnv-tEf4JddRrwWBASia3LE3f8FT2my-CqHiFxe9vm_kdY4lIXMds2T607_mr2w9MHAB5_u5MtCzuEUixjo_JsbkaXDuOZYXhkeJAm7h63c3ebcf00GpmtQ4LXAUEP0m-LaIHAlWJkgNWClyGo2lsmpAN3sJl2gb6I30CDdL4lm2Nl4OcJ5M344q8VBsj0aVK4uNbB7M3XMMdEVdZsue4CW0gVkUYl1qVHQW0DDHw0SOLDzNyhfLmiq7ZnFUjNyN84J5TBswQ"/>
+</div>
+</header>
+<div class="max-w-5xl mx-auto px-6 py-8 mt-16 md:mt-0 font-['Space_Grotesk']">
+<!-- Hero Welcome Section -->
+<section class="mb-12">
+<h1 class="text-4xl md:text-5xl font-bold text-on-background tracking-tighter mb-2">
+                    Welcome back, Alex
+                </h1>
+<p class="text-on-surface-variant font-body text-lg">
+                    Ready for your next adventure?
+                </p>
+</section>
+<!-- Quick Actions Pill Cluster -->
+<section class="flex flex-wrap gap-3 mb-12">
+<button class="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-container text-white rounded-full font-bold shadow-lg shadow-sky-500/20 hover:-translate-y-0.5 transition-all active:scale-95">
+<span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
+                    New Trip
+                </button>
+<button class="flex items-center gap-2 px-6 py-3 bg-white text-on-surface border border-outline-variant/15 rounded-full font-medium hover:-translate-y-0.5 transition-all active:scale-95 shadow-sm">
+<span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
+                    New Entry
+                </button>
+<button class="flex items-center gap-2 px-6 py-3 bg-white text-on-surface border border-outline-variant/15 rounded-full font-medium hover:-translate-y-0.5 transition-all active:scale-95 shadow-sm">
+<span class="material-symbols-outlined text-[20px]" data-icon="checklist">checklist</span>
+                    Add Checklist Item
+                </button>
+</section>
+<!-- Active Trip Card & Bento Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+<!-- Large Active Trip Card -->
+<div class="lg:col-span-2 group relative overflow-hidden bg-surface-container-lowest rounded-[2rem] shadow-[0_20px_40px_-12px_rgba(19,27,46,0.08)] hover:-translate-y-1 transition-all duration-500">
+<div class="relative h-64 overflow-hidden">
+<img alt="Dolomites" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="breathtaking panoramic view of jagged limestone peaks in the Dolomites at sunrise with dramatic shadows and golden mist" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCB4kGDDf8b9Mm7CMidntOREkAXjfT2e_AigrjgeoG-6Kdt9mj-28D0KmhK3e8ILkR1PHKdhDH2XGCm65AHk8MhcRSv4acPlt3jHsnW5IqEmewyX7GVy3V2tq-tt90LTMDUetW-z51_rt-rG1TJ4HqHaU7it5BWwvZVqX1lA1j48r37x4_syMQ0H5UKgOWvABUKCEOz7O2RQOY0UjcX_Q5SxqZQrA9QPMtnRabAW7d1bt-fW0Q1_PR36V1GKxPh5NBdDWYTTPISA70"/>
+<div class="absolute top-6 left-6 px-4 py-1.5 bg-secondary text-white text-xs font-bold rounded-full flex items-center gap-1.5 shadow-xl">
+<span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
+                            Started
+                        </div>
+</div>
+<div class="p-8">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h3 class="text-2xl font-bold text-on-surface mb-1">Exploring the Dolomites</h3>
+<p class="text-on-surface-variant font-body">Northern Italy • Oct 2023</p>
+</div>
+<div class="flex items-center -space-x-3">
+<div class="w-10 h-10 rounded-full border-4 border-white overflow-hidden bg-slate-200 shadow-sm">
+<img class="w-full h-full object-cover" data-alt="close-up of a smiling young traveler with a beanie in an outdoor mountain setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByRHqgtC1nczG2_tjL8k2CBvkHc6aLZgJCNKPueIB0WeJUUe2_KvdfhpgrWwg58NQy4PVoYgA7RCeyJ4WD0vWlD0u49M6LSTIB9WHRohnGLx0HDgsfuwxD-25RCfQs2RTgfGX1GTzZUdX_GsgjXMy3qpSFUy06tGn-ypRr-H-5fk4ZDoYG0J7UVFApYNrT-ymh17RFa3QDBCsGjD3O0LtQheCpJpqA8HZWg-3P0GUj5HLiU9tis254-9-zstl-Ckh4mbhF6mgwIB4"/>
+</div>
+<div class="w-10 h-10 rounded-full border-4 border-white overflow-hidden bg-slate-200 shadow-sm">
+<img class="w-full h-full object-cover" data-alt="portrait of a woman traveler with a warm scarf looking at the scenery" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRtMUJIwiaQujBI2TCyllWMTNbVfDN4TBPi6qUO0crrJt9Ki4MWut5MY5XJvBuk_kPaIkxF-NMy7HHMaFBJYo4XI7-nt8yHjJFc4XuOScLozIQk5a4-i7f47LAVjhFAS7Odcai2rZ71JOKQQh7eyWQEe45juIhjaiTBiQpkljda4i10vcjvtSpHM6uDwzoHRlShcKlbk09CMbzBUppCne4M55DTnQTmDyHfKrUdG-QwglT6Yqux0tkHWAXQ9RRviXLpPvIFjjzRdQ"/>
+</div>
+<div class="w-10 h-10 rounded-full border-4 border-white bg-surface-container-high flex items-center justify-center text-[10px] font-bold text-on-surface-variant shadow-sm">+2</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-4 rounded-2xl bg-surface-container-low flex items-center gap-4">
+<div class="p-2 bg-sky-500/10 text-sky-600 rounded-xl">
+<span class="material-symbols-outlined" data-icon="book">book</span>
+</div>
+<div>
+<p class="text-xl font-bold text-on-surface leading-none">12</p>
+<p class="text-xs text-on-surface-variant uppercase tracking-widest font-bold mt-1">Entries</p>
+</div>
+</div>
+<div class="p-4 rounded-2xl bg-surface-container-low flex items-center gap-4">
+<div class="p-2 bg-secondary-container/20 text-secondary rounded-xl">
+<span class="material-symbols-outlined" data-icon="rule">rule</span>
+</div>
+<div>
+<p class="text-xl font-bold text-on-surface leading-none">3</p>
+<p class="text-xs text-on-surface-variant uppercase tracking-widest font-bold mt-1">Pending</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Jack AI Assistant Card -->
+<div class="glass-card rounded-[2rem] p-8 flex flex-col items-center justify-center text-center shadow-[0_20px_40px_-12px_rgba(19,27,46,0.08)] group hover:-translate-y-1 transition-all duration-500">
+<div class="relative mb-6">
+<div class="w-24 h-24 rounded-full bg-gradient-to-tr from-sky-400 to-indigo-500 p-1 shadow-inner group-hover:rotate-12 transition-transform duration-500">
+<div class="w-full h-full rounded-full bg-white overflow-hidden flex items-center justify-center">
+<img alt="Jack AI" class="w-full h-full object-cover" data-alt="clean digital portrait of a friendly AI assistant with soft human-like features and a subtle futuristic aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsx27c8PNOMFNbxVcSu4Ur8Ht5b_9SqeXyPuTVEJ4Bjz5uVfWp5yjG2Szmz_mjrqJULP_aAZtRLk8mtJMgzO3rXSf5zhPOH4szRwRsyw93ogQ_rIASByVSfTZuFbp6gfK40MbcURYCC-minQevlH8KF89I9dkZ82HPmJb24spWymcKSL7iAvoTC8uknUPm-RoCYLf1vqSEhERbHxnK4iwXAFmGzfJzT9ZRH0RpzKQHTHOKnuf784QyIP1kD1VnEAH4A-GFo1DbdYE"/>
+</div>
+</div>
+<div class="absolute -bottom-1 -right-1 w-8 h-8 bg-sky-500 border-4 border-white rounded-full flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-sm" data-icon="bolt" data-weight="fill" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</div>
+</div>
+<h3 class="text-xl font-bold text-on-surface mb-2">Jack</h3>
+<p class="text-on-surface-variant font-body text-sm mb-8 px-4">
+                        "The weather in Bolzano is perfect for hiking tomorrow. Shall I update your itinerary?"
+                    </p>
+<button class="w-full py-3 bg-on-background text-white rounded-full font-bold hover:opacity-90 transition-opacity active:scale-95 shadow-md">
+                        Ask Jack
+                    </button>
+<div class="mt-4 flex gap-2">
+<span class="px-3 py-1 bg-surface-container-high rounded-full text-[10px] font-bold text-on-surface-variant">PACKING LIST</span>
+<span class="px-3 py-1 bg-surface-container-high rounded-full text-[10px] font-bold text-on-surface-variant">FLIGHT STATUS</span>
+</div>
+</div>
+</div>
+<!-- Recent Memories / Discover Section -->
+<section>
+<div class="flex justify-between items-end mb-8">
+<h2 class="text-2xl font-bold text-on-background">Recent Memories</h2>
+<a class="text-primary font-bold text-sm flex items-center gap-1 hover:gap-2 transition-all" href="#">
+                        View All <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="aspect-square rounded-2xl overflow-hidden shadow-md group">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="stunning night sky over snowy mountain peaks with bright stars and milky way visible" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDK7piWB-6A0SMBi-oaWX_STLNQ0pVlZOvcxXtOCw9KWrFxR3ctJRuHZGnZefPWsSKKeiGrMC5aBFKXt9iCn63OH-DIAWsEuH8oWGQN4PVDYJH-tMqv4wo4cOyt20bipigLB5QWmett3AvCmQfyDStFxh3rYnsdphAtYEP7pLb8lcw6vuYkv5BHAMc7Ti1aYdRH2LiNkO4bAR9aWWBOqFAbE0_1ifD-0MvDE7Rr8ZZWB4xT0vNM9MHRiLdIPpHD8CEKCHPXMRNi_c4"/>
+</div>
+<div class="aspect-square rounded-2xl overflow-hidden shadow-md group">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="scenic mountain lake with turquoise water reflecting a wooden boat and pine forests" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHFDGdx0z_UDkAct2UlSvzN1b9n-4E0za-PlxRIcf_epOpiUmk6IxeM09-X4F9Kw5PApM-IkE7VY9mgceKxC-NGDZoiwmshTS0-cTm2dDzAI6NLymd36Xw8WzJG264vJj69vaMMhadYxiL6Zv83H3oruEdANwCzePMMq96TTmg_jTKdQO253mLTAVfyEGPyVXbTxsrE7fyB4Ufb9TDKu2qv_jkZoxA-d9wyP4k5vGX1rOkx4MHY-_5lwpgPm0WUp0E3l3pzzHXeQo"/>
+</div>
+<div class="aspect-square rounded-2xl overflow-hidden shadow-md group">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="traditional alpine village in Italy with stone houses and colorful flowers against mountains" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8o-vla7ObtbcfkSiJRuKA7Eb5QbUwhiWM7V0Q9S_E0wn7V3QdFQTvKPtAOQlhlxjDM-GMBf2Zt8w1ybuDLt6fNEjrc05-IqRFudxITNuyA8NFb_5jtYJOPf8jYKy8qHach2-bwWx25t4AGFE_uNgH6GuisWFvNSoRoJ7Gjk4T2O8prKQdOy88C3IKx5nELtZzUglTtuff1OMfuEPuiFogZPPJBXviQh4vS75_KBxG72s-u185o3-0FdtJvFBylzqbfUSvJ57z9YM"/>
+</div>
+<div class="aspect-square rounded-2xl overflow-hidden shadow-md group bg-surface-container flex flex-col items-center justify-center p-4 text-center cursor-pointer hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-3xl text-primary mb-2" data-icon="add_a_photo">add_a_photo</span>
+<span class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Add Media</span>
+</div>
+</div>
+</section>
+</div>
+<!-- Bottom Navigation (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-white/80 backdrop-blur-2xl border-t border-white/20 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] rounded-t-[2.5rem] font-['Space_Grotesk'] text-[10px] font-medium uppercase tracking-widest">
+<a class="flex flex-col items-center justify-center text-sky-500 font-bold scale-110 transition-all duration-300" href="#">
+<span class="material-symbols-outlined text-[24px]" data-icon="home" data-weight="fill" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 hover:text-sky-400 transition-all duration-300" href="#">
+<span class="material-symbols-outlined text-[24px]" data-icon="draw">draw</span>
+<span class="mt-1">Drafts</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 hover:text-sky-400 transition-all duration-300" href="#">
+<span class="material-symbols-outlined text-[24px]" data-icon="bookmark">bookmark</span>
+<span class="mt-1">Saved</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 hover:text-sky-400 transition-all duration-300" href="#">
+<span class="material-symbols-outlined text-[24px]" data-icon="person">person</span>
+<span class="mt-1">Profile</span>
+</a>
+</nav>
+</main>
+</body></html>

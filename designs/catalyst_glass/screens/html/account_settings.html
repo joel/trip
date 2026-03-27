@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settings - Catalyst</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary": "#855300",
+              "inverse-on-surface": "#eef0ff",
+              "surface-container-low": "#f2f3ff",
+              "surface": "#faf8ff",
+              "secondary-fixed-dim": "#45dfa4",
+              "on-primary-container": "#004965",
+              "on-tertiary-fixed": "#2a1700",
+              "on-error": "#ffffff",
+              "primary-fixed": "#c4e7ff",
+              "outline": "#6e7980",
+              "secondary": "#006c4b",
+              "inverse-primary": "#7bd0ff",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-high": "#e2e7ff",
+              "primary": "#00668a",
+              "surface-container": "#eaedff",
+              "background": "#faf8ff",
+              "surface-dim": "#d2d9f4",
+              "on-surface-variant": "#3e484f",
+              "secondary-fixed": "#68fcbf",
+              "on-secondary-fixed-variant": "#005137",
+              "inverse-surface": "#283044",
+              "error-container": "#ffdad6",
+              "on-primary-fixed-variant": "#004c69",
+              "primary-container": "#38bdf8",
+              "on-surface": "#131b2e",
+              "outline-variant": "#bdc8d1",
+              "on-tertiary": "#ffffff",
+              "surface-container-highest": "#dae2fd",
+              "on-background": "#131b2e",
+              "secondary-container": "#64f9bc",
+              "on-secondary-fixed": "#002114",
+              "on-secondary-container": "#00714e",
+              "surface-variant": "#dae2fd",
+              "tertiary-fixed": "#ffddb8",
+              "on-secondary": "#ffffff",
+              "tertiary-container": "#f1a02b",
+              "on-primary": "#ffffff",
+              "tertiary-fixed-dim": "#ffb960",
+              "surface-bright": "#faf8ff",
+              "on-tertiary-fixed-variant": "#653e00",
+              "error": "#ba1a1a",
+              "surface-tint": "#00668a",
+              "on-error-container": "#93000a",
+              "primary-fixed-dim": "#7bd0ff",
+              "on-primary-fixed": "#001e2c",
+              "on-tertiary-container": "#613b00"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Space Grotesk"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .tonal-sculpting {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body antialiased">
+<!-- TopAppBar -->
+<header class="bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-white/30 dark:border-slate-800/50 shadow-sm dark:shadow-none fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 w-full">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-sky-500 dark:text-sky-400 cursor-pointer hover:opacity-80 transition-opacity">menu</span>
+<h1 class="font-['Space_Grotesk'] font-bold tracking-tight text-xl font-bold text-slate-900 dark:text-slate-50">Catalyst</h1>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-highest ring-2 ring-primary-container/20">
+<img alt="User profile avatar" data-alt="minimalist 3D avatar of a person with stylish glasses and a friendly expression on a soft blue background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5KrCwGL_TgHfN_aB7xdSoe19rLlZCI_OzGpDXCEv9_gtl_cry1kBo-RFPr99HMVNiI7L1woOxtyYnUBisdV5eQvevA0RmVJKJvMl25gYPO312IAZ8CGFobaQdpjvYnM4frFjNJhmrVTeBm8J14rYoUlr36TUbb3RLnCsn9p2ynEkrfXhqfmWSeLsERv-JpOW7BYT7VEr6iUo7luzZt251dPqdg3Ud7rvAXHXQGt3pY0_hazbdLlypJUkW-z6ZwUFTrsiNBteLFpE"/>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-32 px-6 max-w-3xl mx-auto">
+<!-- Profile Overview Section -->
+<section class="mb-12 text-center md:text-left flex flex-col md:flex-row items-center gap-8 bg-surface-container-low p-8 rounded-lg">
+<div class="relative group">
+<div class="w-32 h-32 rounded-full overflow-hidden shadow-xl ring-4 ring-white dark:ring-slate-800">
+<img class="w-full h-full object-cover" data-alt="modern 3D avatar of a profile with sleek features and a soft studio lighting profile portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCX1EQN34rLaz6zz-k_heWpfjstinumT6AxPTSxJXnooZJKqvZ-porAzftfgmERVeHr3XirBuj9DQ1jB2JSBwIhaTjuI8ex00P2_cyprKxXqTfciXSDMiLuRENeYAnDckRVXS-l8NeylTKWSTZAUhqmn0nxiPtDvWJGvb7z8R4f8ZbjAONYYtJrEtiYeb-ZKGvMjzLUTp9Y-ZOYaYqohbIyBrhJOupai5GHMQ3yHkL5V64FUAJ3L7cTspav5qjTx3d43eKzwITRGE0"/>
+</div>
+<button class="absolute bottom-0 right-0 bg-primary text-on-primary p-2 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-sm">edit</span>
+</button>
+</div>
+<div class="flex-1">
+<h2 class="font-headline text-3xl font-bold tracking-tight mb-1 text-on-surface">Adventurer</h2>
+<p class="text-on-surface-variant font-medium mb-4">Premium Member • Joined June 2023</p>
+<div class="flex flex-wrap gap-2 justify-center md:justify-start">
+<span class="bg-secondary-container text-on-secondary-container px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider font-label">Pro Account</span>
+<span class="bg-primary-container/20 text-primary px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider font-label">Beta Tester</span>
+</div>
+</div>
+<button class="px-6 py-3 bg-surface-container-lowest text-primary font-bold rounded-full shadow-sm hover:shadow-md transition-shadow border border-outline-variant/10">
+                Edit Profile
+            </button>
+</section>
+<!-- Settings Categories -->
+<div class="space-y-4">
+<!-- Category Item -->
+<div class="group bg-surface-container-lowest p-6 rounded-lg tonal-sculpting hover:bg-surface-container transition-colors cursor-pointer flex items-center justify-between">
+<div class="flex items-center gap-5">
+<div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">person_outline</span>
+</div>
+<div>
+<h3 class="font-headline font-semibold text-lg text-on-surface">Profile Information</h3>
+<p class="text-on-surface-variant text-sm font-body">Manage your personal details and display preferences</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">chevron_right</span>
+</div>
+<!-- Category Item -->
+<div class="group bg-surface-container-lowest p-6 rounded-lg tonal-sculpting hover:bg-surface-container transition-colors cursor-pointer flex items-center justify-between">
+<div class="flex items-center gap-5">
+<div class="w-12 h-12 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">passkey</span>
+</div>
+<div>
+<h3 class="font-headline font-semibold text-lg text-on-surface">Security &amp; Passkeys</h3>
+<p class="text-on-surface-variant text-sm font-body">Biometric settings, password, and active sessions</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-secondary transition-colors">chevron_right</span>
+</div>
+<!-- Category Item -->
+<div class="group bg-surface-container-lowest p-6 rounded-lg tonal-sculpting hover:bg-surface-container transition-colors cursor-pointer flex items-center justify-between">
+<div class="flex items-center gap-5">
+<div class="w-12 h-12 rounded-2xl bg-tertiary-container/20 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined">notifications_active</span>
+</div>
+<div>
+<h3 class="font-headline font-semibold text-lg text-on-surface">Notification Preferences</h3>
+<p class="text-on-surface-variant text-sm font-body">Configure alerts for trips, journal updates, and marketing</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-tertiary transition-colors">chevron_right</span>
+</div>
+<!-- Category Item -->
+<div class="group bg-surface-container-lowest p-6 rounded-lg tonal-sculpting hover:bg-surface-container transition-colors cursor-pointer flex items-center justify-between">
+<div class="flex items-center gap-5">
+<div class="w-12 h-12 rounded-2xl bg-on-surface-variant/5 flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">file_download</span>
+</div>
+<div>
+<h3 class="font-headline font-semibold text-lg text-on-surface">Data Export</h3>
+<p class="text-on-surface-variant text-sm font-body">Download your archives in EPUB or ZIP format</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="hidden sm:flex gap-1">
+<span class="px-2 py-0.5 rounded-md bg-surface-container-high text-[10px] font-bold font-mono text-outline uppercase">EPUB</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-container-high text-[10px] font-bold font-mono text-outline uppercase">ZIP</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-on-surface transition-colors">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Logout Section -->
+<div class="mt-12 flex justify-center">
+<button class="flex items-center gap-2 px-10 py-4 bg-error-container text-on-error-container font-headline font-bold rounded-full hover:bg-error hover:text-on-error transition-all duration-300 shadow-lg shadow-error/10 active:scale-95">
+<span class="material-symbols-outlined">logout</span>
+                Logout
+            </button>
+</div>
+</main>
+<!-- NavigationDrawer (Large Screen Only) -->
+<nav class="hidden md:flex flex-col p-4 fixed left-0 top-0 h-full z-[60] h-full w-64 rounded-r-3xl bg-slate-900 dark:bg-black shadow-2xl tonal-sculpting gap-2 font-['Space_Grotesk'] text-sm font-medium">
+<div class="p-6 mb-8 flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-sky-500/20 flex items-center justify-center text-sky-400">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">explore</span>
+</div>
+<div>
+<p class="text-sky-400 font-bold text-lg">Catalyst</p>
+<p class="text-slate-500 text-xs">Navigation</p>
+</div>
+</div>
+<div class="space-y-2">
+<a class="text-slate-400 hover:text-slate-100 px-4 py-3 flex items-center gap-3 hover:bg-slate-800 transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined">home</span>
+                Home
+            </a>
+<a class="text-slate-400 hover:text-slate-100 px-4 py-3 flex items-center gap-3 hover:bg-slate-800 transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined">explore</span>
+                Trips
+            </a>
+<a class="text-slate-400 hover:text-slate-100 px-4 py-3 flex items-center gap-3 hover:bg-slate-800 transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined">edit_note</span>
+                Journal
+            </a>
+<a class="bg-sky-500/10 text-sky-400 rounded-full px-4 py-3 flex items-center gap-3" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
+                Settings
+            </a>
+</div>
+<div class="mt-auto p-4 bg-slate-800/50 rounded-2xl flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-slate-700">
+<img alt="User profile" data-alt="close-up minimalist 3D profile picture of a happy adventurer on dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfnlhuUfmg9WeYWPNfyo96I8UQABTD_S2sZxIQSvlVHOPnEzZYmSsG2v14w9SR8R_v_GuLzyiIOoU-cJKLOjkMlZSfzY9QIF7XIUC4CU9r-0ckqv-eb8u80FN3gDGuIj7pcWhojmCwqASavSz-aDtGqf_RFy7YyTpGRyyipWfVlMZOLnAQVk6luscyydMNJ4hQ7Bi9nOWRLO1XMVCTKIkRA4Ow83_r-EbsY9JDW1Fd8XSG2pMgbzuQ_holQtFOvOSlFMx2RKMnF6M"/>
+</div>
+<div class="overflow-hidden">
+<p class="text-white font-bold truncate">Adventurer</p>
+<p class="text-slate-500 text-xs truncate">Premium Member</p>
+</div>
+</div>
+</nav>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-white/80 dark:bg-slate-950/80 backdrop-blur-lg rounded-t-[2.5rem] shadow-[0_-10px_40px_-12px_rgba(0,0,0,0.1)]">
+<div class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2 hover:text-sky-400 transition-all font-['Inter'] text-[10px] font-semibold uppercase tracking-widest">
+<span class="material-symbols-outlined mb-1">home</span>
+<span>Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2 hover:text-sky-400 transition-all font-['Inter'] text-[10px] font-semibold uppercase tracking-widest">
+<span class="material-symbols-outlined mb-1">explore</span>
+<span>Trips</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2 hover:text-sky-400 transition-all font-['Inter'] text-[10px] font-semibold uppercase tracking-widest">
+<span class="material-symbols-outlined mb-1">edit_note</span>
+<span>Journal</span>
+</div>
+<div class="flex flex-col items-center justify-center text-sky-500 dark:text-sky-400 bg-sky-50 dark:bg-sky-900/20 rounded-full px-5 py-2 font-['Inter'] text-[10px] font-semibold uppercase tracking-widest active:translate-y-[-2px] transition-transform">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span>Settings</span>
+</div>
+</nav>
+</body></html>
