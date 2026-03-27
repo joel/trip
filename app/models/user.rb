@@ -16,6 +16,9 @@ class User < ApplicationRecord
   has_many :comments, dependent: :destroy
   has_many :exports, dependent: :destroy
   has_many :reactions, dependent: :destroy
+  has_many :notifications, foreign_key: :recipient_id,
+                           dependent: :destroy,
+                           inverse_of: :recipient
 
   validates :email, presence: true, uniqueness: { case_sensitive: false }
 end
