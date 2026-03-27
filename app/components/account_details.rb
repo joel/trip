@@ -7,25 +7,59 @@ module Components
     end
 
     def view_template
-      div(class: "ha-card p-6") do
-        div(class: "flex flex-wrap items-start justify-between gap-4") do
-          div do
-            p(class: "ha-overline") { "Account" }
-            p(class: "mt-2 text-lg font-semibold text-[var(--ha-text)]") do
+      div(class: "ha-card p-8") do
+        div(class: "flex items-center gap-6") do
+          render_avatar
+          div(class: "flex-1") do
+            h2(class: "font-headline text-2xl font-bold") do
               plain(@user.name.presence || "Unnamed")
             end
-            div(class: "mt-3 flex items-center gap-2 text-xs text-[var(--ha-muted)]") do
-              span(class: "rounded-full bg-[var(--ha-surface-muted)] px-2 py-1") { "Email" }
-              span(class: "font-semibold text-[var(--ha-text)]") { @user.email }
+            p(class: "mt-1 text-sm " \
+                     "text-[var(--ha-on-surface-variant)]") do
+              plain @user.email
             end
-          end
-          span(
-            class: "rounded-full border border-[var(--ha-border)] bg-[var(--ha-surface-muted)] " \
-                   "px-3 py-1 text-xs font-medium text-[var(--ha-muted)]"
-          ) do
-            plain "##{@user.id}"
+            render_role_chip
           end
         end
+      end
+    end
+
+    private
+
+    def render_avatar
+      div(class: "flex h-20 w-20 flex-shrink-0 items-center " \
+                 "justify-center rounded-full " \
+                 "bg-[var(--ha-primary-container)]/20 " \
+                 "text-2xl font-bold " \
+                 "text-[var(--ha-primary)]") do
+        plain user_initials
+      end
+    end
+
+    def render_role_chip
+      div(class: "mt-3") do
+        span(class: "inline-flex rounded-full px-3 py-1 " \
+                    "text-[10px] font-bold uppercase tracking-widest " \
+                    "bg-[var(--ha-surface-high)] " \
+                    "text-[var(--ha-on-surface-variant)]") do
+          plain role_label
+        end
+      end
+    end
+
+    def user_initials
+      name = @user.name.presence
+      if name
+        name.split.pluck(0).first(2).join.upcase
+      else
+        @user.email.first.upcase
+      end
+    end
+
+    def role_label
+      if @user.role?(:superadmin) then "Super Admin"
+      elsif @user.role?(:admin) then "Admin"
+      else "Member"
       end
     end
   end

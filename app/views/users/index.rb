@@ -24,7 +24,7 @@ module Views
 
           render Components::NoticeBanner.new(message: view_context.notice) if view_context.notice.present?
 
-          div(id: "users", class: "grid gap-4") do
+          div(id: "users", class: "grid gap-6 md:grid-cols-2") do
             @users.each do |user|
               render Components::UserCard.new(user: user)
             end

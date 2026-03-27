@@ -11,20 +11,17 @@ module Components
 
     def view_template
       div(id: dom_id(@user), class: "ha-card p-6") do
-        div(class: "flex items-start justify-between gap-4") do
-          div do
-            p(class: "ha-overline") { "User" }
-            p(class: "mt-2 text-lg font-semibold text-[var(--ha-text)]") { @user.name }
-            div(class: "mt-3 flex items-center gap-2 text-xs text-[var(--ha-muted)]") do
-              span(class: "rounded-full bg-[var(--ha-surface-muted)] px-2 py-1") { "Email" }
-              span(class: "font-semibold text-[var(--ha-text)]") { @user.email }
+        div(class: "flex items-center gap-4") do
+          render_avatar
+          div(class: "flex-1 min-w-0") do
+            p(class: "font-headline text-lg font-bold truncate") do
+              plain @user.name || @user.email
             end
-          end
-          span(
-            class: "rounded-full border border-[var(--ha-border)] bg-[var(--ha-surface-muted)] " \
-                   "px-3 py-1 text-xs font-medium text-[var(--ha-muted)]"
-          ) do
-            plain "##{@user.id}"
+            p(class: "mt-0.5 text-sm truncate " \
+                     "text-[var(--ha-on-surface-variant)]") do
+              plain @user.email
+            end
+            render_role_chip
           end
         end
         render_actions unless view_context.action_name == "show"
@@ -33,10 +30,59 @@ module Components
 
     private
 
+    def render_avatar
+      div(class: "flex h-12 w-12 flex-shrink-0 items-center " \
+                 "justify-center rounded-2xl " \
+                 "bg-[var(--ha-primary-container)]/20 " \
+                 "text-sm font-bold " \
+                 "text-[var(--ha-primary)]") do
+        plain user_initials
+      end
+    end
+
+    def render_role_chip
+      label = role_label
+      div(class: "mt-2") do
+        span(class: "inline-flex rounded-full px-2.5 py-0.5 " \
+                    "text-[10px] font-bold uppercase tracking-widest " \
+                    "bg-[var(--ha-surface-high)] " \
+                    "text-[var(--ha-on-surface-variant)]") do
+          plain label
+        end
+      end
+    end
+
     def render_actions
-      div(class: "ha-card-actions") do
-        link_to("View", @user, class: "ha-button ha-button-secondary")
-        link_to("Edit", view_context.edit_user_path(@user), class: "ha-button ha-button-secondary") if view_context.allowed_to?(:edit?, @user)
+      div(class: "mt-4 flex items-center gap-3") do
+        link_to(
+          @user,
+          class: "text-sm font-semibold text-[var(--ha-primary)] " \
+                 "hover:underline"
+        ) { "View" }
+        if view_context.allowed_to?(:edit?, @user)
+          link_to(
+            view_context.edit_user_path(@user),
+            class: "text-sm font-medium " \
+                   "text-[var(--ha-on-surface-variant)] " \
+                   "hover:text-[var(--ha-primary)]"
+          ) { "Edit" }
+        end
+      end
+    end
+
+    def user_initials
+      name = @user.name.presence
+      if name
+        name.split.pluck(0).first(2).join.upcase
+      else
+        @user.email.first.upcase
+      end
+    end
+
+    def role_label
+      if @user.role?(:superadmin) then "Super Admin"
+      elsif @user.role?(:admin) then "Admin"
+      else "Member"
       end
     end
   end
