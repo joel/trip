@@ -31,7 +31,9 @@ gem "tailwindcss-rails"
 # https://tailwindcss.com/blog/standalone-cli # TL;DR no Node.js or npm required.
 gem "tailwindcss-ruby"
 
-# Authentication (Rodauth + passkeys)
+# Authentication (Rodauth + passkeys + social login)
+gem "omniauth-google-oauth2"
+gem "rodauth-omniauth"
 gem "rodauth-rails"
 gem "sequel-activerecord_connection", require: false
 gem "tilt", require: false
