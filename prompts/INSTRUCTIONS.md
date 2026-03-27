@@ -38,7 +38,9 @@ Task 4 - UI Polish
 Task 5 - UI Designer
   Instructions: Read .claude/skills/ui-designer/SKILL.md and follow it in full for the current branch. Ensure UI Component Library is Sync. Write the complete report to prompts/Phase X - UI Designer Review.md.
 
-Eensure it respects UI Designer specifications, and keep the local UI Element Library in Sync: `ui_library/README.md`
+Ensure it respects UI Designer specifications, and keep the local UI Element Library in Sync: `ui_library/README.md`
+
+Ensure Bullet N+1 notifications are addressed!
 
 Once all three tasks complete, read the three reports and give me a consolidated summary of all 🔴 Critical/Broken/Defect findings
 
