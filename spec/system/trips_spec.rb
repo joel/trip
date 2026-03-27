@@ -31,7 +31,7 @@ RSpec.describe "Trips" do
     trip = create(:trip, name: "Detail Trip", created_by: admin)
     visit trip_path(trip)
     expect(page).to have_content("Detail Trip")
-    expect(page).to have_content("Planning")
+    expect(page).to have_content("PLANNING")
   end
 
   it "edits a trip" do

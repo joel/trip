@@ -23,9 +23,9 @@ module Components
       css = STATE_COLORS.fetch(@state, STATE_COLORS["planning"])
       span(
         class: "inline-flex items-center rounded-full px-3 py-1 " \
-               "text-[10px] font-bold uppercase tracking-widest #{css}"
+               "text-[10px] font-bold tracking-widest #{css}"
       ) do
-        plain @state.capitalize
+        plain @state.upcase
       end
     end
   end
