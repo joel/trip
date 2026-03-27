@@ -57,6 +57,26 @@ RSpec.describe "JournalEntrySubscriptions" do
     end
   end
 
+  describe "authorization" do
+    it "allows trip members to subscribe" do
+      member = create(:user)
+      create(:trip_membership, trip: trip, user: member)
+      stub_current_user(member)
+
+      expect do
+        post trip_journal_entry_subscription_path(trip, entry)
+      end.to change(JournalEntrySubscription, :count).by(1)
+    end
+
+    it "forbids non-members from subscribing" do
+      outsider = create(:user)
+      stub_current_user(outsider)
+
+      post trip_journal_entry_subscription_path(trip, entry)
+      expect(response).to have_http_status(:forbidden)
+    end
+  end
+
   describe "unauthenticated access" do
     before { stub_current_user(nil) }
 

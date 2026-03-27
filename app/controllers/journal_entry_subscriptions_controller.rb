@@ -4,6 +4,7 @@ class JournalEntrySubscriptionsController < ApplicationController
   before_action :require_authenticated_user!
   before_action :set_trip
   before_action :set_journal_entry
+  before_action :authorize_entry!
 
   def create
     @journal_entry.journal_entry_subscriptions.find_or_create_by!(
@@ -31,5 +32,9 @@ class JournalEntrySubscriptionsController < ApplicationController
     @journal_entry = @trip.journal_entries.find(
       params[:journal_entry_id]
     )
+  end
+
+  def authorize_entry!
+    authorize!(@journal_entry, with: JournalEntryPolicy)
   end
 end
