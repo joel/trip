@@ -17,7 +17,7 @@ module Components
           if logged_in?
             nav_tab(view_context.trips_path, "Trips",
                     Components::Icons::Map.new, trip_active?)
-            nav_tab(view_context.notifications_path, "Alerts",
+            nav_tab(view_context.notifications_path, "Notifs",
                     Components::Icons::Bell.new, notifications_active?)
           end
           if logged_in? && view_context.allowed_to?(:index?, User)
