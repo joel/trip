@@ -3,6 +3,8 @@
 module Views
   module Rodauth
     class Login < Views::Base
+      include Phlex::Rails::Helpers::ButtonTo
+
       def view_template
         div(class: "flex min-h-[70vh] items-center justify-center") do
           div(class: "w-full max-w-md space-y-8") do
@@ -49,8 +51,47 @@ module Views
             render Components::RodauthLoginForm.new
           end
 
+          render_google_section if google_configured?
+
           render Components::RodauthLoginFormFooter.new
         end
+      end
+
+      def render_google_section
+        render_social_divider
+        render_google_button("Sign in with Google")
+      end
+
+      def render_social_divider
+        div(class: "relative my-6") do
+          div(class: "absolute inset-0 flex items-center") do
+            div(class: "w-full border-t " \
+                       "border-[var(--ha-border)]/30")
+          end
+          div(class: "relative flex justify-center text-xs") do
+            span(
+              class: "bg-white dark:bg-[var(--ha-surface)] " \
+                     "px-4 text-[var(--ha-muted)]"
+            ) { "or continue with" }
+          end
+        end
+      end
+
+      def render_google_button(label)
+        button_to(
+          view_context.rodauth.omniauth_request_path(:google),
+          method: :post,
+          data: { turbo: false },
+          class: "ha-button ha-button-secondary w-full " \
+                 "flex items-center justify-center gap-3"
+        ) do
+          render Components::Icons::Google.new
+          span { label }
+        end
+      end
+
+      def google_configured?
+        ENV["GOOGLE_CLIENT_ID"].present?
       end
     end
   end
