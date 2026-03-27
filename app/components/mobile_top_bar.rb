@@ -12,7 +12,10 @@ module Components
       ) do
         div(class: "flex h-full items-center justify-between px-4") do
           render_title
-          render_avatar
+          div(class: "flex items-center gap-3") do
+            render_theme_toggle
+            render_avatar
+          end
         end
       end
     end
@@ -25,6 +28,24 @@ module Components
         class: "font-headline text-lg font-semibold tracking-tight " \
                "text-[var(--ha-text)]"
       ) { "Catalyst" }
+    end
+
+    def render_theme_toggle
+      button(
+        type: "button",
+        class: "flex h-9 w-9 items-center justify-center rounded-full " \
+               "text-[var(--ha-on-surface-variant)] " \
+               "hover:bg-[var(--ha-surface-hover)] transition-colors",
+        data: { action: "theme#toggle" },
+        aria_label: "Toggle dark mode"
+      ) do
+        render Components::Icons::Sun.new(
+          css: "h-5 w-5", data: { theme_target: "iconLight" }
+        )
+        render Components::Icons::Moon.new(
+          css: "h-5 w-5 hidden", data: { theme_target: "iconDark" }
+        )
+      end
     end
 
     def render_avatar
