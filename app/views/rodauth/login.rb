@@ -4,36 +4,52 @@ module Views
   module Rodauth
     class Login < Views::Base
       def view_template
-        div(class: "space-y-8") do
-          div(class: "ha-card p-8") do
-            p(class: "ha-overline") do
-              plain "Access"
-            end
-            h1(class: "mt-2 text-3xl font-semibold tracking-tight sm:text-4xl") do
-              plain "Sign in"
-            end
-            p(class: "mt-3 text-sm text-[var(--ha-muted)]") do
-              plain "Enter your email to choose a passkey or request a sign-in link."
-            end
+        div(class: "flex min-h-[70vh] items-center justify-center") do
+          div(class: "w-full max-w-md space-y-8") do
+            render_brand_header
+            render Components::RodauthFlash.new
+            render_login_panel
+          end
+        end
+      end
+
+      private
+
+      def render_brand_header
+        div(class: "text-center") do
+          div(class: "mx-auto flex h-16 w-16 items-center " \
+                     "justify-center rounded-2xl " \
+                     "ha-gradient-aura shadow-lg") do
+            span(class: "text-2xl font-bold text-white") { "C" }
+          end
+          h1(class: "mt-4 font-headline text-3xl font-bold " \
+                    "tracking-tighter") do
+            plain "Catalyst"
+          end
+          p(class: "mt-2 text-sm " \
+                   "text-[var(--ha-on-surface-variant)]") do
+            plain "Your collaborative trip journal"
+          end
+        end
+      end
+
+      def render_login_panel
+        div(class: "ha-glass rounded-[2rem] p-8 " \
+                   "shadow-[var(--ha-card-shadow)]") do
+          h2(class: "font-headline text-xl font-bold") do
+            plain "Sign in"
+          end
+          p(class: "mt-1 text-sm " \
+                   "text-[var(--ha-on-surface-variant)]") do
+            plain "Enter your email to choose a passkey or " \
+                  "request a sign-in link."
           end
 
-          render Components::RodauthFlash.new
-
-          div(class: "ha-card p-6 space-y-6") do
-            div do
-              p(
-                class: "ha-overline"
-              ) { plain "Email" }
-              h2(class: "mt-2 text-lg font-semibold") { plain "Continue with email" }
-              p(class: "mt-2 text-sm text-[var(--ha-muted)]") do
-                plain "We use your email to find available sign-in methods."
-              end
-            end
-
+          div(class: "mt-6") do
             render Components::RodauthLoginForm.new
-
-            render Components::RodauthLoginFormFooter.new
           end
+
+          render Components::RodauthLoginFormFooter.new
         end
       end
     end
