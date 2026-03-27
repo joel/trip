@@ -31,7 +31,8 @@ module Comments
       Rails.event.notify(
         "comment.created",
         comment_id: comment.id,
-        journal_entry_id: comment.journal_entry_id
+        journal_entry_id: comment.journal_entry_id,
+        actor_id: comment.user_id
       )
       Success()
     end

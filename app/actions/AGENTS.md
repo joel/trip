@@ -170,10 +170,10 @@ Events follow the pattern `entity.action`:
 | `trip.created` | Trips::Create | `{ trip_id }` |
 | `trip.updated` | Trips::Update | `{ trip_id }` |
 | `trip.state_changed` | Trips::TransitionState | `{ trip_id, from_state, to_state }` |
-| `journal_entry.created` | JournalEntries::Create | `{ journal_entry_id, trip_id }` |
+| `journal_entry.created` | JournalEntries::Create | `{ journal_entry_id, trip_id, actor_id }` |
 | `journal_entry.updated` | JournalEntries::Update | `{ journal_entry_id, trip_id }` |
 | `journal_entry.deleted` | JournalEntries::Delete | `{ journal_entry_id, trip_id }` |
-| `comment.created` | Comments::Create | `{ comment_id, journal_entry_id }` |
+| `comment.created` | Comments::Create | `{ comment_id, journal_entry_id, actor_id }` |
 | `comment.updated` | Comments::Update | `{ comment_id, journal_entry_id }` |
 | `comment.deleted` | Comments::Delete | `{ comment_id, journal_entry_id }` |
 | `reaction.created` | Reactions::Toggle | `{ reaction_id, reactable_type, reactable_id }` |
@@ -184,7 +184,7 @@ Events follow the pattern `entity.action`:
 | `access_request.rejected` | AccessRequests::Reject | `{ access_request_id, email }` |
 | `invitation.sent` | Invitations::SendInvitation | `{ invitation_id, email }` |
 | `invitation.accepted` | Invitations::Accept | `{ invitation_id, email }` |
-| `trip_membership.created` | TripMemberships::Assign | `{ trip_membership_id, trip_id, user_id }` |
+| `trip_membership.created` | TripMemberships::Assign | `{ trip_membership_id, trip_id, user_id, actor_id }` |
 | `trip_membership.removed` | TripMemberships::Remove | `{ trip_membership_id, trip_id, user_id }` |
 | `checklist.created` | Checklists::Create | `{ checklist_id, trip_id }` |
 | `checklist.updated` | Checklists::Update | `{ checklist_id, trip_id }` |
