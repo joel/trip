@@ -11,16 +11,11 @@ module Components
 
     def view_template
       div(class: "ha-card p-6") do
-        div(class: "flex items-start justify-between gap-4") do
-          div do
-            p(class: "text-lg font-semibold " \
-                     "text-[var(--ha-text)]") do
-              plain @checklist.name
-            end
-            render_progress
-          end
+        h3(class: "font-headline text-lg font-bold") do
+          plain @checklist.name
         end
-        render_actions
+        render_progress
+        render_footer
       end
     end
 
@@ -31,18 +26,36 @@ module Components
       completed = all_items.count(&:completed?)
       return if total.zero?
 
-      p(class: "mt-1 text-sm text-[var(--ha-muted)]") do
-        plain "#{completed}/#{total} items completed"
+      pct = (completed.to_f / total * 100).round
+
+      div(class: "mt-4") do
+        div(class: "flex items-center justify-between " \
+                   "text-xs font-medium") do
+          span(class: "text-[var(--ha-on-surface-variant)]") do
+            plain "#{completed}/#{total} items"
+          end
+          span(class: "text-[var(--ha-primary)]") do
+            plain "#{pct}%"
+          end
+        end
+        div(class: "mt-2 h-2 overflow-hidden rounded-full " \
+                   "bg-[var(--ha-surface-high)]") do
+          div(class: "h-full rounded-full ha-gradient-aura " \
+                     "transition-all duration-500",
+              style: "width: #{pct}%")
+        end
       end
     end
 
-    def render_actions
-      div(class: "ha-card-actions") do
+    def render_footer
+      div(class: "mt-4") do
         link_to(
-          "View",
           view_context.trip_checklist_path(@trip, @checklist),
-          class: "ha-button ha-button-secondary"
-        )
+          class: "inline-flex items-center gap-1 text-sm " \
+                 "font-semibold text-[var(--ha-primary)]"
+        ) do
+          plain "View checklist \u2192"
+        end
       end
     end
 
