@@ -75,7 +75,20 @@ module Views
             "Back to trip", view_context.trip_path(@trip),
             class: "ha-button ha-button-secondary"
           )
+          render_follow_button
         end
+      end
+
+      def render_follow_button
+        return unless view_context.current_user
+
+        subscribed = @entry.journal_entry_subscriptions.exists?(
+          user: view_context.current_user
+        )
+        render Components::JournalEntryFollowButton.new(
+          trip: @trip, journal_entry: @entry,
+          subscribed: subscribed
+        )
       end
 
       def render_entry_details
