@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Catalyst | Collaboration Hub</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary": "#855300",
+              "inverse-on-surface": "#eef0ff",
+              "surface-container-low": "#f2f3ff",
+              "surface": "#faf8ff",
+              "secondary-fixed-dim": "#45dfa4",
+              "on-primary-container": "#004965",
+              "on-tertiary-fixed": "#2a1700",
+              "on-error": "#ffffff",
+              "primary-fixed": "#c4e7ff",
+              "outline": "#6e7980",
+              "secondary": "#006c4b",
+              "inverse-primary": "#7bd0ff",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-high": "#e2e7ff",
+              "primary": "#00668a",
+              "surface-container": "#eaedff",
+              "background": "#faf8ff",
+              "surface-dim": "#d2d9f4",
+              "on-surface-variant": "#3e484f",
+              "secondary-fixed": "#68fcbf",
+              "on-secondary-fixed-variant": "#005137",
+              "inverse-surface": "#283044",
+              "error-container": "#ffdad6",
+              "on-primary-fixed-variant": "#004c69",
+              "primary-container": "#38bdf8",
+              "on-surface": "#131b2e",
+              "outline-variant": "#bdc8d1",
+              "on-tertiary": "#ffffff",
+              "surface-container-highest": "#dae2fd",
+              "on-background": "#131b2e",
+              "secondary-container": "#64f9bc",
+              "on-secondary-fixed": "#002114",
+              "on-secondary-container": "#00714e",
+              "surface-variant": "#dae2fd",
+              "tertiary-fixed": "#ffddb8",
+              "on-secondary": "#ffffff",
+              "tertiary-container": "#f1a02b",
+              "on-primary": "#ffffff",
+              "tertiary-fixed-dim": "#ffb960",
+              "surface-bright": "#faf8ff",
+              "on-tertiary-fixed-variant": "#653e00",
+              "error": "#ba1a1a",
+              "surface-tint": "#00668a",
+              "on-error-container": "#93000a",
+              "primary-fixed-dim": "#7bd0ff",
+              "on-primary-fixed": "#001e2c",
+              "on-tertiary-container": "#613b00"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Space Grotesk"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "1.5rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .aura-shadow {
+            box-shadow: 0 12px 30px -10px rgba(19, 27, 46, 0.06);
+        }
+        .primary-gradient {
+            background: linear-gradient(135deg, #00668a, #38bdf8);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .blob-bg {
+            position: fixed;
+            z-index: -1;
+            filter: blur(80px);
+            opacity: 0.4;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-background font-body text-on-surface min-h-screen">
+<!-- Background Blobs -->
+<div class="blob-bg bg-sky-200 w-64 h-64 top-20 right-0 rounded-full"></div>
+<div class="blob-bg bg-indigo-100 w-96 h-96 bottom-0 left-0 rounded-full"></div>
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-40 bg-white/70 dark:bg-[#faf8ff]/10 backdrop-blur-xl flex justify-between items-center px-6 h-16">
+<div class="flex items-center gap-4">
+<button class="text-sky-500 hover:opacity-80 transition-opacity active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="font-['Space_Grotesk'] font-semibold text-lg text-slate-900 dark:text-white">Trip Journal</h1>
+</div>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-sky-200">
+<img alt="User profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBepFhNa7YrqoayZ6Cu3wdL2s6CMnsXFa8kBM1K-fBg7CoEbcJjg5sodC9-SRQIDY2XfkmCqQYW2nBDyr3Ue5scMNjMsdvzhaOEZmgcBpiatRYvg55pPsnGMJ5q1OWnIocIWHSbjs0-YyUin2Pc78TgvzXkSbMDS-tQOdZmhCL1D64mabVK3QCGZGwIkYotwKuvGZOGUs_F2dzcx3YlCBf64yWIquQdaR2sSEkNj_pJx7iMBYMO-mwrBbaNNCT2_SkbmSVdxuppSqw"/>
+</div>
+</header>
+<!-- NavigationDrawer (Desktop) -->
+<aside class="hidden lg:flex flex-col fixed inset-y-0 left-0 z-50 w-72 bg-[#0b1220] rounded-r-[2rem] shadow-[0_20px_40px_-12px_rgba(11,18,32,0.5)] font-['Space_Grotesk'] antialiased tracking-tight">
+<div class="p-8">
+<div class="flex items-center gap-4 mb-10">
+<div class="w-12 h-12 rounded-full border-2 border-sky-400 p-0.5">
+<img alt="User Profile" class="w-full h-full rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBepFhNa7YrqoayZ6Cu3wdL2s6CMnsXFa8kBM1K-fBg7CoEbcJjg5sodC9-SRQIDY2XfkmCqQYW2nBDyr3Ue5scMNjMsdvzhaOEZmgcBpiatRYvg55pPsnGMJ5q1OWnIocIWHSbjs0-YyUin2Pc78TgvzXkSbMDS-tQOdZmhCL1D64mabVK3QCGZGwIkYotwKuvGZOGUs_F2dzcx3YlCBf64yWIquQdaR2sSEkNj_pJx7iMBYMO-mwrBbaNNCT2_SkbmSVdxuppSqw"/>
+</div>
+<div>
+<h3 class="font-bold text-white text-lg">Alex Rivers</h3>
+<p class="text-sky-400 text-xs">Global Explorer</p>
+</div>
+</div>
+<nav class="space-y-2">
+<a class="text-slate-400 hover:text-white hover:bg-white/5 rounded-2xl px-4 py-3 flex items-center gap-3 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="edit_note">edit_note</span> Journal
+                </a>
+<a class="text-slate-400 hover:text-white hover:bg-white/5 rounded-2xl px-4 py-3 flex items-center gap-3 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="map">map</span> Map
+                </a>
+<a class="text-slate-400 hover:text-white hover:bg-white/5 rounded-2xl px-4 py-3 flex items-center gap-3 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="photo_library">photo_library</span> Memories
+                </a>
+<a class="bg-sky-500/10 text-sky-400 rounded-2xl px-4 py-3 flex items-center gap-3 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="explore">explore</span> Discover
+                </a>
+<a class="text-slate-400 hover:text-white hover:bg-white/5 rounded-2xl px-4 py-3 flex items-center gap-3 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span> Settings
+                </a>
+</nav>
+</div>
+</aside>
+<main class="pt-24 pb-32 px-6 lg:ml-72 max-w-4xl mx-auto">
+<!-- Header Section -->
+<div class="mb-10 space-y-2">
+<h2 class="text-4xl font-headline font-bold text-on-surface tracking-tight">Collaboration Hub</h2>
+<p class="text-on-surface-variant text-sm max-w-lg">Manage team roles and review workspace access requests.</p>
+</div>
+<!-- Vertical Stack of Sections -->
+<div class="space-y-12">
+<!-- Active Team Section -->
+<section class="space-y-4">
+<div class="flex items-center justify-between">
+<h3 class="font-headline text-xl font-bold flex items-center gap-3">
+                        Active Team
+                        <span class="text-[10px] bg-sky-100 text-sky-700 px-2 py-0.5 rounded-full font-bold">12</span>
+</h3>
+<button class="text-primary text-sm font-semibold hover:opacity-70 transition-opacity">Invite New</button>
+</div>
+<div class="space-y-3">
+<!-- Member Card 1 -->
+<div class="bg-white p-4 rounded-lg aura-shadow border border-white/50 flex items-center gap-4 group transition-all hover:scale-[1.01]">
+<img alt="Sarah Chen" class="w-12 h-12 rounded-full object-cover ring-2 ring-sky-50" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1zzpvf3YCTK25PDY8uMbC8IA4k0I86mmUVGLa24xJzOTMVizbFAiqOjOZhg8guTtFEeG5nFFWgBvRR3HNnsdu1XZkyW02O_KtJkAyZInKm9CwcJ9KgL08I71K9VictJJY9Ib2YtFSd4MGyMZf36ToI8pvACkaaYEZdkZoUvEr_coGpfOo08xf7rexGkU7RgA-uM0qZDnePf_WWt-n3eI8cwqMW4AaSqaddOTP1SnqyiZ_rZtPBdC4kpIwjVDia9sYPGSJYJNhiA4"/>
+<div class="flex-grow">
+<h4 class="font-bold text-on-surface text-sm">Sarah Chen</h4>
+<p class="text-xs text-on-surface-variant">Editor</p>
+</div>
+<button class="p-2 hover:bg-surface-container rounded-full text-outline transition-colors">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+<!-- Member Card 2 -->
+<div class="bg-white p-4 rounded-lg aura-shadow border border-white/50 flex items-center gap-4 group transition-all hover:scale-[1.01]">
+<img alt="Marcus Wright" class="w-12 h-12 rounded-full object-cover ring-2 ring-sky-50" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVSMI7UV8UZnKw8RAxegzB59-zTspCmDem0uzsb-96FNw9648wZBtXvr3-5NCPykRUtYE_3rEMOA7l4BEHyciwkxo9i_wCVEEPM28w18Ugv0dCoUAEYnc9oeAD3D6T-H0R7rlmmJ9uOEb9mI2lFyA1XziIngvrapYcZHzw5qKCTASLxzRFkQe6apiyCsKhL1qOtZEDS9Bb3VSnnp9Nm_NaZhvqMudC7hT-FsIacc5TBgWQ3qeRB346Pm3O1A5oaVTxW6nl77MQJMU"/>
+<div class="flex-grow">
+<h4 class="font-bold text-on-surface text-sm">Marcus Wright</h4>
+<p class="text-xs text-on-surface-variant">Editor</p>
+</div>
+<button class="p-2 hover:bg-surface-container rounded-full text-outline transition-colors">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+<!-- Member Card 3 -->
+<div class="bg-white p-4 rounded-lg aura-shadow border border-white/50 flex items-center gap-4 group transition-all hover:scale-[1.01]">
+<div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold text-sm">JW</div>
+<div class="flex-grow">
+<h4 class="font-bold text-on-surface text-sm">James Wu</h4>
+<p class="text-xs text-on-surface-variant">Viewer</p>
+</div>
+<button class="p-2 hover:bg-surface-container rounded-full text-outline transition-colors">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Pending Invitations Section -->
+<section class="space-y-4">
+<h3 class="font-headline text-xl font-bold">Pending Invitations</h3>
+<div class="bg-white/40 rounded-lg p-2 aura-shadow">
+<!-- Invite List Item 1 -->
+<div class="flex items-center justify-between p-4 border-b border-white/50 last:border-0">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400 scale-75" data-icon="alternate_email">alternate_email</span>
+<div>
+<p class="text-sm font-medium">david.vance@studio.com</p>
+<p class="text-[10px] text-outline uppercase tracking-wider font-bold">Editor • Sent 2d ago</p>
+</div>
+</div>
+<button class="text-[10px] font-bold text-error border border-error/20 px-3 py-1.5 rounded-full hover:bg-error/5 transition-colors uppercase tracking-widest">Cancel</button>
+</div>
+<!-- Invite List Item 2 -->
+<div class="flex items-center justify-between p-4 last:border-0">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400 scale-75" data-icon="alternate_email">alternate_email</span>
+<div>
+<p class="text-sm font-medium">tina.f@creative-hub.net</p>
+<p class="text-[10px] text-outline uppercase tracking-wider font-bold">Viewer • Sent 5h ago</p>
+</div>
+</div>
+<button class="text-[10px] font-bold text-error border border-error/20 px-3 py-1.5 rounded-full hover:bg-error/5 transition-colors uppercase tracking-widest">Cancel</button>
+</div>
+</div>
+</section>
+<!-- Access Requests Section -->
+<section class="space-y-4">
+<div class="flex items-center gap-3">
+<h3 class="font-headline text-xl font-bold">Access Requests</h3>
+<span class="text-[10px] bg-error-container text-error px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">New</span>
+</div>
+<div class="space-y-4">
+<!-- Glassy Request Card -->
+<div class="glass-panel p-6 rounded-lg aura-shadow border-t border-l border-white/60">
+<div class="flex items-start gap-4 mb-5">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">LO</div>
+<div class="space-y-1">
+<h4 class="font-bold text-on-surface text-sm">Liam O'Conner</h4>
+<p class="text-xs text-on-surface-variant">Requesting <span class="font-semibold text-primary">Editor</span> access</p>
+<p class="text-xs text-outline italic bg-surface-container/50 p-2 rounded-lg mt-2">"Need access to update the July roadmap."</p>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 bg-emerald-600 text-white text-[11px] font-bold py-2.5 rounded-full hover:bg-emerald-700 transition-colors uppercase tracking-widest">Approve</button>
+<button class="flex-1 bg-rose-500 text-white text-[11px] font-bold py-2.5 rounded-full hover:bg-rose-600 transition-colors uppercase tracking-widest">Reject</button>
+</div>
+</div>
+<!-- Empty State Placeholder (Example) -->
+<!-- 
+                    <div class="flex flex-col items-center justify-center py-12 px-6 border-2 border-dashed border-slate-200 rounded-lg text-slate-400">
+                        <span class="material-symbols-outlined text-4xl mb-2" data-icon="notifications_off">notifications_off</span>
+                        <p class="text-sm font-medium">No pending requests at the moment</p>
+                    </div>
+                    -->
+</div>
+</section>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 bg-white/80 dark:bg-white/10 backdrop-blur-2xl border-t border-white/20 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] rounded-t-[2.5rem] flex justify-around items-center px-4 pb-6 pt-3">
+<button class="flex flex-col items-center justify-center text-slate-400 hover:text-sky-400 transition-all active:translate-y-[-2px] duration-300">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-['Space_Grotesk'] text-[10px] font-medium uppercase tracking-widest mt-1">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 hover:text-sky-400 transition-all active:translate-y-[-2px] duration-300">
+<span class="material-symbols-outlined" data-icon="draw">draw</span>
+<span class="font-['Space_Grotesk'] text-[10px] font-medium uppercase tracking-widest mt-1">Drafts</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 hover:text-sky-400 transition-all active:translate-y-[-2px] duration-300">
+<span class="material-symbols-outlined" data-icon="bookmark">bookmark</span>
+<span class="font-['Space_Grotesk'] text-[10px] font-medium uppercase tracking-widest mt-1">Saved</span>
+</button>
+<button class="flex flex-col items-center justify-center text-sky-500 font-bold scale-110 transition-all active:translate-y-[-2px] duration-300">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-['Space_Grotesk'] text-[10px] font-bold uppercase tracking-widest mt-1">Profile</span>
+</button>
+</nav>
+</body></html>

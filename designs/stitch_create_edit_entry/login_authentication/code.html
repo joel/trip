@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Catalyst - Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary": "#855300",
+              "inverse-on-surface": "#eef0ff",
+              "surface-container-low": "#f2f3ff",
+              "surface": "#faf8ff",
+              "secondary-fixed-dim": "#45dfa4",
+              "on-primary-container": "#004965",
+              "on-tertiary-fixed": "#2a1700",
+              "on-error": "#ffffff",
+              "primary-fixed": "#c4e7ff",
+              "outline": "#6e7980",
+              "secondary": "#006c4b",
+              "inverse-primary": "#7bd0ff",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-high": "#e2e7ff",
+              "primary": "#00668a",
+              "surface-container": "#eaedff",
+              "background": "#faf8ff",
+              "surface-dim": "#d2d9f4",
+              "on-surface-variant": "#3e484f",
+              "secondary-fixed": "#68fcbf",
+              "on-secondary-fixed-variant": "#005137",
+              "inverse-surface": "#283044",
+              "error-container": "#ffdad6",
+              "on-primary-fixed-variant": "#004c69",
+              "primary-container": "#38bdf8",
+              "on-surface": "#131b2e",
+              "outline-variant": "#bdc8d1",
+              "on-tertiary": "#ffffff",
+              "surface-container-highest": "#dae2fd",
+              "on-background": "#131b2e",
+              "secondary-container": "#64f9bc",
+              "on-secondary-fixed": "#002114",
+              "on-secondary-container": "#00714e",
+              "surface-variant": "#dae2fd",
+              "tertiary-fixed": "#ffddb8",
+              "on-secondary": "#ffffff",
+              "tertiary-container": "#f1a02b",
+              "on-primary": "#ffffff",
+              "tertiary-fixed-dim": "#ffb960",
+              "surface-bright": "#faf8ff",
+              "on-tertiary-fixed-variant": "#653e00",
+              "error": "#ba1a1a",
+              "surface-tint": "#00668a",
+              "on-error-container": "#93000a",
+              "primary-fixed-dim": "#7bd0ff",
+              "on-primary-fixed": "#001e2c",
+              "on-tertiary-container": "#613b00"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Space Grotesk"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .aura-gradient {
+            background: linear-gradient(135deg, #00668a, #38bdf8);
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .tonal-sculpting {
+            box-shadow: 0 20px 40px -12px rgba(19, 27, 46, 0.08);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body min-h-screen flex items-center justify-center p-6 relative overflow-hidden">
+<!-- Decorative Background Elements -->
+<div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] aura-gradient opacity-10 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-secondary-container opacity-10 rounded-full blur-[120px]"></div>
+<!-- Main Content Canvas -->
+<main class="w-full max-w-md z-10">
+<!-- Brand Identity Section -->
+<div class="text-center mb-10">
+<div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary mb-4 shadow-lg">
+<span class="material-symbols-outlined text-white text-3xl">auto_awesome</span>
+</div>
+<h1 class="font-headline text-4xl font-bold tracking-tight text-on-surface">Catalyst</h1>
+<p class="text-on-surface-variant font-medium mt-2">Document your journey, frame by frame.</p>
+</div>
+<!-- Login Card -->
+<div class="glass-panel rounded-lg p-8 tonal-sculpting">
+<div class="flex flex-col gap-6">
+<!-- Header -->
+<div class="space-y-1">
+<h2 class="text-2xl font-headline font-semibold text-on-surface">Welcome back</h2>
+<p class="text-sm text-on-surface-variant">Sign in to your adventurer profile</p>
+</div>
+<!-- Form Fields -->
+<form class="space-y-4" onsubmit="return false;">
+<div class="space-y-2">
+<label class="text-sm font-label font-medium text-on-surface-variant ml-1">Email Address</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-xl">mail</span>
+<input class="w-full pl-12 pr-4 py-3.5 bg-surface-container-highest border-none rounded-md focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all placeholder:text-outline-variant" placeholder="explorer@catalyst.com" type="email"/>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-center ml-1">
+<label class="text-sm font-label font-medium text-on-surface-variant">Password</label>
+<a class="text-xs font-label text-primary hover:opacity-80 transition-opacity" href="#">Forgot Password?</a>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-xl">lock</span>
+<input class="w-full pl-12 pr-12 py-3.5 bg-surface-container-highest border-none rounded-md focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all" placeholder="••••••••" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors" type="button">
+<span class="material-symbols-outlined text-xl">visibility</span>
+</button>
+</div>
+</div>
+<div class="pt-2">
+<button class="w-full aura-gradient text-white font-label font-bold py-4 rounded-full shadow-lg hover:translate-y-[-1px] active:scale-95 transition-all">
+                            Login
+                        </button>
+</div>
+</form>
+<!-- Divider -->
+<div class="relative flex items-center py-2">
+<div class="flex-grow border-t border-outline-variant opacity-30"></div>
+<span class="flex-shrink mx-4 text-xs font-label text-outline uppercase tracking-widest">or continue with</span>
+<div class="flex-grow border-t border-outline-variant opacity-30"></div>
+</div>
+<!-- Passkey Authentication -->
+<button class="w-full flex items-center justify-center gap-3 bg-surface-container-low text-on-surface border border-outline-variant/20 font-label font-semibold py-4 rounded-full hover:bg-surface-container-high active:scale-95 transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">passkey</span>
+                    Login with Passkey
+                </button>
+</div>
+</div>
+<!-- Footer Actions -->
+<div class="mt-8 text-center space-y-4">
+<p class="text-on-surface-variant font-medium">
+                New to Catalyst? 
+                <a class="text-primary font-bold hover:underline decoration-2 underline-offset-4 ml-1" href="#">Create Account</a>
+</p>
+<div class="flex justify-center gap-6 mt-4">
+<a class="text-xs text-outline font-label uppercase tracking-widest hover:text-primary transition-colors" href="#">Terms</a>
+<a class="text-xs text-outline font-label uppercase tracking-widest hover:text-primary transition-colors" href="#">Privacy</a>
+<a class="text-xs text-outline font-label uppercase tracking-widest hover:text-primary transition-colors" href="#">Support</a>
+</div>
+</div>
+</main>
+<!-- Visual Anchor: Trip Preview Snippet -->
+<div class="hidden lg:block absolute right-12 bottom-12 w-80 glass-panel rounded-lg p-4 tonal-sculpting -rotate-3 overflow-hidden">
+<div class="h-40 w-full rounded-md mb-4 overflow-hidden">
+<img alt="Scenic valley" class="w-full h-full object-cover" data-alt="cinematic landscape of a mountain valley with a winding river at sunset with golden orange light and purple shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXz9n6FsMPAxXoU45_a9xNdhcfn0BW6j7bjGGA8nW6gy0vgSHDdzWQNdV5BZL8wJtxJg6Bo985RdL_E4mZPu9VtGOhcu5a9H6MiJYdx072s-CVWON6SPNicgi2Pc5eTTVWkW10_IIdLBtm901WF3xNWULY8W8JUFUndoCK_e1z3S_zPINv0Fv0TbtZ2pvfg9d7DcmqfhH14gaRbf7Y6xz24JhM0TgDTh4rYFbU0EwJlXwS7UjQERAonjjKyipwzjEpmUhCOFaJlQ8"/>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-center">
+<span class="text-xs font-mono text-primary font-bold">#TRIP-2024</span>
+<span class="text-[10px] font-label bg-secondary-container/30 text-on-secondary-container px-2 py-0.5 rounded-full">ACTIVE</span>
+</div>
+<h3 class="font-headline font-bold text-on-surface">Alpine Discovery</h3>
+<p class="text-xs text-on-surface-variant line-clamp-2">The air is thinner up here, but the view of the valley floor makes every step worth it...</p>
+</div>
+</div>
+</body></html>
