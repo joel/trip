@@ -25,7 +25,7 @@ module Components
     def render_badge(count)
       css = "absolute -top-1 -right-1 flex h-5 min-w-5 " \
             "items-center justify-center rounded-full " \
-            "bg-red-500 px-1 text-[10px] font-bold text-white"
+            "bg-[var(--ha-danger-strong)] px-1 text-[10px] font-bold text-white"
       css = "#{css} hidden" if count.zero?
       label = "#{count} unread #{"notification".pluralize(count)}"
       span(
