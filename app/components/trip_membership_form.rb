@@ -21,7 +21,7 @@ module Components
 
         div do
           form.label :user_id, "User",
-                     class: "text-sm font-semibold text-[var(--ha-muted)]"
+                     class: "text-sm font-medium text-[var(--ha-on-surface-variant)]"
           form.collection_select(
             :user_id, @users, :id, :email,
             { prompt: "Select a user" },
@@ -31,7 +31,7 @@ module Components
 
         div do
           form.label :role,
-                     class: "text-sm font-semibold text-[var(--ha-muted)]"
+                     class: "text-sm font-medium text-[var(--ha-on-surface-variant)]"
           form.select(
             :role,
             TripMembership.roles.keys.map { |r| [r.capitalize, r] },
@@ -52,10 +52,8 @@ module Components
     def render_errors
       div(
         id: "error_explanation",
-        class: "ha-card border border-red-200 bg-red-50/80 " \
-               "px-4 py-3 text-sm text-red-700 " \
-               "dark:border-red-500/30 dark:bg-red-500/10 " \
-               "dark:text-red-200"
+        class: "rounded-2xl bg-[var(--ha-error-container)] " \
+               "px-5 py-4 text-sm text-[var(--ha-error)]"
       ) do
         h2(class: "font-semibold") do
           plain "#{pluralize(@membership.errors.count, "error")} " \
