@@ -30,7 +30,9 @@ module JournalEntries
     def emit_event(entry)
       Rails.event.notify(
         "journal_entry.created",
-        journal_entry_id: entry.id, trip_id: entry.trip_id
+        journal_entry_id: entry.id,
+        trip_id: entry.trip_id,
+        actor_id: entry.author_id
       )
       Success()
     end

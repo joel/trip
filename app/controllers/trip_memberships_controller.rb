@@ -23,7 +23,7 @@ class TripMembershipsController < ApplicationController
 
   def create
     result = TripMemberships::Assign.new.call(
-      params: membership_params, trip: @trip
+      params: membership_params, trip: @trip, actor: current_user
     )
     case result
     in Dry::Monads::Success
