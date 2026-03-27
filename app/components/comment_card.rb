@@ -15,11 +15,10 @@ module Components
 
     def view_template
       div(id: dom_id(@comment),
-          class: "rounded-xl border " \
-                 "border-[var(--ha-border)] " \
-                 "bg-[var(--ha-surface)] p-4 " \
-                 "transition-colors duration-150 " \
-                 "hover:bg-[var(--ha-surface-hover)]") do
+          class: "rounded-2xl " \
+                 "bg-[var(--ha-surface-low)] p-4 " \
+                 "transition-colors duration-200 " \
+                 "hover:bg-[var(--ha-surface-container)]") do
         render_header
         p(class: "mt-3 text-sm text-[var(--ha-text)]") do
           plain @comment.body
