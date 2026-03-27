@@ -24,6 +24,7 @@ class RodauthMain < Rodauth::Rails::Auth
       login_param "email"
       login_label "Email"
       login_confirm_param "email-confirm"
+      need_password_notice_flash "Email recognized. Choose how to sign in."
 
       create_account_set_password? false
       verify_account_set_password? false
