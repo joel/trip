@@ -7,7 +7,6 @@ class CreateUserOmniauthIdentities < ActiveRecord::Migration[8.1]
                           foreign_key: { on_delete: :cascade }
       t.string :provider, null: false
       t.string :uid, null: false
-      t.timestamps
     end
 
     add_index :user_omniauth_identities,
