@@ -77,7 +77,7 @@ module Components
               delay: "80ms"
             )
           end
-          if view_context.allowed_to?(:index?, User)
+          if logged_in? && view_context.allowed_to?(:index?, User)
             render Components::NavItem.new(
               path: view_context.users_path,
               label: "Users",
@@ -86,7 +86,7 @@ module Components
               delay: "120ms"
             )
           end
-          if view_context.allowed_to?(:index?, AccessRequest)
+          if logged_in? && view_context.allowed_to?(:index?, AccessRequest)
             render Components::NavItem.new(
               path: view_context.access_requests_path,
               label: "Requests",
@@ -111,7 +111,7 @@ module Components
         div(class: "pt-4") do
           nav_section_label("Quick Actions")
           div(class: "space-y-1") do
-            if view_context.allowed_to?(:new?, User)
+            if logged_in? && view_context.allowed_to?(:new?, User)
               render Components::NavItem.new(
                 path: view_context.new_user_path, label: "New user",
                 icon: Components::Icons::Plus.new, delay: "200ms"

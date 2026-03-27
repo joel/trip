@@ -14,6 +14,7 @@ RSpec.describe Views::Users::Index, type: :request do
   it "renders a list of users" do
     get users_path
     expect(response).to have_http_status(:ok)
-    expect(response.body.scan("User").length).to be >= 2
+    expect(response.body).to include("user-one@example.com")
+    expect(response.body).to include("user-two@example.com")
   end
 end
