@@ -7,7 +7,7 @@ module Components
     def view_template
       return if view_context.rodauth.login_form_footer_links.empty?
 
-      div(class: "mt-4 border-t border-[var(--ha-border)] pt-4") do
+      div(class: "mt-6 pt-6") do
         p(class: "ha-overline") do
           plain "More options"
         end

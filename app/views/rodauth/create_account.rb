@@ -7,43 +7,42 @@ module Views
       include Phlex::Rails::Helpers::ContentTag
 
       def view_template
-        div(class: "space-y-8") do
-          div(class: "ha-card p-8") do
-            p(class: "ha-overline") do
-              plain "Access"
-            end
-            h1(class: "mt-2 text-3xl font-semibold tracking-tight sm:text-4xl") do
-              plain "Create account"
-            end
-            p(class: "mt-3 text-sm text-[var(--ha-muted)]") do
-              plain "Sign up with your email and we will verify it before you log in."
-            end
-          end
-
-          render Components::RodauthFlash.new
-
-          div(class: "ha-card p-6") do
-            form_with(
-              url: view_context.rodauth.create_account_path,
-              method: :post,
-              data: { turbo: false },
-              class: "space-y-6"
-            ) do |form|
-              raw safe(view_context.rodauth.create_account_additional_form_tags.to_s)
-              render_invitation_token_field(form)
-
-              render_login_field(form)
-              render_login_confirm_field(form) if view_context.rodauth.require_login_confirmation?
-
-              if view_context.rodauth.create_account_set_password?
-                render_password_field(form)
-                render_password_confirm_field(form) if view_context.rodauth.require_password_confirmation?
+        div(class: "flex min-h-[70vh] items-center justify-center") do
+          div(class: "w-full max-w-md space-y-8") do
+            div(class: "text-center") do
+              h1(class: "font-headline text-3xl font-bold tracking-tighter") do
+                plain "Create account"
               end
+              p(class: "mt-2 text-sm text-[var(--ha-on-surface-variant)]") do
+                plain "Sign up with your email and we will verify it before you log in."
+              end
+            end
 
-              form.submit(
-                view_context.rodauth.create_account_button,
-                class: "ha-button ha-button-primary w-full"
-              )
+            render Components::RodauthFlash.new
+
+            div(class: "ha-glass rounded-[2rem] p-8 shadow-[var(--ha-card-shadow)]") do
+              form_with(
+                url: view_context.rodauth.create_account_path,
+                method: :post,
+                data: { turbo: false },
+                class: "space-y-6"
+              ) do |form|
+                raw safe(view_context.rodauth.create_account_additional_form_tags.to_s)
+                render_invitation_token_field(form)
+
+                render_login_field(form)
+                render_login_confirm_field(form) if view_context.rodauth.require_login_confirmation?
+
+                if view_context.rodauth.create_account_set_password?
+                  render_password_field(form)
+                  render_password_confirm_field(form) if view_context.rodauth.require_password_confirmation?
+                end
+
+                form.submit(
+                  view_context.rodauth.create_account_button,
+                  class: "ha-button ha-button-primary w-full"
+                )
+              end
             end
           end
         end
@@ -61,7 +60,7 @@ module Views
           form.label(
             "login",
             view_context.rodauth.login_label,
-            class: "text-sm font-semibold text-[var(--ha-muted)]"
+            class: "text-sm font-medium text-[var(--ha-on-surface-variant)]"
           )
           form.email_field(
             view_context.rodauth.login_param,
@@ -80,7 +79,7 @@ module Views
           end
           if login_error
             span(
-              class: "mt-1 block text-xs text-red-500",
+              class: "mt-1 block text-xs text-[var(--ha-error)]",
               id: "login_error_message"
             ) { login_error }
           end
@@ -101,7 +100,7 @@ module Views
           form.label(
             "login-confirm",
             view_context.rodauth.login_confirm_label,
-            class: "text-sm font-semibold text-[var(--ha-muted)]"
+            class: "text-sm font-medium text-[var(--ha-on-surface-variant)]"
           )
           form.email_field(
             view_context.rodauth.login_confirm_param,
@@ -114,7 +113,7 @@ module Views
           )
           if login_confirm_error
             span(
-              class: "mt-1 block text-xs text-red-500",
+              class: "mt-1 block text-xs text-[var(--ha-error)]",
               id: "login-confirm_error_message"
             ) { login_confirm_error }
           end
@@ -133,7 +132,7 @@ module Views
           form.label(
             "password",
             view_context.rodauth.password_label,
-            class: "text-sm font-semibold text-[var(--ha-muted)]"
+            class: "text-sm font-medium text-[var(--ha-on-surface-variant)]"
           )
           form.password_field(
             view_context.rodauth.password_param,
@@ -146,7 +145,7 @@ module Views
           )
           if password_error
             span(
-              class: "mt-1 block text-xs text-red-500",
+              class: "mt-1 block text-xs text-[var(--ha-error)]",
               id: "password_error_message"
             ) { password_error }
           end
@@ -181,7 +180,7 @@ module Views
           form.label(
             "password-confirm",
             view_context.rodauth.password_confirm_label,
-            class: "text-sm font-semibold text-[var(--ha-muted)]"
+            class: "text-sm font-medium text-[var(--ha-on-surface-variant)]"
           )
           form.password_field(
             view_context.rodauth.password_confirm_param,
@@ -194,7 +193,7 @@ module Views
           )
           if password_confirm_error
             span(
-              class: "mt-1 block text-xs text-red-500",
+              class: "mt-1 block text-xs text-[var(--ha-error)]",
               id: "password-confirm_error_message"
             ) { password_confirm_error }
           end

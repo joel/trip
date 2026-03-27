@@ -36,7 +36,7 @@ module Components
         form.label(
           "login",
           view_context.rodauth.login_label,
-          class: "text-sm font-semibold text-[var(--ha-muted)]"
+          class: "text-sm font-medium text-[var(--ha-on-surface-variant)]"
         )
         form.email_field(
           view_context.rodauth.login_param,
@@ -55,7 +55,7 @@ module Components
         form.label(
           "login",
           view_context.rodauth.login_label,
-          class: "text-sm font-semibold text-[var(--ha-muted)]"
+          class: "text-sm font-medium text-[var(--ha-on-surface-variant)]"
         )
         form.email_field(
           view_context.rodauth.login_param,
@@ -72,7 +72,7 @@ module Components
           content_tag(
             :span,
             login_error,
-            class: "mt-1 block text-xs text-red-500",
+            class: "mt-1 block text-xs text-[var(--ha-error)]",
             id: "login_error_message"
           )
         end
@@ -86,7 +86,7 @@ module Components
         form.label(
           "password",
           view_context.rodauth.password_label,
-          class: "text-sm font-semibold text-[var(--ha-muted)]"
+          class: "text-sm font-medium text-[var(--ha-on-surface-variant)]"
         )
         form.password_field(
           view_context.rodauth.password_param,
@@ -103,7 +103,7 @@ module Components
           content_tag(
             :span,
             password_error,
-            class: "mt-1 block text-xs text-red-500",
+            class: "mt-1 block text-xs text-[var(--ha-error)]",
             id: "password_error_message"
           )
         end
