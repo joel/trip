@@ -317,76 +317,13 @@
     background: var(--ha-danger-strong);
   }
 
-  /* ── Navigation sidebar ── */
+  /* ── Navigation sidebar (desktop only, hidden md:flex) ── */
   .ha-nav {
-    width: 4.5rem;
-    transition: width 240ms ease;
+    width: 16rem;
   }
 
-  .ha-nav[open] {
-    width: min(16rem, 80vw);
-  }
-
-  .ha-nav:not([open]) > .ha-nav-body {
-    display: flex;
-  }
-
-  .ha-nav-label {
-    white-space: nowrap;
-    opacity: 0;
-    transform: translateX(-0.4rem);
-    transition: opacity 180ms ease, transform 180ms ease;
-  }
-
-  .ha-nav[open] .ha-nav-label {
-    opacity: 1;
-    transform: translateX(0);
-  }
-
-  .ha-nav:not([open]) .ha-nav-item {
-    justify-content: center;
-    gap: 0;
-  }
-
-  .ha-nav:not([open]) .ha-nav-label {
-    width: 0;
-    margin-left: 0;
-    overflow: hidden;
-    pointer-events: none;
-  }
-
-  .ha-nav:not([open]) summary {
-    justify-content: center;
-  }
-
-  .ha-nav:not([open]) .ha-nav-brand {
-    display: none;
-  }
-
-  .ha-nav-toggle svg {
-    transition: transform 200ms ease;
-  }
-
-  .ha-nav[open] .ha-nav-toggle svg {
-    transform: rotate(180deg);
-  }
-
-  @media (max-width: 767px) {
-    .ha-nav {
-      position: fixed;
-      z-index: 40;
-      height: 100vh;
-      width: 4.5rem;
-    }
-
-    .ha-nav[open] {
-      width: min(16rem, 80vw);
-      box-shadow: 18px 0 45px -10px rgba(0, 0, 0, 0.5);
-    }
-
-    .ha-nav ~ main {
-      margin-left: 4.5rem;
-    }
+  .ha-nav-item {
+    transition: background-color 200ms ease, color 200ms ease;
   }
 
   /* ── Glassmorphism utility ── */
