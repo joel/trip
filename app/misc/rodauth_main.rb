@@ -35,6 +35,10 @@ class RodauthMain < Rodauth::Rails::Auth
       require_bcrypt? false
 
       auth_class_eval do
+        def two_factor_authentication_setup?
+          false
+        end
+
         def get_password_hash
           nil
         end
