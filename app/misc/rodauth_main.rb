@@ -4,7 +4,7 @@ require "sequel/core"
 
 class RodauthMain < Rodauth::Rails::Auth
   unless BuildTasks.assets_precompile?
-    configure do
+    configure do # rubocop:disable Metrics/BlockLength
       enable :create_account, :verify_account, :login, :logout,
              :email_auth, :webauthn, :webauthn_login
 
