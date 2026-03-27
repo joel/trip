@@ -11,11 +11,9 @@ module Components
     end
 
     def view_template
-      css = "ha-card p-4 flex items-start gap-4 " \
-            "motion-safe:transition-all motion-safe:duration-200"
-      css = "#{css} opacity-60" if @notification.read?
-      div(class: css) do
-        render_indicator
+      div(class: card_css) do
+        render_left_border unless @notification.read?
+        render_avatar
         render_content
         render_actions
       end
@@ -23,13 +21,32 @@ module Components
 
     private
 
-    def render_indicator
+    def card_css
+      base = "relative overflow-hidden rounded-2xl p-5 " \
+             "flex items-start gap-4 " \
+             "motion-safe:transition-all motion-safe:duration-300"
       if @notification.read?
-        div(class: "mt-1.5 h-2.5 w-2.5 rounded-full " \
-                   "bg-transparent flex-shrink-0")
+        "#{base} bg-[var(--ha-card)]/60 opacity-60 hover:opacity-100"
       else
-        div(class: "mt-1.5 h-2.5 w-2.5 rounded-full " \
-                   "bg-[var(--ha-primary)] flex-shrink-0")
+        "#{base} bg-[var(--ha-card)] " \
+          "shadow-[0_20px_40px_-12px_rgba(19,27,46,0.05)]"
+      end
+    end
+
+    def render_left_border
+      div(class: "absolute top-0 left-0 w-1 h-full " \
+                 "bg-[var(--ha-primary)]")
+    end
+
+    def render_avatar
+      css = "w-12 h-12 rounded-full flex-shrink-0 flex " \
+            "items-center justify-center " \
+            "bg-[var(--ha-surface-high)] " \
+            "text-sm font-bold " \
+            "text-[var(--ha-on-surface-variant)]"
+      css = "#{css} grayscale" if @notification.read?
+      div(class: css) do
+        plain actor_initials
       end
     end
 
@@ -45,15 +62,23 @@ module Components
     end
 
     def render_text
-      p(class: "text-sm font-medium leading-snug") do
-        span(class: "font-semibold") do
-          plain actor_name
+      div(class: "flex justify-between items-start") do
+        p(class: "text-sm leading-snug") do
+          span(class: "font-bold text-[var(--ha-on-surface)]") do
+            plain actor_name
+          end
+          plain " "
+          span(class: "text-[var(--ha-on-surface-variant)]") do
+            plain description
+          end
         end
-        plain " #{description}"
       end
-      p(class: "text-xs text-[var(--ha-muted)] mt-1") do
-        plain time_ago_in_words(@notification.created_at)
-        plain " ago"
+      div(class: "flex items-center gap-3 mt-1") do
+        span(class: "text-[11px] font-medium " \
+                    "text-[var(--ha-muted)]") do
+          plain time_ago_in_words(@notification.created_at)
+          plain " ago"
+        end
       end
     end
 
@@ -63,8 +88,10 @@ module Components
       button_to(
         view_context.mark_as_read_notification_path(@notification),
         method: :patch,
-        class: "text-xs text-[var(--ha-primary)] " \
-               "hover:underline flex-shrink-0",
+        class: "text-[11px] font-bold text-[var(--ha-primary)] " \
+               "uppercase tracking-wider " \
+               "hover:underline flex-shrink-0 " \
+               "motion-safe:transition-all",
         form: { class: "inline-flex" }
       ) { "Mark read" }
     end
@@ -74,6 +101,17 @@ module Components
 
       @notification.actor.name.presence ||
         @notification.actor.email.split("@").first
+    end
+
+    def actor_initials
+      return "?" unless @notification.actor
+
+      name = @notification.actor.name.presence
+      if name
+        name.split.map(&:first).first(2).join.upcase
+      else
+        @notification.actor.email.first.upcase
+      end
     end
 
     def description
