@@ -21,10 +21,12 @@ module Views
           ) do
             render Components::FlashToasts.new
             render Components::PwaInstallBanner.new
+            render Components::MobileTopBar.new
             div(class: "flex min-h-screen") do
               render Components::Sidebar.new
               render_main(&)
             end
+            render Components::MobileBottomNav.new
           end
         end
       end
@@ -37,7 +39,8 @@ module Views
           meta(name: "viewport", content: "width=device-width,initial-scale=1")
           meta(name: "theme-color", content: "#0b1220")
           meta(name: "apple-mobile-web-app-capable", content: "yes")
-          meta(name: "apple-mobile-web-app-status-bar-style", content: "black-translucent")
+          meta(name: "apple-mobile-web-app-status-bar-style",
+               content: "black-translucent")
           meta(name: "application-name", content: "Trip Journal")
           meta(name: "mobile-web-app-capable", content: "yes")
           csrf_meta_tags
@@ -53,7 +56,7 @@ module Views
       end
 
       def render_main(&)
-        main(class: "relative flex-1 overflow-hidden") do
+        main(class: "relative flex-1 overflow-hidden pt-16 pb-20 md:pt-0 md:pb-0") do
           render_background_decorations
           div(class: "relative px-6 py-8 sm:px-10") do
             div(class: "mx-auto max-w-5xl ha-fade-in", &)
@@ -63,10 +66,12 @@ module Views
 
       def render_background_decorations
         div(class: "pointer-events-none fixed inset-0 -z-10") do
-          div(class: "absolute -right-48 -top-48 h-[500px] w-[500px] rounded-full " \
-                     "bg-[var(--ha-primary-container)] opacity-[0.12] blur-[120px]")
-          div(class: "absolute -bottom-24 -left-24 h-[400px] w-[400px] rounded-full " \
-                     "bg-[var(--ha-surface-high)] opacity-[0.25] blur-[100px]")
+          div(class: "absolute -right-48 -top-48 h-[500px] w-[500px] " \
+                     "rounded-full bg-[var(--ha-primary-container)] " \
+                     "opacity-[0.12] blur-[120px]")
+          div(class: "absolute -bottom-24 -left-24 h-[400px] w-[400px] " \
+                     "rounded-full bg-[var(--ha-surface-high)] " \
+                     "opacity-[0.25] blur-[100px]")
         end
       end
     end

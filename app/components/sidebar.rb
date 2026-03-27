@@ -8,43 +8,59 @@ module Components
     NAV_BASE = Components::NavItem::NAV_BASE
 
     def view_template
-      details(
-        class: "ha-nav flex h-screen flex-shrink-0 flex-col overflow-hidden " \
+      nav(
+        class: "ha-nav hidden md:flex h-screen flex-shrink-0 flex-col overflow-hidden " \
+               "rounded-r-[2rem] " \
                "bg-[linear-gradient(180deg,var(--ha-panel),var(--ha-panel-strong))] " \
-               "text-[var(--ha-panel-text)] shadow-[18px_0_45px_-30px_rgba(15,23,42,0.7)]",
-        open: true
+               "text-[var(--ha-panel-text)] " \
+               "shadow-[0_20px_40px_-12px_rgba(11,18,32,0.5)]",
+        aria_label: "Main navigation"
       ) do
-        render_summary
-        div(class: "ha-nav-body flex h-full flex-1 flex-col") do
-          render_main_nav
-          render_bottom_nav
-        end
+        render_user_profile
+        render_main_nav
+        render_bottom_nav
       end
     end
 
     private
 
-    def render_summary
-      summary(class: "flex cursor-pointer items-center justify-between gap-3 px-4 pb-3 pt-4",
-              aria_label: "Toggle menu") do
-        div(class: "ha-nav-brand flex items-center gap-3") do
-          div(class: "flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 " \
-                     "text-lg font-semibold text-white") { "S" }
-          span(class: "ha-nav-label text-base font-semibold tracking-tight " \
-                      "text-[var(--ha-panel-text)]") { "Catalyst" }
-        end
-        span(class: "ha-nav-toggle flex h-9 w-9 items-center justify-center rounded-xl " \
-                    "bg-white/10 text-white/70") do
-          render Components::Icons::ChevronLeft.new
+    def render_user_profile
+      div(class: "px-4 pb-3 pt-5") do
+        if logged_in?
+          div(class: "flex items-center gap-3") do
+            render_avatar
+            div do
+              p(class: "text-sm font-semibold text-white truncate") do
+                plain user_display_name
+              end
+              p(class: "text-xs text-[var(--ha-panel-muted)] truncate") do
+                plain user_role_label
+              end
+            end
+          end
+        else
+          div(class: "flex items-center gap-3") do
+            div(class: "flex h-10 w-10 items-center justify-center " \
+                       "rounded-2xl bg-white/10 text-lg font-semibold text-white") { "C" }
+            span(class: "text-base font-semibold tracking-tight " \
+                        "text-[var(--ha-panel-text)]") { "Catalyst" }
+          end
         end
       end
     end
 
+    def render_avatar
+      div(class: "flex h-10 w-10 items-center justify-center " \
+                 "rounded-2xl bg-[var(--ha-primary-container)]/20 " \
+                 "text-sm font-semibold text-[var(--ha-primary-container)]") do
+        plain user_initials
+      end
+    end
+
     def render_main_nav
-      div(class: "px-3") do
-        div(class: "ha-nav-label mb-3 px-2 text-[0.65rem] font-semibold uppercase " \
-                   "tracking-[0.2em] text-[var(--ha-panel-muted)]") { "Main" }
-        nav(class: "space-y-1") do
+      div(class: "flex-1 px-3 pt-4") do
+        nav_section_label("Main")
+        div(class: "space-y-1") do
           render Components::NavItem.new(
             path: view_context.root_path,
             label: "Overview",
@@ -52,16 +68,12 @@ module Components
             active: view_context.current_page?(view_context.root_path),
             delay: "40ms"
           )
-          if view_context.rodauth.logged_in?
+          if logged_in?
             render Components::NavItem.new(
               path: view_context.trips_path,
               label: "Trips",
               icon: Components::Icons::Map.new,
-              active: %w[trips journal_entries trip_memberships
-                         comments reactions checklists
-                         checklist_sections checklist_items
-                         exports]
-                      .include?(view_context.controller_name),
+              active: trip_controllers?,
               delay: "80ms"
             )
           end
@@ -96,10 +108,15 @@ module Components
 
     def render_bottom_nav
       div(class: "mt-auto px-3 pb-4 pt-6") do
-        div(class: "border-t border-white/10 pt-4") do
-          render_quick_actions_label
+        div(class: "pt-4") do
+          nav_section_label("Quick Actions")
           div(class: "space-y-1") do
-            render_new_user_link
+            if view_context.allowed_to?(:new?, User)
+              render Components::NavItem.new(
+                path: view_context.new_user_path, label: "New user",
+                icon: Components::Icons::Plus.new, delay: "200ms"
+              )
+            end
             render_theme_toggle
             render_account_section
           end
@@ -107,20 +124,9 @@ module Components
       end
     end
 
-    def render_quick_actions_label
-      div(class: "ha-nav-label mb-3 px-2 text-[0.65rem] font-semibold uppercase " \
-                 "tracking-[0.2em] text-[var(--ha-panel-muted)]") { "Quick Actions" }
-    end
-
-    def render_new_user_link
-      return unless view_context.allowed_to?(:new?, User)
-
-      render Components::NavItem.new(
-        path: view_context.new_user_path,
-        label: "New user",
-        icon: Components::Icons::Plus.new,
-        delay: "200ms"
-      )
+    def nav_section_label(text)
+      p(class: "mb-3 px-2 text-[0.65rem] font-semibold uppercase " \
+               "tracking-[0.2em] text-[var(--ha-panel-muted)]") { text }
     end
 
     def render_theme_toggle
@@ -134,19 +140,24 @@ module Components
         aria_label: "Toggle dark mode"
       ) do
         span(class: "flex h-8 w-8 items-center justify-center rounded-xl bg-white/10") do
-          render Components::Icons::Sun.new(css: "h-4 w-4", data: { theme_target: "iconLight" })
-          render Components::Icons::Moon.new(css: "h-4 w-4 hidden", data: { theme_target: "iconDark" })
+          render Components::Icons::Sun.new(
+            css: "h-4 w-4", data: { theme_target: "iconLight" }
+          )
+          render Components::Icons::Moon.new(
+            css: "h-4 w-4 hidden", data: { theme_target: "iconDark" }
+          )
         end
-        span(class: "ha-nav-label", data: { theme_target: "label" }) { "Dark mode" }
+        span(class: "ha-nav-label", data: { theme_target: "label" }) do
+          plain "Dark mode"
+        end
       end
     end
 
     def render_account_section
-      div(class: "mt-4 border-t border-white/10 pt-4") do
-        div(class: "ha-nav-label mb-3 px-2 text-[0.65rem] font-semibold uppercase " \
-                   "tracking-[0.2em] text-[var(--ha-panel-muted)]") { "Account" }
+      div(class: "mt-4 pt-4") do
+        nav_section_label("Account")
         div(class: "space-y-1") do
-          if view_context.rodauth.logged_in?
+          if logged_in?
             render_logged_in_links
           else
             render_logged_out_links
@@ -207,6 +218,43 @@ module Components
         icon: Components::Icons::CreateAccount.new,
         delay: "340ms"
       )
+    end
+
+    def logged_in? = view_context.rodauth.logged_in?
+
+    def current_user
+      @current_user ||= view_context.current_user if logged_in?
+    end
+
+    def user_display_name
+      return "User" unless current_user
+
+      current_user.name.presence || current_user.email.split("@").first
+    end
+
+    def user_initials
+      return "U" unless current_user
+
+      name = current_user.name.presence
+      return name.split.pluck(0).first(2).join.upcase if name
+
+      current_user.email.first.upcase
+    end
+
+    def user_role_label
+      return "Member" unless current_user
+
+      if current_user.role?(:superadmin) then "Super Admin"
+      elsif current_user.role?(:admin) then "Admin"
+      else "Member"
+      end
+    end
+
+    def trip_controllers?
+      %w[trips journal_entries trip_memberships
+         comments reactions checklists
+         checklist_sections checklist_items
+         exports].include?(view_context.controller_name)
     end
   end
 end
