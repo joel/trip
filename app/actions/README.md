@@ -179,8 +179,67 @@ Every action emits events. Subscribers react. Jobs execute. It's a clean pipelin
   |                  |         |                   |         |                  |
   | "journal_entry.  +-------->| JournalEntrySub   +-------->| ProcessJournal   |
   |  created"        |         |                   |         |  ImagesJob       |
-  +------------------+         +-------------------+         +------------------+
+  |                  |         |                   |         |                  |
+  | "journal_entry.  +-------->| NotificationSub   +-------->| NotifyEntry      |
+  |  created"        |         |                   |         |  CreatedJob      |
+  |                  |         |                   |         |    |             |
+  | "comment.        +-------->| NotificationSub   +-------->| NotifyComment   |
+  |  created"        |         |                   |         |  AddedJob        |
+  |                  |         |                   |         |    |             |
+  | "trip_membership +-------->| TripMembershipSub +-------->| CreateNotifi-   |
+  |  .created"       |         | (also sends       |         |  cationJob      |
+  |                  |         |  assignment email) |         |    |             |
+  +------------------+         +-------------------+         +----+--+----------+
+                                                                  |  |
+                                                   ActionCable    |  |  Email
+                                                   broadcast      v  v
+                                                   (unread_count)
 ```
+
+## Notification Center
+
+> Open [`docs/notification-center.excalidraw`](../../docs/notification-center.excalidraw) in [excalidraw.com](https://excalidraw.com) for the interactive diagram.
+
+Three actions participate in the notification system by emitting events with `actor_id` payloads:
+
+```
+JournalEntries::Create ──► journal_entry.created ──► NotifyEntryCreatedJob
+                                                        │
+                                                        ├─► CreateNotificationJob (per trip member, excl. author)
+                                                        └─► NotificationMailer.entry_created (per member)
+
+Comments::Create ──────► comment.created ──────────► NotifyCommentAddedJob
+                                                        │
+                                                        ├─► CreateNotificationJob (per subscriber, excl. commenter)
+                                                        └─► NotificationMailer.comment_added (per subscriber)
+
+TripMemberships::Assign ► trip_membership.created ──► CreateNotificationJob (direct, the added user)
+```
+
+### Auto-Subscribe
+
+| Action | Subscribes | To |
+|--------|------------|------|
+| `JournalEntries::Create` | Author | The created journal entry |
+| `Comments::Create` | Commenter | The parent journal entry |
+
+Subscriptions determine who receives `comment.created` notifications. Users can unfollow entries to stop receiving comment notifications via the `JournalEntrySubscription` model.
+
+### Self-Exclusion
+
+The actor is **never** notified of their own action. Fan-out jobs use `.where.not(id: actor_id)` to exclude the author or commenter from the recipient list.
+
+### Idempotency
+
+| Mechanism | Protection |
+|-----------|-----------|
+| Unique index on `(notifiable_type, notifiable_id, recipient_id, event_type)` | Prevents duplicate notifications |
+| `CreateNotificationJob` rescues `ActiveRecord::RecordNotUnique` | Safe for job retries |
+| `find_or_create_by!` in auto-subscribe | Safe for duplicate subscription attempts |
+
+### Real-Time Badge
+
+`CreateNotificationJob` broadcasts `{ unread_count: N }` via Action Cable to `notifications:user_{id}`. The `notification-badge` Stimulus controller updates the sidebar bell icon badge in real-time.
 
 ## Actions Inventory
 
@@ -189,10 +248,12 @@ Every action emits events. Subscribers react. Jobs execute. It's a clean pipelin
 | **Trips** | `Create` | Create a trip |
 | | `Update` | Update trip attributes |
 | | `TransitionState` | Move trip between states with guard validation |
-| **Journal Entries** | `Create` | Add an entry to a trip |
+| **Journal Entries** | `Create` | Add an entry to a trip; auto-subscribes author |
 | | `Update` | Edit an entry |
 | | `Delete` | Remove an entry |
-| **Comments** | `Create` | Add a comment to an entry |
+| | `AttachImages` | Download images from HTTPS URLs (SSRF-protected) |
+| | `UploadImages` | Upload images via base64 (Marcel MIME detection) |
+| **Comments** | `Create` | Add a comment to an entry; auto-subscribes commenter |
 | | `Update` | Edit a comment |
 | | `Delete` | Remove a comment |
 | **Reactions** | `Toggle` | Add or remove an emoji reaction (idempotent) |
@@ -246,7 +307,8 @@ app/actions/
   invitations/
     accept.rb, send_invitation.rb
   journal_entries/
-    create.rb, delete.rb, update.rb
+    attach_images.rb, create.rb, delete.rb,
+    update.rb, upload_images.rb
   reactions/
     toggle.rb
   trip_memberships/
