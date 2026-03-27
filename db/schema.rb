@@ -218,10 +218,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_27_200001) do
   end
 
   create_table "user_omniauth_identities", id: uuid, force: :cascade do |t|
-    t.datetime "created_at", null: false
     t.string "provider", null: false
     t.string "uid", null: false
-    t.datetime "updated_at", null: false
     t.string "user_id", limit: 36, null: false
     t.index ["provider", "uid"], name: "idx_omniauth_identities_uniqueness", unique: true
     t.index ["user_id"], name: "index_user_omniauth_identities_on_user_id"
