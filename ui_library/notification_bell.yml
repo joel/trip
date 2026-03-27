@@ -1,0 +1,16 @@
+component: Components::NotificationBell
+file: app/components/notification_bell.rb
+library_source: application_ui/navigation/sidebar_navigation
+library_variant: null
+description: Sidebar/mobile nav notification bell link with unread count badge. Reuses NavItem NAV_BASE styling for consistent sidebar alignment. Badge is an absolute-positioned red pill with bold white text, hidden when count is zero. Wired to notification-badge Stimulus controller for real-time ActionCable updates.
+design_tokens:
+  - ha-nav-item
+  - ha-nav-label
+  - ha-rise
+  - "--ha-primary"
+tailwind_classes:
+  - relative, flex, items-center, gap-3
+  - absolute, -top-1, -right-1, h-5, min-w-5
+  - rounded-full, px-1
+  - bg-red-500, text-white, text-[10px], font-bold
+  - hidden

@@ -1,0 +1,8 @@
+component: Components::Icons::Bell
+file: app/components/icons/bell.rb
+library_source: null
+library_variant: null
+description: Bell icon SVG (20x20 viewBox) with two stroke paths for the bell body and clapper. Follows project icon conventions (currentColor, stroke-width 1.5, no fill). Used in NotificationBell nav item and notifications empty state.
+design_tokens: []
+tailwind_classes:
+  - h-4, w-4
