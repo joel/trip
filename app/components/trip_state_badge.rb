@@ -3,16 +3,16 @@
 module Components
   class TripStateBadge < Components::Base
     STATE_COLORS = {
-      "planning" => "bg-sky-100 text-sky-800 " \
-                    "dark:bg-sky-500/10 dark:text-sky-300",
-      "started" => "bg-emerald-100 text-emerald-800 " \
-                   "dark:bg-emerald-500/10 dark:text-emerald-300",
-      "cancelled" => "bg-red-100 text-red-800 " \
-                     "dark:bg-red-500/10 dark:text-red-300",
-      "finished" => "bg-indigo-100 text-indigo-800 " \
-                    "dark:bg-indigo-500/10 dark:text-indigo-300",
-      "archived" => "bg-zinc-100 text-zinc-800 " \
-                    "dark:bg-zinc-500/10 dark:text-zinc-300"
+      "planning" => "bg-[var(--ha-primary-container)]/20 " \
+                    "text-[var(--ha-on-primary-container)]",
+      "started" => "bg-[var(--ha-secondary-container)] " \
+                   "text-[var(--ha-on-secondary-container)]",
+      "cancelled" => "bg-[var(--ha-error-container)] " \
+                     "text-[var(--ha-error)]",
+      "finished" => "bg-[var(--ha-surface-variant)] " \
+                    "text-[var(--ha-on-surface-variant)]",
+      "archived" => "bg-[var(--ha-surface-high)] " \
+                    "text-[var(--ha-on-surface-variant)]"
     }.freeze
 
     def initialize(state:)
@@ -20,9 +20,10 @@ module Components
     end
 
     def view_template
-      css = STATE_COLORS[@state]
+      css = STATE_COLORS.fetch(@state, STATE_COLORS["planning"])
       span(
-        class: "rounded-full px-3 py-1 text-xs font-medium #{css}"
+        class: "inline-flex items-center rounded-full px-3 py-1 " \
+               "text-[10px] font-bold uppercase tracking-widest #{css}"
       ) do
         plain @state.capitalize
       end
