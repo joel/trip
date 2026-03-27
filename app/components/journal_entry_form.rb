@@ -19,31 +19,31 @@ module Components
 
         div do
           form.label :name,
-                     class: "text-sm font-semibold text-[var(--ha-muted)]"
+                     class: "text-sm font-medium text-[var(--ha-on-surface-variant)]"
           form.text_field :name, class: "ha-input mt-2"
         end
 
         div do
           form.label :entry_date,
-                     class: "text-sm font-semibold text-[var(--ha-muted)]"
+                     class: "text-sm font-medium text-[var(--ha-on-surface-variant)]"
           form.date_field :entry_date, class: "ha-input mt-2"
         end
 
         div do
           form.label :description,
-                     class: "text-sm font-semibold text-[var(--ha-muted)]"
+                     class: "text-sm font-medium text-[var(--ha-on-surface-variant)]"
           form.text_area :description, class: "ha-input mt-2", rows: 3
         end
 
         div do
           form.label :location_name, "Location",
-                     class: "text-sm font-semibold text-[var(--ha-muted)]"
+                     class: "text-sm font-medium text-[var(--ha-on-surface-variant)]"
           form.text_field :location_name, class: "ha-input mt-2"
         end
 
         div do
           form.label :body,
-                     class: "text-sm font-semibold text-[var(--ha-muted)]"
+                     class: "text-sm font-medium text-[var(--ha-on-surface-variant)]"
           div(class: "mt-2") do
             form.rich_text_area :body, class: "ha-input"
           end
@@ -51,7 +51,7 @@ module Components
 
         div do
           form.label :images,
-                     class: "text-sm font-semibold text-[var(--ha-muted)]"
+                     class: "text-sm font-medium text-[var(--ha-on-surface-variant)]"
           form.file_field :images, multiple: true, accept: "image/*",
                                    class: "ha-input mt-2"
         end
@@ -67,10 +67,8 @@ module Components
     def render_errors
       div(
         id: "error_explanation",
-        class: "ha-card border border-red-200 bg-red-50/80 " \
-               "px-4 py-3 text-sm text-red-700 " \
-               "dark:border-red-500/30 dark:bg-red-500/10 " \
-               "dark:text-red-200"
+        class: "rounded-2xl bg-[var(--ha-error-container)] " \
+               "px-5 py-4 text-sm text-[var(--ha-error)]"
       ) do
         h2(class: "font-semibold") do
           plain "#{pluralize(@entry.errors.count, "error")} " \
