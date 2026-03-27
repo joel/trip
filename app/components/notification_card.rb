@@ -12,7 +12,7 @@ module Components
 
     def view_template
       css = "ha-card p-4 flex items-start gap-4 " \
-            "transition-all duration-200"
+            "motion-safe:transition-all motion-safe:duration-200"
       css = "#{css} opacity-60" if @notification.read?
       div(class: css) do
         render_indicator
