@@ -68,6 +68,28 @@ RSpec.describe "JournalEntrySubscriptions" do
       end.to change(JournalEntrySubscription, :count).by(1)
     end
 
+    it "allows viewers to subscribe" do
+      viewer = create(:user)
+      create(:trip_membership, trip: trip, user: viewer,
+                               role: :viewer)
+      stub_current_user(viewer)
+
+      expect do
+        post trip_journal_entry_subscription_path(trip, entry)
+      end.to change(JournalEntrySubscription, :count).by(1)
+    end
+
+    it "allows members on finished trips to subscribe" do
+      trip.update!(state: :finished)
+      member = create(:user)
+      create(:trip_membership, trip: trip, user: member)
+      stub_current_user(member)
+
+      expect do
+        post trip_journal_entry_subscription_path(trip, entry)
+      end.to change(JournalEntrySubscription, :count).by(1)
+    end
+
     it "forbids non-members from subscribing" do
       outsider = create(:user)
       stub_current_user(outsider)

@@ -35,6 +35,6 @@ class JournalEntrySubscriptionsController < ApplicationController
   end
 
   def authorize_entry!
-    authorize!(@journal_entry, with: JournalEntryPolicy)
+    authorize!(@journal_entry, with: JournalEntryPolicy, to: :show?)
   end
 end
