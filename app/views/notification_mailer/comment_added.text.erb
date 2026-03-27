@@ -1,0 +1,3 @@
+<%= @commenter.name || @commenter.email %> commented on "<%= @entry.name %>" in the trip "<%= @trip.name %>".
+
+View the entry: <%= trip_journal_entry_url(@trip, @entry) %>
