@@ -126,11 +126,12 @@ class RodauthMain < Rodauth::Rails::Auth
       # OmniAuth hooks
       omniauth_login_failure_redirect { login_path }
 
-      before_omniauth_callback_route do
-        return if omniauth_email.blank?
+      after_login do
+        next unless authenticated_by&.include?("omniauth")
+        next if omniauth_name.blank?
 
         user = ::User.find_by(id: account_id)
-        user&.update!(name: omniauth_name) if user&.name.blank? && omniauth_name.present?
+        user&.update!(name: omniauth_name) if user&.name.blank?
       end
 
       logout_redirect "/"
