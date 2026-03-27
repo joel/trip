@@ -2,19 +2,23 @@ component: Components::CommentCard
 file: app/components/comment_card.rb
 library_source: application_ui/lists/feeds
 library_variant: null
-description: Comment card with author name, timestamp, body text, inline delete button, and inline edit form via <details> toggle. Uses surface background with border, not ha-card.
+description: Comment card with author name, relative timestamp, body text, delete button, and inline edit form via details/summary toggle. Uses surface-low background with hover to surface-container. Rounded-2xl without ha-card shadow.
 design_tokens:
   - ha-input
   - ha-button
   - ha-button-primary
+  - "--ha-surface-low"
+  - "--ha-surface-container"
+  - "--ha-text"
+  - "--ha-muted"
   - "--ha-accent"
   - "--ha-accent-strong"
   - "--ha-danger"
   - "--ha-danger-strong"
 tailwind_classes:
-  - rounded-xl, border, p-4
-  - mt-2, mt-3, gap-2, space-y-3
+  - rounded-2xl, p-4
+  - transition-colors, duration-200, duration-150
+  - flex, items-center, justify-between, gap-2
+  - mt-2, mt-3, space-y-3
   - text-sm, text-xs, font-semibold
-  - flex, items-center, justify-between
-  - transition-colors, duration-150
-  - cursor-pointer, sr-only, w-full
+  - cursor-pointer, sr-only, w-full, inline-flex

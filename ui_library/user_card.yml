@@ -1,0 +1,21 @@
+component: Components::UserCard
+file: app/components/user_card.rb
+library_source: application_ui/layout/cards
+library_variant: null
+description: User card with avatar initials in rounded-2xl container, name, email, role chip badge, and View/Edit action links. Uses ha-card base with p-6 padding. Avatar uses primary-container tonal coloring.
+design_tokens:
+  - ha-card
+  - font-headline
+  - "--ha-primary"
+  - "--ha-primary-container"
+  - "--ha-on-surface-variant"
+  - "--ha-surface-high"
+tailwind_classes:
+  - p-6, gap-4, flex, items-center, flex-1, min-w-0
+  - h-12, w-12, flex-shrink-0, rounded-2xl
+  - font-headline, text-lg, font-bold, truncate
+  - mt-0.5, mt-2, mt-4, text-sm, text-xs, text-[10px]
+  - rounded-full, px-2.5, py-0.5
+  - font-bold, uppercase, tracking-widest
+  - font-semibold, font-medium, hover:underline
+  - gap-3

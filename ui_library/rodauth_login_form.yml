@@ -1,0 +1,16 @@
+component: Components::RodauthLoginForm
+file: app/components/rodauth_login_form.rb
+library_source: application_ui/forms/sign_in_forms
+library_variant: simple.html
+description: Rodauth login form with email and password fields, field-level error messages, and full-width primary submit button. Handles readonly login field for invitation flows.
+design_tokens:
+  - ha-input
+  - ha-button
+  - ha-button-primary
+  - "--ha-on-surface-variant"
+  - "--ha-error"
+tailwind_classes:
+  - space-y-6
+  - text-sm, font-medium, text-xs
+  - mt-1, mt-2, block, w-full
+  - opacity-80, sr-only

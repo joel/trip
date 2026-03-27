@@ -1,16 +1,24 @@
 component: Components::Sidebar
 file: app/components/sidebar.rb
 library_source: application_ui/navigation/sidebar_navigation
-library_variant: null
-description: Full-height sidebar with brand logo, main nav, quick actions, account section, theme toggle. Uses details/summary for collapse.
+library_variant: brand.html
+description: Full-height sidebar with user profile avatar, main nav, quick actions, account section, theme toggle. Uses gradient panel background with dark surface and rounded-r-[2rem] shape. Desktop-only (hidden md:flex).
 design_tokens:
-  - ha-nav (custom flex column)
-  - ha-nav-item (nav link styling)
-  - ha-nav-label (collapsible label)
-  - ha-rise (entrance animation)
+  - ha-nav
+  - ha-nav-item
+  - ha-nav-label
+  - ha-rise
+  - "--ha-panel"
+  - "--ha-panel-strong"
+  - "--ha-panel-text"
+  - "--ha-panel-muted"
+  - "--ha-primary-container"
 tailwind_classes:
-  - flex, h-screen, flex-shrink-0, flex-col, overflow-hidden
-  - px-3, px-4, pb-3, pt-4, py-2.5
-  - text-sm, text-base, font-medium, font-semibold
-  - rounded-2xl, rounded-xl
-  - bg-white/10, text-white/70
+  - hidden, md:flex, h-screen, flex-shrink-0, flex-col, overflow-hidden
+  - rounded-r-[2rem], rounded-2xl, rounded-xl
+  - px-3, px-4, pb-3, pt-4, pt-5, py-2.5, mt-auto, pb-4, pt-6, mt-4
+  - text-sm, text-xs, text-base, text-lg, font-medium, font-semibold
+  - bg-white/10, text-white, truncate
+  - space-y-1, gap-3, items-center, flex-1
+  - tracking-tight, tracking-[0.2em], uppercase
+  - h-10, w-10, h-8, w-8, h-4, w-4

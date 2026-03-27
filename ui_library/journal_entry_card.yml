@@ -1,0 +1,20 @@
+component: Components::JournalEntryCard
+file: app/components/journal_entry_card.rb
+library_source: application_ui/layout/cards
+library_variant: null
+description: Journal entry card with optional cover image (aspect-[16/9] with hover zoom), overline date, headline title, location, description (line-clamp-2), comment count meta, and Read more/Edit footer links. Uses ha-card base with group hover effects.
+design_tokens:
+  - ha-card
+  - ha-overline
+  - font-headline
+  - "--ha-primary"
+  - "--ha-on-surface-variant"
+tailwind_classes:
+  - group, overflow-hidden
+  - aspect-[16/9], object-cover, transition-transform, duration-700, group-hover:scale-105
+  - p-6, mt-1, mt-2, mt-3, mt-4
+  - font-headline, text-xl, font-bold, tracking-tight
+  - text-xs, text-sm, line-clamp-2
+  - flex, items-center, justify-between, gap-1
+  - font-semibold, font-medium
+  - group-hover:gap-2

@@ -1,0 +1,16 @@
+component: Components::MobileBottomNav
+file: app/components/mobile_bottom_nav.rb
+library_source: application_ui/navigation/navbars
+library_variant: null
+description: Fixed bottom navigation bar for mobile (md:hidden). Uses ha-glass for frosted glassmorphism effect with rounded-t-[2.5rem]. Contains tab items for Home, Trips, Users, and Profile with active state scaling and color highlight.
+design_tokens:
+  - ha-glass
+  - "--ha-primary"
+  - "--ha-muted"
+tailwind_classes:
+  - fixed, bottom-0, left-0, z-50, w-full, md:hidden
+  - rounded-t-[2.5rem]
+  - flex, items-center, justify-around, px-4, py-2
+  - flex-col, gap-0.5, px-3, py-2
+  - text-[10px], font-medium, uppercase, tracking-widest
+  - scale-110, transition-all, duration-300
