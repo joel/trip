@@ -3,13 +3,16 @@
 module Components
   class NotificationBell < Components::Base
     NAV_BASE = Components::NavItem::NAV_BASE
+    NAV_ACTIVE = Components::NavItem::NAV_ACTIVE
 
     def view_template
       count = view_context.unread_notification_count
       div(data: { controller: "notification-badge" }) do
+        css = "#{NAV_BASE} ha-rise relative"
+        css = "#{css} #{NAV_ACTIVE}" if active?
         a(
           href: view_context.notifications_path,
-          class: "#{NAV_BASE} ha-rise relative",
+          class: css,
           style: "animation-delay: 100ms;",
           aria: active? ? { current: "page" } : {}
         ) do
