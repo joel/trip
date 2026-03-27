@@ -21,6 +21,17 @@ RSpec.describe JournalEntries::Create do
       expect(entry.author).to eq(admin)
     end
 
+    it "auto-subscribes the author to the entry" do
+      result = described_class.new.call(
+        params: { name: "Day 1", entry_date: Date.current },
+        trip: trip,
+        user: admin
+      )
+
+      entry = result.value!
+      expect(entry.subscribers).to include(admin)
+    end
+
     it "returns failure with missing name" do
       result = described_class.new.call(
         params: { name: "", entry_date: Date.current },

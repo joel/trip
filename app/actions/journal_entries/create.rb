@@ -4,6 +4,7 @@ module JournalEntries
   class Create < BaseAction
     def call(params:, trip:, user:)
       entry = yield persist(params, trip, user)
+      yield subscribe_author(entry, user)
       yield emit_event(entry)
       Success(entry)
     end
@@ -17,6 +18,13 @@ module JournalEntries
       Success(entry)
     rescue ActiveRecord::RecordInvalid => e
       Failure(e.record.errors)
+    end
+
+    def subscribe_author(entry, user)
+      entry.journal_entry_subscriptions.find_or_create_by!(
+        user: user
+      )
+      Success()
     end
 
     def emit_event(entry)
