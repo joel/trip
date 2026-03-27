@@ -1,0 +1,3 @@
+<%= @author.name || @author.email %> added a new entry "<%= @entry.name %>" to the trip "<%= @trip.name %>".
+
+View the entry: <%= trip_journal_entry_url(@trip, @entry) %>
