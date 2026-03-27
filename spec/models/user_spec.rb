@@ -38,4 +38,18 @@ RSpec.describe User do
       expect(user.role?(:contributor)).to be(false)
     end
   end
+
+  describe "notification cleanup on destroy" do
+    it "destroys actor-side notifications when user is deleted" do
+      actor = create(:user)
+      recipient = create(:user)
+      entry = create(:journal_entry)
+
+      create(:notification,
+             actor: actor, recipient: recipient,
+             notifiable: entry)
+
+      expect { actor.destroy! }.to change(Notification, :count).by(-1)
+    end
+  end
 end
