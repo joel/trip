@@ -1,18 +1,24 @@
 # New Phase
 
 Follow these steps:
-- Draft the next phase PLAN, X, and write it down in `prompts/Phase X.md`
+- Draft the next phase PLAN, X, and
+
+Write the PLAN down in `prompts/Phase 13 Google Stitch Design Integration.md`
 
 /clear # Clear the context to start a new cone
 
 # Execution
 
+To implement the plan, it is critical to use the agent-browser to verify that the integration and design proceed as expected. This is a highly visual re-design task that requires a visual check.
+
 Steps:
 - Read `PRPs/trip-journal.md`
 - Read CLAUDE.md
-- Use the project skill /github-workflow to execute the PLAN `prompts/Phase X.md`
-- Write the Steps taken in `prompts/Phase X - Steps.md` for trail and audit
-- QA at runtime is everything works, use the project skill /product-review
+- Use the project skill /github-workflow to execute the PLAN `prompts/Phase 13.md`
+- Write the Steps taken in `prompts/Phase 13 - Steps.md` for trail and audit
+- QA at runtime is everything works, use the project skill /product-review, it is critical to use the agent-browser to verify that the integration and design proceed as expected. This is a highly visual re-design task that requires a visual check.
+
+
 
 Use the Task tool to spin up parallel sub-agents for review. Each agent must work independently and write its report to disk before exiting. Do not wait for one to finish before starting the next.
 
