@@ -43,3 +43,6 @@
 
 # Ignore locally-installed gems.
 /vendor/bundle/
+
+# MCP server config (contains API keys)
+.mcp.json
