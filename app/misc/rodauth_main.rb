@@ -32,6 +32,10 @@ class RodauthMain < Rodauth::Rails::Auth
       omniauth_create_account? false
       omniauth_verify_account? true
 
+      omniauth_identity_insert_hash do
+        super().merge(id: SecureRandom.uuid)
+      end
+
       rails_controller { RodauthController }
       title_instance_variable :@page_title
 
