@@ -1,0 +1,9 @@
+component: Components::JournalEntryFollowButton
+file: app/components/journal_entry_follow_button.rb
+library_source: application_ui/elements/buttons
+library_variant: rounded_secondary_buttons.html
+description: Toggle button for subscribing/unsubscribing to a journal entry's notifications. Shows "Follow" (POST) when not subscribed and "Following" (DELETE) when subscribed. Uses ha-button ha-button-secondary for consistent action bar styling.
+design_tokens:
+  - ha-button
+  - ha-button-secondary
+tailwind_classes: []

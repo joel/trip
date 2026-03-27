@@ -1,0 +1,17 @@
+component: Components::NotificationCard
+file: app/components/notification_card.rb
+library_source: application_ui/lists/stacked_lists
+library_variant: narrow_with_actions.html
+description: Notification card with unread indicator dot, linked content area (actor name + event description + relative timestamp), and a "Mark read" action button. Read notifications show opacity-60 and no indicator dot. Adapts the stacked-list-with-actions library pattern into ha-card containers.
+design_tokens:
+  - ha-card
+  - "--ha-primary"
+  - "--ha-muted"
+tailwind_classes:
+  - p-4, flex, items-start, gap-4
+  - transition-all, duration-200, opacity-60
+  - mt-1.5, h-2.5, w-2.5, rounded-full, flex-shrink-0
+  - flex-1, min-w-0
+  - text-sm, text-xs, font-medium, font-semibold, leading-snug
+  - mt-1, inline-flex
+  - hover:underline
