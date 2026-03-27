@@ -17,6 +17,8 @@ module Components
           if logged_in?
             nav_tab(view_context.trips_path, "Trips",
                     Components::Icons::Map.new, trip_active?)
+            nav_tab(view_context.notifications_path, "Alerts",
+                    Components::Icons::Bell.new, notifications_active?)
           end
           if logged_in? && view_context.allowed_to?(:index?, User)
             nav_tab(view_context.users_path, "Users",
@@ -62,6 +64,10 @@ module Components
 
     def users_active?
       view_context.controller_name == "users"
+    end
+
+    def notifications_active?
+      view_context.controller_name == "notifications"
     end
 
     def account_active?

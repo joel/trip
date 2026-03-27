@@ -22,12 +22,17 @@ class ApplicationController < ActionController::Base
   # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
 
-  helper_method :current_user
+  helper_method :current_user, :unread_notification_count
 
   private
 
   def current_user
     rodauth.rails_account
+  end
+
+  def unread_notification_count
+    @unread_notification_count ||=
+      current_user ? Notification.where(recipient: current_user).unread.count : 0
   end
 
   def require_authenticated_user!

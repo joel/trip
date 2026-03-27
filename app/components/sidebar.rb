@@ -75,6 +75,7 @@ module Components
               active: trip_controllers?,
               delay: "80ms"
             )
+            render Components::NotificationBell.new
           end
           if logged_in? && view_context.allowed_to?(:index?, User)
             render Components::NavItem.new(
