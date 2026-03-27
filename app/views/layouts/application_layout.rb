@@ -62,11 +62,11 @@ module Views
       end
 
       def render_background_decorations
-        div(class: "pointer-events-none absolute inset-0") do
-          div(class: "absolute -right-32 -top-32 h-80 w-80 rounded-full " \
-                     "bg-[var(--ha-accent)] opacity-20 blur-3xl")
-          div(class: "absolute -bottom-20 left-12 h-72 w-72 rounded-full " \
-                     "bg-[var(--ha-accent-2)] opacity-10 blur-3xl")
+        div(class: "pointer-events-none fixed inset-0 -z-10") do
+          div(class: "absolute -right-48 -top-48 h-[500px] w-[500px] rounded-full " \
+                     "bg-[var(--ha-primary-container)] opacity-[0.12] blur-[120px]")
+          div(class: "absolute -bottom-24 -left-24 h-[400px] w-[400px] rounded-full " \
+                     "bg-[var(--ha-surface-high)] opacity-[0.25] blur-[100px]")
         end
       end
     end
