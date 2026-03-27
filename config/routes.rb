@@ -27,6 +27,9 @@ Rails.application.routes.draw do
   # Core domain
   resources :trips do
     resources :journal_entries, except: [:index] do
+      resource :subscription,
+               only: %i[create destroy],
+               controller: "journal_entry_subscriptions"
       resources :comments, only: %i[create update destroy]
       resources :reactions, only: %i[create destroy]
     end
