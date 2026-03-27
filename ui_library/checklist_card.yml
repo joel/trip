@@ -1,0 +1,20 @@
+component: Components::ChecklistCard
+file: app/components/checklist_card.rb
+library_source: application_ui/navigation/progress_bars
+library_variant: null
+description: Checklist card with headline name, progress bar (completed/total with percentage), and View checklist link. Progress bar uses ha-gradient-aura fill on ha-surface-high track.
+design_tokens:
+  - ha-card
+  - ha-gradient-aura
+  - font-headline
+  - "--ha-primary"
+  - "--ha-on-surface-variant"
+  - "--ha-surface-high"
+tailwind_classes:
+  - p-6, mt-4
+  - font-headline, text-lg, font-bold
+  - flex, items-center, justify-between
+  - text-xs, font-medium, text-sm, font-semibold
+  - h-2, rounded-full, overflow-hidden
+  - transition-all, duration-500
+  - gap-1, inline-flex

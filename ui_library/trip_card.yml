@@ -2,14 +2,22 @@ component: Components::TripCard
 file: app/components/trip_card.rb
 library_source: application_ui/layout/cards
 library_variant: null
-description: Trip card with overline label, title, dates, description (line-clamp-2), state badge, and View/Edit action buttons.
+description: Trip card with cover image area, state badge overlay, title, dates (mono font), description (line-clamp-2), and View details/Edit footer links. Rounded-[2rem] with card shadow and hover lift. Cancelled state adds grayscale filter.
 design_tokens:
-  - ha-card
-  - ha-card-actions
-  - ha-overline
-  - ha-button, ha-button-primary, ha-button-secondary
+  - "--ha-card"
+  - "--ha-card-shadow"
+  - "--ha-card-shadow-hover"
+  - "--ha-primary"
+  - "--ha-primary-container"
+  - "--ha-on-surface-variant"
 tailwind_classes:
-  - p-6, mt-2, gap-4
-  - text-lg, text-xs, text-sm
-  - font-semibold, line-clamp-2
-  - flex, items-start, justify-between
+  - group, relative, overflow-hidden, rounded-[2rem]
+  - transition-all, duration-500, hover:-translate-y-1
+  - grayscale, opacity-80, hover:grayscale-0, hover:opacity-100
+  - aspect-[16/10], absolute, inset-0, top-5, left-5, z-10
+  - p-8, mt-2, mt-3, mt-6
+  - font-headline, text-xl, font-bold, tracking-tight
+  - font-mono, text-xs, text-sm, line-clamp-2
+  - flex, items-center, justify-between, gap-1, gap-2
+  - font-semibold, font-medium
+  - group-hover:gap-2, group-hover:translate-x-0.5

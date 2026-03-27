@@ -2,9 +2,12 @@ component: Components::PageHeader
 file: app/components/page_header.rb
 library_source: application_ui/headings/page_headings
 library_variant: null
-description: Page header with section overline, title, optional subtitle, and block for action buttons.
+description: Page header with section overline, large headline title (text-4xl/text-5xl), optional subtitle, and block slot for action buttons. Responsive flex layout (column on mobile, row on sm+).
 design_tokens:
   - ha-overline
+  - font-headline
+  - "--ha-on-surface-variant"
 tailwind_classes:
-  - text-2xl, font-semibold, text-sm
-  - flex, flex-col, gap-4, sm:flex-row, sm:items-center, sm:justify-between
+  - flex, flex-col, gap-4, sm:flex-row, sm:items-end, sm:justify-between
+  - mt-2, text-4xl, md:text-5xl, font-bold, tracking-tighter
+  - text-sm, flex-wrap, gap-3

@@ -1,0 +1,19 @@
+component: Components::AccountDetails
+file: app/components/account_details.rb
+library_source: application_ui/data_display/description_lists
+library_variant: null
+description: Account detail card with large avatar (h-20 w-20, rounded-full), name headline, email, and role chip badge. Uses ha-card with p-8 padding for spacious layout.
+design_tokens:
+  - ha-card
+  - font-headline
+  - "--ha-primary"
+  - "--ha-primary-container"
+  - "--ha-on-surface-variant"
+  - "--ha-surface-high"
+tailwind_classes:
+  - p-8, gap-6, flex, items-center, flex-1
+  - h-20, w-20, flex-shrink-0, rounded-full
+  - font-headline, text-2xl, font-bold
+  - mt-1, mt-3, text-sm, text-[10px]
+  - rounded-full, px-3, py-1
+  - font-bold, uppercase, tracking-widest

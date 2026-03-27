@@ -1,0 +1,17 @@
+component: Components::MobileTopBar
+file: app/components/mobile_top_bar.rb
+library_source: application_ui/navigation/navbars
+library_variant: null
+description: Fixed top header bar for mobile (md:hidden). Uses ha-glass for frosted glassmorphism with h-16 height. Shows brand name on the left and user avatar initials or sign-in link on the right.
+design_tokens:
+  - ha-glass
+  - font-headline
+  - "--ha-text"
+  - "--ha-primary"
+  - "--ha-primary-container"
+tailwind_classes:
+  - fixed, top-0, z-40, w-full, md:hidden
+  - h-16, flex, items-center, justify-between, px-4
+  - font-headline, text-lg, font-semibold, tracking-tight
+  - h-9, w-9, rounded-full, text-xs, font-bold
+  - text-sm, font-medium
