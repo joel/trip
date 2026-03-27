@@ -27,9 +27,11 @@ module Components
             "items-center justify-center rounded-full " \
             "bg-red-500 px-1 text-[10px] font-bold text-white"
       css = "#{css} hidden" if count.zero?
+      label = "#{count} unread #{"notification".pluralize(count)}"
       span(
         class: css,
-        data: { notification_badge_target: "count" }
+        data: { notification_badge_target: "count" },
+        aria: { label: label }
       ) { count > 99 ? "99+" : count.to_s }
     end
 
