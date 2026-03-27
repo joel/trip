@@ -84,6 +84,7 @@ Rails/I18nLocaleTexts:
     - 'app/controllers/checklist_sections_controller.rb'
     - 'app/controllers/trip_memberships_controller.rb'
     - 'app/controllers/exports_controller.rb'
+    - 'app/controllers/notifications_controller.rb'
     - 'app/mailers/invitation_mailer.rb'
 
 # Offense count: 1

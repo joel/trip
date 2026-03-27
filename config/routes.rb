@@ -14,6 +14,16 @@ Rails.application.routes.draw do
   end
   resources :invitations, only: %i[index new create]
 
+  # Notifications
+  resources :notifications, only: [:index] do
+    member do
+      patch :mark_as_read
+    end
+    collection do
+      patch :mark_all_as_read
+    end
+  end
+
   # Core domain
   resources :trips do
     resources :journal_entries, except: [:index] do
