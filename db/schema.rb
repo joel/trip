@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_24_100002) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_27_100001) do
   create_table "access_requests", id: uuid, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -150,6 +150,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_24_100002) do
     t.index ["trip_id"], name: "index_journal_entries_on_trip_id"
   end
 
+  create_table "notifications", id: uuid, force: :cascade do |t|
+    t.string "actor_id", limit: 36, null: false
+    t.datetime "created_at", null: false
+    t.integer "event_type", null: false
+    t.string "notifiable_id", limit: 36, null: false
+    t.string "notifiable_type", null: false
+    t.datetime "read_at"
+    t.string "recipient_id", limit: 36, null: false
+    t.datetime "updated_at", null: false
+    t.index ["actor_id"], name: "index_notifications_on_actor_id"
+    t.index ["notifiable_type", "notifiable_id", "recipient_id", "event_type"], name: "idx_notifications_uniqueness", unique: true
+    t.index ["notifiable_type", "notifiable_id"], name: "index_notifications_on_notifiable_type_and_notifiable_id"
+    t.index ["recipient_id", "created_at"], name: "index_notifications_on_recipient_id_and_created_at"
+    t.index ["recipient_id", "read_at"], name: "index_notifications_on_recipient_id_and_read_at"
+    t.index ["recipient_id"], name: "index_notifications_on_recipient_id"
+  end
+
   create_table "reactions", id: uuid, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "emoji", null: false
@@ -233,6 +250,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_24_100002) do
   add_foreign_key "invitations", "users", column: "inviter_id"
   add_foreign_key "journal_entries", "trips"
   add_foreign_key "journal_entries", "users", column: "author_id"
+  add_foreign_key "notifications", "users", column: "actor_id"
+  add_foreign_key "notifications", "users", column: "recipient_id"
   add_foreign_key "reactions", "users"
   add_foreign_key "trip_memberships", "trips"
   add_foreign_key "trip_memberships", "users"
