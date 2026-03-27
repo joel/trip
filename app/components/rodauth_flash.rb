@@ -18,9 +18,8 @@ module Components
       return unless flash[:alert]
 
       div(
-        class: "ha-card border border-red-200 bg-red-50/80 px-4 py-3 text-sm " \
-               "font-medium text-red-700 dark:border-red-500/30 dark:bg-red-500/10 " \
-               "dark:text-red-200"
+        class: "ha-card bg-[var(--ha-error-container)] px-4 py-3 text-sm " \
+               "font-medium text-[var(--ha-error)]"
       ) { plain flash[:alert] }
     end
   end

@@ -14,7 +14,7 @@ module Components
         render_errors if @user.errors.any?
 
         div do
-          form.label :name, class: "text-sm font-semibold text-[var(--ha-muted)]"
+          form.label :name, class: "text-sm font-medium text-[var(--ha-on-surface-variant)]"
           form.text_field :name, class: "ha-input mt-2"
         end
 
@@ -29,8 +29,7 @@ module Components
     def render_errors
       div(
         id: "error_explanation",
-        class: "ha-card border border-red-200 bg-red-50/80 px-4 py-3 text-sm text-red-700 " \
-               "dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200"
+        class: "rounded-2xl bg-[var(--ha-error-container)] px-5 py-4 text-sm text-[var(--ha-error)]"
       ) do
         h2(class: "font-semibold") do
           plain "#{pluralize(@user.errors.count, "error")} prohibited this account from being saved:"

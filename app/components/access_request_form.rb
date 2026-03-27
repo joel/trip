@@ -14,7 +14,7 @@ module Components
         render_errors if @access_request.errors.any?
 
         div do
-          form.label :email, class: "text-sm font-semibold text-[var(--ha-muted)]"
+          form.label :email, class: "text-sm font-medium text-[var(--ha-on-surface-variant)]"
           form.email_field :email, class: "ha-input mt-2", autocomplete: "email",
                                    placeholder: "your@email.com"
         end
@@ -29,8 +29,7 @@ module Components
 
     def render_errors
       div(
-        class: "ha-card border border-red-200 bg-red-50/80 px-4 py-3 text-sm text-red-700 " \
-               "dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200"
+        class: "rounded-2xl bg-[var(--ha-error-container)] px-5 py-4 text-sm text-[var(--ha-error)]"
       ) do
         h2(class: "font-semibold") do
           plain "#{pluralize(@access_request.errors.count, "error")} prohibited this request:"
