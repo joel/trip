@@ -3,7 +3,10 @@
 Follow these steps:
 - Draft the next phase PLAN, X, and
 
-Write the PLAN down in `prompts/Phase 13 Google Stitch Design Integration.md`
+Add Social Login.
+Use rodauth-omniauth to let people Sign In/up with their Google Account.
+Generate a plan with /generate-prp
+Write the PLAN down in `prompts/Phase 15 Social Login.md`
 
 /clear # Clear the context to start a new cone
 
