@@ -18,7 +18,7 @@ module Components
             nav_tab(view_context.trips_path, "Trips",
                     Components::Icons::Map.new, trip_active?)
           end
-          if view_context.allowed_to?(:index?, User)
+          if logged_in? && view_context.allowed_to?(:index?, User)
             nav_tab(view_context.users_path, "Users",
                     Components::Icons::Users.new, users_active?)
           end
