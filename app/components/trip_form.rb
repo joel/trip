@@ -15,25 +15,25 @@ module Components
 
         div do
           form.label :name,
-                     class: "text-sm font-semibold text-[var(--ha-muted)]"
+                     class: "text-sm font-medium text-[var(--ha-on-surface-variant)]"
           form.text_field :name, class: "ha-input mt-2"
         end
 
         div do
           form.label :description,
-                     class: "text-sm font-semibold text-[var(--ha-muted)]"
+                     class: "text-sm font-medium text-[var(--ha-on-surface-variant)]"
           form.text_area :description, class: "ha-input mt-2", rows: 4
         end
 
         div(class: "grid gap-4 sm:grid-cols-2") do
           div do
             form.label :start_date,
-                       class: "text-sm font-semibold text-[var(--ha-muted)]"
+                       class: "text-sm font-medium text-[var(--ha-on-surface-variant)]"
             form.date_field :start_date, class: "ha-input mt-2"
           end
           div do
             form.label :end_date,
-                       class: "text-sm font-semibold text-[var(--ha-muted)]"
+                       class: "text-sm font-medium text-[var(--ha-on-surface-variant)]"
             form.date_field :end_date, class: "ha-input mt-2"
           end
         end
@@ -49,10 +49,8 @@ module Components
     def render_errors
       div(
         id: "error_explanation",
-        class: "ha-card border border-red-200 bg-red-50/80 " \
-               "px-4 py-3 text-sm text-red-700 " \
-               "dark:border-red-500/30 dark:bg-red-500/10 " \
-               "dark:text-red-200"
+        class: "rounded-2xl bg-[var(--ha-error-container)] " \
+               "px-5 py-4 text-sm text-[var(--ha-error)]"
       ) do
         h2(class: "font-semibold") do
           plain "#{pluralize(@trip.errors.count, "error")} " \
