@@ -19,6 +19,7 @@ class User < ApplicationRecord
   has_many :notifications, foreign_key: :recipient_id,
                            dependent: :destroy,
                            inverse_of: :recipient
+  has_many :journal_entry_subscriptions, dependent: :destroy
 
   validates :email, presence: true, uniqueness: { case_sensitive: false }
 end

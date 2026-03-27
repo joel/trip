@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_27_100001) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_27_100002) do
   create_table "access_requests", id: uuid, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -150,6 +150,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_27_100001) do
     t.index ["trip_id"], name: "index_journal_entries_on_trip_id"
   end
 
+  create_table "journal_entry_subscriptions", id: uuid, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "journal_entry_id", limit: 36, null: false
+    t.string "user_id", limit: 36, null: false
+    t.index ["journal_entry_id"], name: "index_journal_entry_subscriptions_on_journal_entry_id"
+    t.index ["user_id", "journal_entry_id"], name: "idx_entry_subscriptions_uniqueness", unique: true
+    t.index ["user_id"], name: "index_journal_entry_subscriptions_on_user_id"
+  end
+
   create_table "notifications", id: uuid, force: :cascade do |t|
     t.string "actor_id", limit: 36, null: false
     t.datetime "created_at", null: false
@@ -250,6 +259,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_27_100001) do
   add_foreign_key "invitations", "users", column: "inviter_id"
   add_foreign_key "journal_entries", "trips"
   add_foreign_key "journal_entries", "users", column: "author_id"
+  add_foreign_key "journal_entry_subscriptions", "journal_entries"
+  add_foreign_key "journal_entry_subscriptions", "users"
   add_foreign_key "notifications", "users", column: "actor_id"
   add_foreign_key "notifications", "users", column: "recipient_id"
   add_foreign_key "reactions", "users"
