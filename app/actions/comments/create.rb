@@ -4,6 +4,7 @@ module Comments
   class Create < BaseAction
     def call(params:, journal_entry:, user:)
       comment = yield persist(params, journal_entry, user)
+      yield subscribe_commenter(journal_entry, user)
       yield emit_event(comment)
       Success(comment)
     end
@@ -17,6 +18,13 @@ module Comments
       Success(comment)
     rescue ActiveRecord::RecordInvalid => e
       Failure(e.record.errors)
+    end
+
+    def subscribe_commenter(journal_entry, user)
+      journal_entry.journal_entry_subscriptions.find_or_create_by!(
+        user: user
+      )
+      Success()
     end
 
     def emit_event(comment)
