@@ -2,11 +2,12 @@ component: Components::MobileBottomNav
 file: app/components/mobile_bottom_nav.rb
 library_source: application_ui/navigation/navbars
 library_variant: null
-description: Fixed bottom navigation bar for mobile (md:hidden). Uses ha-glass for frosted glassmorphism effect with rounded-t-[2.5rem]. Contains tab items for Home, Trips, Users, and Profile with active state scaling and color highlight.
+description: Fixed bottom navigation bar for mobile (md:hidden). Uses ha-glass for frosted glassmorphism effect with rounded-t-[2.5rem]. Contains tab items for Home, Trips, Notifications (with unread badge), Users, and Profile with active state scaling and color highlight. Notification tab wired to notification-badge Stimulus controller for real-time ActionCable updates.
 design_tokens:
   - ha-glass
   - "--ha-primary"
   - "--ha-muted"
+  - "--ha-danger-strong"
 tailwind_classes:
   - fixed, bottom-0, left-0, z-50, w-full, md:hidden
   - rounded-t-[2.5rem]
@@ -14,3 +15,5 @@ tailwind_classes:
   - flex-col, gap-0.5, px-3, py-2
   - text-[10px], font-medium, uppercase, tracking-widest
   - scale-110, transition-all, duration-300
+  - relative, absolute, -top-1, -right-1, h-5, min-w-5
+  - rounded-full, px-1, font-bold, text-white, hidden
