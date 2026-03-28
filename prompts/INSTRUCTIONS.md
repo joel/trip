@@ -14,6 +14,8 @@ Write the PLAN down in `prompts/Phase 15 Social Login.md`
 
 To implement the plan, it is critical to use the agent-browser to verify that the integration and design proceed as expected. This is a highly visual re-design task that requires a visual check.
 
+/generate-prp Notifications badge show in desktop but not in the mobile menu.
+
 Steps:
 - Read `PRPs/trip-journal.md`
 - Read CLAUDE.md
