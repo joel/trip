@@ -14,6 +14,36 @@ RSpec.describe "Notifications" do
     expect(page).to have_content("Notifications")
   end
 
+  it "shows unread badge in mobile navigation" do
+    actor = create(:user)
+    create(:notification,
+           recipient: admin,
+           actor: actor,
+           notifiable: entry,
+           event_type: :entry_created)
+
+    visit root_path
+    mobile_nav = find(
+      "nav[aria-label='Mobile navigation']", visible: :all
+    )
+    badge = mobile_nav.find(
+      "[data-notification-badge-target='count']", visible: :all
+    )
+    expect(badge.text(:all)).to eq("1")
+    expect(badge[:class]).not_to include("hidden")
+  end
+
+  it "hides badge in mobile navigation when no unread notifications" do
+    visit root_path
+    mobile_nav = find(
+      "nav[aria-label='Mobile navigation']", visible: :all
+    )
+    badge = mobile_nav.find(
+      "[data-notification-badge-target='count']", visible: :all
+    )
+    expect(badge[:class]).to include("hidden")
+  end
+
   it "shows empty notifications page" do
     visit notifications_path
     expect(page).to have_content("No notifications yet")
