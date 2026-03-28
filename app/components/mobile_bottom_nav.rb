@@ -17,8 +17,7 @@ module Components
           if logged_in?
             nav_tab(view_context.trips_path, "Trips",
                     Components::Icons::Map.new, trip_active?)
-            nav_tab(view_context.notifications_path, "Notifs",
-                    Components::Icons::Bell.new, notifications_active?)
+            notification_tab
           end
           if logged_in? && view_context.allowed_to?(:index?, User)
             nav_tab(view_context.users_path, "Users",
@@ -31,6 +30,46 @@ module Components
     end
 
     private
+
+    def notification_tab
+      count = view_context.unread_notification_count
+      active = notifications_active?
+      active_css = "text-[var(--ha-primary)] scale-110"
+      idle_css = "text-[var(--ha-muted)] hover:text-[var(--ha-primary)]"
+
+      div(data: { controller: "notification-badge" }) do
+        a(
+          href: view_context.notifications_path,
+          class: "flex flex-col items-center gap-0.5 px-3 py-2 " \
+                 "transition-all duration-300 " \
+                 "#{active ? active_css : idle_css}",
+          aria: { current: (active ? "page" : nil) }
+        ) do
+          div(class: "relative") do
+            render Components::Icons::Bell.new
+            render_notification_badge(count)
+          end
+          span(class: "text-[10px] font-medium uppercase tracking-widest") do
+            plain "Notifs"
+          end
+        end
+      end
+    end
+
+    def render_notification_badge(count)
+      css = "absolute -top-1 -right-1 flex h-5 min-w-5 " \
+            "items-center justify-center rounded-full " \
+            "bg-[var(--ha-danger-strong)] px-1 " \
+            "text-[10px] font-bold text-white"
+      css = "#{css} hidden" if count.zero?
+      label = "#{count} unread " \
+              "#{"notification".pluralize(count)}"
+      span(
+        class: css,
+        data: { notification_badge_target: "count" },
+        aria: { label: label }
+      ) { count > 99 ? "99+" : count.to_s }
+    end
 
     def nav_tab(path, label, icon, active)
       active_css = "text-[var(--ha-primary)] scale-110"
