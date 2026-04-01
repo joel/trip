@@ -46,3 +46,5 @@
 
 # MCP server config (contains API keys)
 .mcp.json
+
+/notes/
