@@ -40,7 +40,7 @@ RSpec.describe "Comments" do
     expect(comment.reload.body).to eq("Updated text")
   end
 
-  it "deletes a comment" do
+  it "deletes a comment", :js do
     comment = create(:comment, journal_entry: entry,
                                user: admin,
                                body: "To be removed")

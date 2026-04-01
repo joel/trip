@@ -34,7 +34,7 @@ RSpec.describe "Journal Entries" do
     expect(page).to have_content("New Title")
   end
 
-  it "deletes a journal entry" do
+  it "deletes a journal entry", :js do
     entry = create(:journal_entry, trip: trip, author: admin,
                                    name: "Deletable")
     visit trip_journal_entry_path(trip, entry)
