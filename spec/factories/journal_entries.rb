@@ -12,5 +12,9 @@ FactoryBot.define do
       latitude { 48.8566 }
       longitude { 2.3522 }
     end
+
+    trait :with_body do
+      body { "Sample journal entry content with <strong>bold text</strong>." }
+    end
   end
 end
