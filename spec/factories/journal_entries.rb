@@ -16,5 +16,21 @@ FactoryBot.define do
     trait :with_body do
       body { "Sample journal entry content with <strong>bold text</strong>." }
     end
+
+    trait :with_images do
+      after(:create) do |entry|
+        # 1x1 red PNG (67 bytes)
+        png = "\x89PNG\r\n\x1A\n\x00\x00\x00\rIHDR\x00\x00\x00" \
+              "\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS" \
+              "\xDE\x00\x00\x00\x0CIDAT\x08\xD7c\xF8\xCF\xC0" \
+              "\x00\x00\x00\x03\x00\x01\x00\x05\xFE\xD4\x00" \
+              "\x00\x00\x00IEND\xAEB`\x82"
+        entry.images.attach(
+          io: StringIO.new(png.dup.force_encoding("BINARY")),
+          filename: "test_photo.png",
+          content_type: "image/png"
+        )
+      end
+    end
   end
 end
