@@ -6,7 +6,7 @@ class RodauthMain < Rodauth::Rails::Auth
   unless BuildTasks.assets_precompile?
     configure do # rubocop:disable Metrics/BlockLength
       enable :create_account, :verify_account, :login, :logout,
-             :email_auth, :webauthn, :webauthn_login, :omniauth
+             :email_auth, :webauthn, :webauthn_login, :omniauth, :remember
 
       db Sequel.sqlite(extensions: :activerecord_connection, keep_reference: false)
 
@@ -16,6 +16,11 @@ class RodauthMain < Rodauth::Rails::Auth
       webauthn_keys_table :user_webauthn_keys
       webauthn_user_ids_table :user_webauthn_user_ids
       webauthn_keys_account_id_column :user_id
+
+      # Remember me (persistent sessions)
+      remember_table :user_remember_keys
+      remember_deadline_interval({ days: 30 })
+      extend_remember_deadline? true
 
       # OmniAuth (Google social login)
       omniauth_identities_table :user_omniauth_identities
@@ -131,6 +136,9 @@ class RodauthMain < Rodauth::Rails::Auth
       omniauth_login_failure_redirect { login_path }
 
       after_login do
+        remember_login
+
+        # OmniAuth name backfill
         next unless authenticated_by&.include?("omniauth")
         next if omniauth_name.blank?
 
