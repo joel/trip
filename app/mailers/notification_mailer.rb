@@ -26,6 +26,7 @@ class NotificationMailer < ApplicationMailer
     @entry = @comment.journal_entry
     @trip = @entry.trip
     @commenter = @comment.user
+    @entry_url = trip_journal_entry_url(@trip, @entry)
 
     mail(
       to: @recipient.email,
