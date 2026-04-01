@@ -1,5 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
+const NO_ACCOUNT_KEY = "google_one_tap_no_account"
+
 export default class extends Controller {
   static values = {
     clientId: String,
@@ -7,6 +9,8 @@ export default class extends Controller {
   }
 
   connect() {
+    if (sessionStorage.getItem(NO_ACCOUNT_KEY)) return
+
     this.loadScript().then(() => this.initializeOneTap())
   }
 
@@ -57,8 +61,11 @@ export default class extends Controller {
       .then((data) => {
         if (data.ok) {
           window.location.replace(data.redirect || "/")
-        } else if (data.redirect) {
-          window.location.href = data.redirect
+        } else if (data.error === "no_account") {
+          // Suppress One Tap for the rest of this browser session
+          // to avoid auto_select → no_account → redirect loops.
+          sessionStorage.setItem(NO_ACCOUNT_KEY, "1")
+          window.google.accounts.id.cancel()
         }
       })
   }
