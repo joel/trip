@@ -25,11 +25,17 @@ FactoryBot.define do
               "\xDE\x00\x00\x00\x0CIDAT\x08\xD7c\xF8\xCF\xC0" \
               "\x00\x00\x00\x03\x00\x01\x00\x05\xFE\xD4\x00" \
               "\x00\x00\x00IEND\xAEB`\x82"
-        entry.images.attach(
-          io: StringIO.new(png.dup.force_encoding("BINARY")),
+        io = StringIO.new(png.dup.force_encoding("BINARY"))
+        blob = ActiveStorage::Blob.new(
+          id: SecureRandom.uuid,
+          key: SecureRandom.base36(28),
           filename: "test_photo.png",
-          content_type: "image/png"
+          content_type: "image/png",
+          service_name: ActiveStorage::Blob.service.name
         )
+        blob.upload(io)
+        blob.save!
+        entry.images.attach(blob)
       end
     end
   end
