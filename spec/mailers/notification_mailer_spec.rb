@@ -94,6 +94,29 @@ RSpec.describe NotificationMailer do
       end
     end
 
+    context "when entry has images" do
+      let(:entry) do
+        create(:journal_entry, :with_body, :with_images,
+               trip: trip, author: admin, name: "Photo Entry")
+      end
+
+      it "includes inline attachments" do
+        expect(mail.attachments.count).to eq(1)
+        expect(mail.attachments.first.filename)
+          .to eq("0_test_photo.png")
+      end
+
+      it "references image in HTML part" do
+        html = mail.html_part.body.to_s
+        expect(html).to include("cid:")
+      end
+
+      it "notes image count in text part" do
+        text = mail.text_part.body.to_s
+        expect(text).to include("[1 image attached]")
+      end
+    end
+
     it "returns nil mail when entry not found" do
       result = described_class.entry_created("nonexistent", member.id)
       expect(result.message).to be_a(ActionMailer::Base::NullMail)
