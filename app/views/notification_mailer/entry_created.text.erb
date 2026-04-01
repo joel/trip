@@ -1,3 +1,15 @@
-<%= @author.name || @author.email %> added a new entry "<%= @entry.name %>" to the trip "<%= @trip.name %>".
+<%= @author.name || @author.email %> added a new entry to the trip "<%= @trip.name %>".
 
-View the entry: <%= trip_journal_entry_url(@trip, @entry) %>
+---
+
+<%= @entry.name %>
+<%= @entry.entry_date.to_fs(:long) %>
+<% if @entry.location_name.present? %><%= @entry.location_name %>
+<% end %>
+<% if @entry.description.present? %><%= @entry.description %>
+
+<% end %><% if @entry.body.present? %><%= @entry.body.to_plain_text %>
+
+<% end %>---
+
+Read Online: <%= @entry_url %>
