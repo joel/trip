@@ -52,6 +52,9 @@ Rails.application.routes.draw do
       patch :transition
     end
   end
+  # Google One Tap sign-in
+  post "auth/google/one_tap", to: "google_one_tap_sessions#create"
+
   # MCP (Model Context Protocol) server endpoint
   post "/mcp", to: "mcp#handle"
 

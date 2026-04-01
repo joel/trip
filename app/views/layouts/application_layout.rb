@@ -20,6 +20,7 @@ module Views
             data: { controller: "theme" }
           ) do
             render Components::FlashToasts.new
+            render Components::GoogleOneTap.new
             render Components::PwaInstallBanner.new
             render Components::MobileTopBar.new
             div(class: "flex min-h-screen") do
