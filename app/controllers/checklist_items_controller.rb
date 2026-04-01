@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class ChecklistItemsController < ApplicationController
+  include ActionView::RecordIdentifier
+
   before_action :require_authenticated_user!
   before_action :set_trip
   before_action :set_checklist
