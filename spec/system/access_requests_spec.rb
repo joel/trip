@@ -20,5 +20,19 @@ RSpec.describe "Access Requests" do
       visit access_requests_path
       expect(page).to have_content("pending@example.com")
     end
+
+    it "approves an access request" do
+      AccessRequest.create!(email: "approveme@example.com")
+      visit access_requests_path
+      click_on "Approve"
+      expect(page).to have_content("approved")
+    end
+
+    it "rejects an access request" do
+      AccessRequest.create!(email: "rejectme@example.com")
+      visit access_requests_path
+      click_on "Reject"
+      expect(page).to have_content("rejected")
+    end
   end
 end

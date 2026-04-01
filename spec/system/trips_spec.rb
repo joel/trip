@@ -42,4 +42,19 @@ RSpec.describe "Trips" do
     expect(page).to have_content("Trip updated")
     expect(page).to have_content("New Name")
   end
+
+  it "deletes a trip" do
+    trip = create(:trip, name: "Doomed Trip", created_by: admin)
+    visit trip_path(trip)
+    accept_confirm { click_on "Delete" }
+    expect(page).to have_content("Trip deleted")
+  end
+
+  it "transitions a trip to started" do
+    trip = create(:trip, name: "Ready Trip", created_by: admin)
+    create(:trip_membership, trip: trip, user: admin)
+    visit trip_path(trip)
+    click_on "Start Trip"
+    expect(page).to have_content("Trip is now started")
+  end
 end
