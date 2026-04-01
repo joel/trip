@@ -29,20 +29,7 @@ module Tools
       limit = limit.to_i.clamp(1, 100)
       offset = [offset.to_i, 0].max
 
-      entries = trip.journal_entries
-                    .chronological
-                    .offset(offset)
-                    .limit(limit)
-                    .map do |e|
-        {
-          id: e.id, name: e.name,
-          entry_date: e.entry_date.to_s,
-          location_name: e.location_name,
-          description: e.description,
-          actor_type: e.actor_type,
-          comments_count: e.comments.size
-        }
-      end
+      entries = fetch_entries(trip, limit, offset)
 
       success_response(
         entries: entries,
@@ -52,5 +39,26 @@ module Tools
     rescue ToolError => e
       error_response(e.message)
     end
+
+    def self.fetch_entries(trip, limit, offset)
+      trip.journal_entries
+          .chronological
+          .left_joins(:comments)
+          .select("journal_entries.*",
+                  "COUNT(comments.id) AS comments_total")
+          .group("journal_entries.id")
+          .offset(offset).limit(limit)
+          .map do |e|
+        {
+          id: e.id, name: e.name,
+          entry_date: e.entry_date.to_s,
+          location_name: e.location_name,
+          description: e.description,
+          actor_type: e.actor_type,
+          comments_count: e.comments_total
+        }
+      end
+    end
+    private_class_method :fetch_entries
   end
 end
