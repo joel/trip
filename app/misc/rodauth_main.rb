@@ -6,7 +6,8 @@ class RodauthMain < Rodauth::Rails::Auth
   unless BuildTasks.assets_precompile?
     configure do # rubocop:disable Metrics/BlockLength
       enable :create_account, :verify_account, :login, :logout,
-             :email_auth, :webauthn, :webauthn_login, :omniauth, :remember
+             :email_auth, :webauthn, :webauthn_login, :webauthn_autofill,
+             :omniauth, :remember
 
       db Sequel.sqlite(extensions: :activerecord_connection, keep_reference: false)
 

@@ -51,6 +51,8 @@ module Views
             render Components::RodauthLoginForm.new
           end
 
+          render Components::WebauthnAutofill.new
+
           render_google_section if google_configured?
 
           render Components::RodauthLoginFormFooter.new
