@@ -2,12 +2,15 @@
 
 class NotificationMailer < ApplicationMailer
   def entry_created(journal_entry_id, recipient_id)
-    @entry = JournalEntry.find_by(id: journal_entry_id)
+    @entry = JournalEntry.includes(:rich_text_body)
+                         .find_by(id: journal_entry_id)
     @recipient = User.find_by(id: recipient_id)
     return unless @entry && @recipient
 
     @trip = @entry.trip
     @author = @entry.author
+    @entry_url = trip_journal_entry_url(@trip, @entry)
+    @email_body_html = sanitize_body_for_email(@entry.body).html_safe # rubocop:disable Rails/OutputSafety
 
     mail(
       to: @recipient.email,
@@ -28,5 +31,16 @@ class NotificationMailer < ApplicationMailer
       to: @recipient.email,
       subject: "New comment on #{@entry.name} in #{@trip.name}"
     )
+  end
+
+  private
+
+  def sanitize_body_for_email(rich_text)
+    return "" if rich_text.blank?
+
+    html = rich_text.to_s
+    doc = Nokogiri::HTML.fragment(html)
+    doc.css("action-text-attachment").each(&:remove)
+    doc.to_html
   end
 end

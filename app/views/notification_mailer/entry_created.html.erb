@@ -1,0 +1,84 @@
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+  <tr>
+    <td style="padding: 32px; background-color: #ffffff; border-radius: 16px;">
+      <%# Header: trip overline + entry title + date + location %>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+        <tr>
+          <td style="padding-bottom: 8px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: #3e484f;">
+            <%= @trip.name %>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-bottom: 4px; font-size: 28px; font-weight: 700; color: #131b2e; line-height: 1.2;">
+            <%= @entry.name %>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-bottom: 24px; font-size: 14px; color: #3e484f;">
+            <%= @entry.entry_date.to_fs(:long) %>
+            <% if @entry.location_name.present? %>
+              &nbsp;&middot;&nbsp;<%= @entry.location_name %>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-bottom: 16px; font-size: 13px; color: #3e484f;">
+            By <%= @author.name || @author.email %>
+          </td>
+        </tr>
+      </table>
+
+      <%# Description (if present) %>
+      <% if @entry.description.present? %>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+          <tr>
+            <td style="padding: 16px 0; font-size: 16px; line-height: 1.6; color: #131b2e; font-style: italic;">
+              <%= @entry.description %>
+            </td>
+          </tr>
+        </table>
+      <% end %>
+
+      <%# Divider %>
+      <% if @entry.description.present? || @email_body_html.present? %>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+          <tr>
+            <td style="padding: 8px 0;">
+              <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 0;">
+            </td>
+          </tr>
+        </table>
+      <% end %>
+
+      <%# Full body content (sanitized ActionText HTML) %>
+      <% if @email_body_html.present? %>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+          <tr>
+            <td style="padding: 16px 0; font-size: 16px; line-height: 1.7; color: #131b2e;">
+              <%= @email_body_html %>
+            </td>
+          </tr>
+        </table>
+      <% end %>
+
+      <%# Read Online button %>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+        <tr>
+          <td style="padding-top: 24px;" align="center">
+            <a href="<%= @entry_url %>"
+               style="display: inline-block; padding: 12px 32px; background-color: #00668a; color: #ffffff; font-size: 14px; font-weight: 600; text-decoration: none; border-radius: 9999px;">
+              Read Online
+            </a>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <%# Footer %>
+  <tr>
+    <td align="center" style="padding: 24px 0 0; font-size: 12px; color: #3e484f;">
+      You received this because you are a member of the trip "<%= @trip.name %>".
+    </td>
+  </tr>
+</table>
