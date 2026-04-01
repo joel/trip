@@ -2,7 +2,8 @@
 
 class NotificationMailer < ApplicationMailer
   def entry_created(journal_entry_id, recipient_id)
-    @entry = JournalEntry.includes(:rich_text_body)
+    @entry = JournalEntry.includes(:rich_text_body,
+                                   images_attachments: :blob)
                          .find_by(id: journal_entry_id)
     @recipient = User.find_by(id: recipient_id)
     return unless @entry && @recipient
@@ -11,6 +12,7 @@ class NotificationMailer < ApplicationMailer
     @author = @entry.author
     @entry_url = trip_journal_entry_url(@trip, @entry)
     @email_body_html = sanitize_body_for_email(@entry.body).html_safe # rubocop:disable Rails/OutputSafety
+    attach_inline_images
 
     mail(
       to: @recipient.email,
@@ -34,6 +36,15 @@ class NotificationMailer < ApplicationMailer
   end
 
   private
+
+  def attach_inline_images
+    return unless @entry.images.attached?
+
+    @entry.images.each_with_index do |image, index|
+      key = "#{index}_#{image.filename}"
+      attachments.inline[key] = image.blob.download
+    end
+  end
 
   def sanitize_body_for_email(rich_text)
     return "" if rich_text.blank?

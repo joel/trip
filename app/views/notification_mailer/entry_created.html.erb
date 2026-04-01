@@ -61,6 +61,21 @@
         </table>
       <% end %>
 
+      <%# Inline images %>
+      <% if @entry.images.attached? %>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+          <% @entry.images.each_with_index do |image, index| %>
+            <tr>
+              <td style="padding: 8px 0;">
+                <img src="<%= attachments["#{index}_#{image.filename}"].url %>"
+                     style="max-width: 100%; height: auto; border-radius: 12px; display: block;"
+                     alt="<%= image.filename %>">
+              </td>
+            </tr>
+          <% end %>
+        </table>
+      <% end %>
+
       <%# Read Online button %>
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
         <tr>
