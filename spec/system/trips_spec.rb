@@ -43,7 +43,7 @@ RSpec.describe "Trips" do
     expect(page).to have_content("New Name")
   end
 
-  it "deletes a trip" do
+  it "deletes a trip", :js do
     trip = create(:trip, name: "Doomed Trip", created_by: admin)
     visit trip_path(trip)
     accept_confirm { click_on "Delete" }
