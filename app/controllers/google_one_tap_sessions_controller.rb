@@ -83,8 +83,10 @@ class GoogleOneTapSessionsController < ApplicationController
       user.update!(status: open_status)
     end
 
+    rodauth.account_from_id(user.id)
     session[rodauth.session_key] = user.id
     session[rodauth.authenticated_by_session_key] = ["google_one_tap"]
+    rodauth.remember_login
 
     backfill_name(user, payload)
 

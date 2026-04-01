@@ -35,6 +35,14 @@ RSpec.describe "POST /auth/google/one_tap" do
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body).to include("ok" => true)
     end
+
+    it "sets a remember cookie for persistent sessions" do
+      post "/auth/google/one_tap",
+           params: { credential: "valid-jwt" },
+           as: :json
+
+      expect(response.cookies["_remember"]).to be_present
+    end
   end
 
   context "with matching email but no identity" do
