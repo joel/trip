@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_27_200002) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_01_174314) do
   create_table "access_requests", id: uuid, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -225,6 +225,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_27_200002) do
     t.index ["user_id"], name: "index_user_omniauth_identities_on_user_id"
   end
 
+  create_table "user_remember_keys", id: uuid, force: :cascade do |t|
+    t.datetime "deadline", null: false
+    t.string "key", null: false
+  end
+
   create_table "user_verification_keys", id: uuid, force: :cascade do |t|
     t.datetime "email_last_sent", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.string "key", null: false
@@ -277,6 +282,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_27_200002) do
   add_foreign_key "trips", "users", column: "created_by_id"
   add_foreign_key "user_email_auth_keys", "users", column: "id"
   add_foreign_key "user_omniauth_identities", "users", on_delete: :cascade
+  add_foreign_key "user_remember_keys", "users", column: "id"
   add_foreign_key "user_verification_keys", "users", column: "id"
   add_foreign_key "user_webauthn_keys", "users"
   add_foreign_key "user_webauthn_user_ids", "users", column: "id"
