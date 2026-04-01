@@ -20,7 +20,9 @@ class RodauthMain < Rodauth::Rails::Auth
       # Remember me (persistent sessions)
       remember_table :user_remember_keys
       remember_deadline_interval({ days: 30 })
+      remember_period({ days: 30 })
       extend_remember_deadline? true
+      remember_cookie_options(same_site: :lax)
 
       # OmniAuth (Google social login)
       omniauth_identities_table :user_omniauth_identities
