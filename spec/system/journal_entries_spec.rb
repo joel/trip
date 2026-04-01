@@ -23,4 +23,22 @@ RSpec.describe "Journal Entries" do
     visit trip_journal_entry_path(trip, entry)
     expect(page).to have_content("My Entry")
   end
+
+  it "edits a journal entry" do
+    entry = create(:journal_entry, trip: trip, author: admin,
+                                   name: "Old Title")
+    visit edit_trip_journal_entry_path(trip, entry)
+    fill_in "Name", with: "New Title"
+    click_on "Update Journal entry"
+    expect(page).to have_content("Entry updated")
+    expect(page).to have_content("New Title")
+  end
+
+  it "deletes a journal entry" do
+    entry = create(:journal_entry, trip: trip, author: admin,
+                                   name: "Deletable")
+    visit trip_journal_entry_path(trip, entry)
+    accept_confirm { click_on "Delete" }
+    expect(page).to have_content("Entry deleted")
+  end
 end

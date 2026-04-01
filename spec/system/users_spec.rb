@@ -19,4 +19,25 @@ RSpec.describe "Users" do
     click_on "Create User"
     expect(page).to have_content("User was successfully created")
   end
+
+  it "shows user details" do
+    user = create(:user, name: "Bob Detail")
+    visit user_path(user)
+    expect(page).to have_content("Bob Detail")
+  end
+
+  it "edits a user" do
+    user = create(:user, name: "Old Name")
+    visit edit_user_path(user)
+    fill_in "Name", with: "New Name"
+    click_on "Update User"
+    expect(page).to have_content("User was successfully updated")
+  end
+
+  it "deletes a user" do
+    user = create(:user, name: "Deletable User")
+    visit user_path(user)
+    click_on "Delete"
+    expect(page).to have_content("User was successfully destroyed")
+  end
 end
