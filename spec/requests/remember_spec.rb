@@ -18,7 +18,15 @@ RSpec.describe "Remember me configuration" do
     expect(rodauth_instance.remember_deadline_interval).to eq({ days: 30 })
   end
 
+  it "sets remember period to 30 days for deadline extension" do
+    expect(rodauth_instance.remember_period).to eq({ days: 30 })
+  end
+
   it "extends remember deadline on activity" do
     expect(rodauth_instance.extend_remember_deadline?).to be true
+  end
+
+  it "sets SameSite=Lax on the remember cookie" do
+    expect(rodauth_instance.remember_cookie_options).to include(same_site: :lax)
   end
 end
