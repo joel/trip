@@ -10,6 +10,8 @@
 
 <% end %><% if @entry.body.present? %><%= @entry.body.to_plain_text %>
 
+<% end %><% if @entry.images.attached? %>[<%= @entry.images.count %> image<%= @entry.images.count == 1 ? "" : "s" %> attached]
+
 <% end %>---
 
 Read Online: <%= @entry_url %>
