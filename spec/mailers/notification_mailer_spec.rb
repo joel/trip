@@ -130,7 +130,7 @@ RSpec.describe NotificationMailer do
 
   describe "#comment_added" do
     let(:entry) do
-      create(:journal_entry,
+      create(:journal_entry, :with_location,
              trip: trip, author: admin, name: "Test Entry")
     end
     let(:comment) do
@@ -149,6 +149,55 @@ RSpec.describe NotificationMailer do
       expect(mail.subject).to eq(
         "New comment on Test Entry in Japan Trip"
       )
+    end
+
+    it "includes entry title in HTML part" do
+      html = mail.html_part.body.to_s
+      expect(html).to include("Test Entry")
+    end
+
+    it "includes comment body in HTML part" do
+      html = mail.html_part.body.to_s
+      expect(html).to include("Great post!")
+    end
+
+    it "includes commenter name in HTML part" do
+      html = mail.html_part.body.to_s
+      expect(html).to include("Bob")
+    end
+
+    it "includes Read Online link in HTML part" do
+      html = mail.html_part.body.to_s
+      expect(html).to include("Read Online")
+    end
+
+    it "includes location in HTML part" do
+      html = mail.html_part.body.to_s
+      expect(html).to include("Paris, France")
+    end
+
+    it "includes comment body in text part" do
+      text = mail.text_part.body.to_s
+      expect(text).to include("Great post!")
+    end
+
+    it "includes Read Online link in text part" do
+      text = mail.text_part.body.to_s
+      expect(text).to include("Read Online")
+    end
+
+    it "returns nil mail when comment not found" do
+      result = described_class.comment_added(
+        "nonexistent", admin.id
+      )
+      expect(result.message).to be_a(ActionMailer::Base::NullMail)
+    end
+
+    it "returns nil mail when recipient not found" do
+      result = described_class.comment_added(
+        comment.id, "nonexistent"
+      )
+      expect(result.message).to be_a(ActionMailer::Base::NullMail)
     end
   end
 end
