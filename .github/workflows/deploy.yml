@@ -58,6 +58,8 @@ jobs:
         uses: dopplerhq/cli-action@v1
 
       - name: Deploy
-        run: doppler run -- kamal deploy
+        run: |
+          set -o pipefail
+          doppler run -- kamal deploy | grep -v "DEBUG \["
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
