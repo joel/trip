@@ -46,8 +46,7 @@ jobs:
         run: ssh-keyscan -H 65.20.110.89 >> ~/.ssh/known_hosts
 
       - name: Install Doppler CLI
-        run: |
-          curl -Ls https://get.doppler.com/install.sh | sudo sh
+        uses: dopplerhq/cli-action@v1
 
       - name: Deploy
         run: doppler run -- kamal deploy
