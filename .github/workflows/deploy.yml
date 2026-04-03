@@ -6,6 +6,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
+    if: "!contains(lowercased(github.event.head_commit.message), '[skip deploy]')"
+
     env:
       # Map your secrets to env vars Kamal expects
       KAMAL_REGISTRY_PASSWORD: ${{ secrets.KAMAL_REGISTRY_PASSWORD }}
