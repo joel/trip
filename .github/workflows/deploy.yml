@@ -1,6 +1,6 @@
 name: Deploy
 
-run-name: ${{ github.actor }} - DEPLOY - ${{ github.event.pull_request.title || github.event.head_commit.message }}
+run-name: ${{ github.actor }} - DEPLOY - ${{ github.event.head_commit.message }}
 
 on:
   push:
