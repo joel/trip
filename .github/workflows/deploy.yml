@@ -42,21 +42,19 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Configure SSH
+      - name: Setup Local Hostname
+        # This tells the runner that workeverywhere.app IS the IP.
+        # This prevents the DNS "getaddrinfo" error safely.
+        run: |
+          sudo echo "65.20.110.89 workeverywhere.app" | sudo tee -a /etc/hosts
+
+      - name: Add known_hosts (Securely)
+        # Now that the hostname resolves, we can scan it.
+        # This populates the "Guest List" so the bot doesn't complain.
         run: |
           mkdir -p ~/.ssh
-          cat >> ~/.ssh/config <<EOF
-          Host workeverywhere.app
-            HostName 65.20.110.89
-            User linuxuser
-            StrictHostKeyChecking no
-            UserKnownHostsFile /dev/null
-          EOF
-
-      - name: Add known_hosts
-        run: |
-          ssh-keyscan -H 65.20.110.89 >> ~/.ssh/known_hosts
           ssh-keyscan -H workeverywhere.app >> ~/.ssh/known_hosts
+          ssh-keyscan -H 65.20.110.89 >> ~/.ssh/known_hosts
 
       - name: Install Doppler CLI
         uses: dopplerhq/cli-action@v1
