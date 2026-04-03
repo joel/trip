@@ -48,11 +48,8 @@ jobs:
       - name: Add known_hosts (Securely)
         run: |
           mkdir -p ~/.ssh
-          # 1. Grab all key types for the exact comma-separated string net-ssh expects
-          ssh-keyscan -t rsa,ecdsa,ed25519 -H "workeverywhere.app,65.20.110.89" >> ~/.ssh/known_hosts
-
-          # 2. Grab the raw IP just as a fallback
-          ssh-keyscan -t rsa,ecdsa,ed25519 -H 65.20.110.89 >> ~/.ssh/known_hosts
+          ssh-keyscan -t rsa,ecdsa,ed25519 workeverywhere.app,65.20.110.89 >> ~/.ssh/known_hosts
+          ssh-keyscan -t rsa,ecdsa,ed25519 65.20.110.89 >> ~/.ssh/known_hosts
 
       - name: Install Doppler CLI
         uses: dopplerhq/cli-action@v1
