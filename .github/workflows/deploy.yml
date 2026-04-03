@@ -10,10 +10,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    # Simple, case-insensitive, and actually works:
-    if: >-
-      (github.event_name == 'push' || github.event.pull_request.merged == true) &&
-      !contains(github.event.pull_request.title || github.event.head_commit.message, '[skip deploy]')
+    if: "!contains(github.event.head_commit.message, '[skip deploy]')"
 
     env:
       # Map your secrets to env vars Kamal expects
@@ -49,12 +46,13 @@ jobs:
           sudo echo "65.20.110.89 workeverywhere.app" | sudo tee -a /etc/hosts
 
       - name: Add known_hosts (Securely)
-        # Now that the hostname resolves, we can scan it.
-        # This populates the "Guest List" so the bot doesn't complain.
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H workeverywhere.app >> ~/.ssh/known_hosts
-          ssh-keyscan -H 65.20.110.89 >> ~/.ssh/known_hosts
+          # 1. Grab all key types for the exact comma-separated string net-ssh expects
+          ssh-keyscan -t rsa,ecdsa,ed25519 -H "workeverywhere.app,65.20.110.89" >> ~/.ssh/known_hosts
+
+          # 2. Grab the raw IP just as a fallback
+          ssh-keyscan -t rsa,ecdsa,ed25519 -H 65.20.110.89 >> ~/.ssh/known_hosts
 
       - name: Install Doppler CLI
         uses: dopplerhq/cli-action@v1
