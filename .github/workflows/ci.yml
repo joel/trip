@@ -2,7 +2,13 @@ name: CI
 
 run-name: ${{ github.actor }} - CI - ${{ github.event.pull_request.title || github.event.head_commit.message }}
 
-on: [ push ]
+on:
+  # 1. Trigger for ANY Pull Request, regardless of target branch
+  pull_request:
+
+  # 2. Trigger only when code actually lands on main (for Deploy/Final Check)
+  push:
+    branches: [main]
 
 env:
   RAILS_ENV: test
