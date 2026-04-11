@@ -166,3 +166,16 @@ This checklist must be satisfied before pushing:
 - [ ] Login page renders correctly
 - [ ] Dark mode toggle works
 - [ ] No runtime errors in any page
+
+## Skill Self-Evaluation
+
+After using any skill from this project, append a brief retrospective:
+
+**Skill used**: [skill name]
+**Step audit**:
+- Any step that was redundant or unnecessary → note it
+- Any step whose output was unused → note it
+- Any command that produced an error or required a workaround → note it
+- Any step where you deviated from the skill's instructions → explain why
+
+**Improvement suggestion**: One concrete, actionable edit to the SKILL.md that would fix the most significant issue found. If none, write "No changes suggested."
