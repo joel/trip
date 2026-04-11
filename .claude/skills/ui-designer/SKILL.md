@@ -1,101 +1,18 @@
 ---
 name: ui-designer
 description: Build production-grade frontend interfaces using Tailwind CSS, Phlex components, and Hotwire (Turbo + Stimulus). Use this skill whenever the user asks to build, style, or improve web pages, UI components, layouts, forms, navigation, dashboards, or any visual frontend element. Also use when the user mentions designing a view, creating a Phlex component, styling with Tailwind, adding a sidebar, building a table, creating a card, or beautifying any web UI. This skill has access to a 657-component reference library to produce polished, consistent results. Always trigger this skill for ANY UI-related work -- even small styling tweaks, layout adjustments, or "make this look better" requests.
+compatibility: Rails project with Phlex (Components::Base) + Tailwind CSS standalone (no Node/npm) + Hotwire (Turbo + Stimulus). Requires a local clone of the Tailwind UI component library at ~/Workspace/WebUIComponents/TailwindCSS/ and the project-local ui_library/*.yml registry.
 ---
 
 # UI Designer
 
 Build and modify frontend interfaces for this Rails + Phlex + Tailwind project. Every UI change must go through this skill to ensure consistency with the design system and reuse of existing library components.
 
-## UI Components Library
+## Component Reference Library
 
-The project has access to a **657-component Tailwind CSS reference library** at:
+This skill draws from a local library of 657 Tailwind CSS component templates (path documented in the `compatibility` frontmatter). Before building any non-trivial UI element, read `references/component_library.md` — it has the full category index (364 Application UI + 114 E-commerce + 179 Marketing), the decision flow for picking a template, the Phlex translation example, and how to browse and regenerate the project index.
 
-```
-~/Workspace/WebUIComponents/TailwindCSS/
-```
-
-### Library Structure
-
-| Category | Count | Path |
-|----------|-------|------|
-| **Application UI** | 364 | `application_ui/` |
-| -- Application Shells | 23 | `application_shells/` (sidebar, stacked, multi-column) |
-| -- Data Display | 19 | `data_display/` (calendars, description lists, stats) |
-| -- Elements | 45 | `elements/` (avatars, badges, buttons, button groups, dropdowns) |
-| -- Feedback | 12 | `feedback/` (alerts, empty states) |
-| -- Forms | 74 | `forms/` (action panels, checkboxes, comboboxes, form layouts, input groups, radio groups, select menus, sign-in forms, textareas, toggles) |
-| -- Headings | 25 | `headings/` (card headings, page headings, section headings) |
-| -- Layout | 38 | `layout/` (cards, containers, dividers, list containers, media objects) |
-| -- Lists | 44 | `lists/` (feeds, grid lists, stacked lists, tables) |
-| -- Navigation | 54 | `navigation/` (breadcrumbs, command palettes, navbars, pagination, progress bars, sidebar navigation, tabs, vertical navigation) |
-| -- Overlays | 24 | `overlays/` (drawers, modal dialogs, notifications) |
-| -- Page Examples | 6 | `page_examples/` (detail, home, settings screens) |
-| **Ecommerce** | 114 | `ecommerce/` |
-| **Marketing** | 179 | `marketing/` |
-
-### How to Use the Library
-
-**Before creating any new UI component, search the library first:**
-
-```bash
-# Search by component type
-ls ~/Workspace/WebUIComponents/TailwindCSS/application_ui/elements/badges/
-ls ~/Workspace/WebUIComponents/TailwindCSS/application_ui/layout/cards/
-ls ~/Workspace/WebUIComponents/TailwindCSS/application_ui/lists/stacked_lists/
-
-# Read a component to see the HTML/Tailwind pattern
-cat ~/Workspace/WebUIComponents/TailwindCSS/application_ui/elements/badges/flat.html
-```
-
-**Decision flow:**
-
-1. **Search the library** for the component type you need (card, badge, form, list, etc.)
-2. **Found a match?** Read the HTML, adapt it to Phlex syntax, apply project design tokens (`--ha-*` CSS variables). Document the mapping in `ui_library/` (see below).
-3. **No match?** Build from scratch using the project design system. Still create an entry in `ui_library/` for future reference.
-
-### Adapting Library Components to Phlex
-
-Library components are raw HTML + Tailwind. To use them in this project:
-
-1. Read the HTML from the library file
-2. Convert to Phlex Ruby syntax (HTML tags become method calls)
-3. Replace hardcoded Tailwind colors with project CSS variables (`--ha-text`, `--ha-muted`, `--ha-accent`, etc.)
-4. Apply project conventions (see Design System section below)
-5. Document the adaptation in `ui_library/`
-
-**Example: Library badge -> Project badge**
-
-Library HTML (`application_ui/elements/badges/flat.html`):
-```html
-<span class="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-700">Badge</span>
-```
-
-Phlex adaptation:
-```ruby
-span(class: "rounded-full px-3 py-1 text-xs font-medium " \
-            "bg-emerald-100 text-emerald-800 " \
-            "dark:bg-emerald-500/10 dark:text-emerald-300") do
-  plain "Badge"
-end
-```
-
-Changes: added dark mode variants, used project-consistent spacing (`px-3 py-1`), matched the border-radius language.
-
-### Browsing the Libraries
-
-Both libraries have browsable `index.html` files:
-
-- **Reference library**: `open ~/Workspace/WebUIComponents/TailwindCSS/index.html` (657 components)
-- **Project library**: `open ui_library/index.html` (current project components)
-
-### Regenerating the Project Index
-
-After adding or modifying `ui_library/*.yml` entries, regenerate the browsable index:
-
-```bash
-mise x -- ruby ui_library/generate_index.rb
-```
+If the library path is missing on this machine, stop and ask the user rather than inventing class names.
 
 ## Project UI Library (`ui_library/`)
 
@@ -226,38 +143,4 @@ end
 
 ## Existing Project Components
 
-| Component | Type | File |
-|-----------|------|------|
-| Sidebar | Navigation shell | `sidebar.rb` |
-| NavItem | Navigation item | `nav_item.rb` |
-| PageHeader | Page heading | `page_header.rb` |
-| TripCard | List card | `trip_card.rb` |
-| TripStateBadge | Status badge | `trip_state_badge.rb` |
-| JournalEntryCard | List card | `journal_entry_card.rb` |
-| CommentCard | Inline card | `comment_card.rb` |
-| CommentForm | Form | `comment_form.rb` |
-| ReactionSummary | Inline widget | `reaction_summary.rb` |
-| ExportCard | List card | `export_card.rb` |
-| ExportStatusBadge | Status badge | `export_status_badge.rb` |
-| UserCard | List card | `user_card.rb` |
-| AccessRequestCard | List card | `access_request_card.rb` |
-| InvitationCard | List card | `invitation_card.rb` |
-| TripMembershipCard | List card | `trip_membership_card.rb` |
-| ChecklistCard | List card | `checklist_card.rb` |
-| ChecklistItemRow | List row | `checklist_item_row.rb` |
-| NoticeBanner | Feedback | `notice_banner.rb` |
-| FlashToasts | Feedback | `flash_toasts.rb` |
-| PwaInstallBanner | Feedback | `pwa_install_banner.rb` |
-| TripForm | Form | `trip_form.rb` |
-| JournalEntryForm | Form | `journal_entry_form.rb` |
-| UserForm | Form | `user_form.rb` |
-| AccountForm | Form | `account_form.rb` |
-| AccountDetails | Detail display | `account_details.rb` |
-| InvitationForm | Form | `invitation_form.rb` |
-| AccessRequestForm | Form | `access_request_form.rb` |
-| TripMembershipForm | Form | `trip_membership_form.rb` |
-| ChecklistForm | Form | `checklist_form.rb` |
-| RodauthLoginForm | Auth form | `rodauth_login_form.rb` |
-| RodauthLoginFormFooter | Auth footer | `rodauth_login_form_footer.rb` |
-| RodauthEmailAuthRequestForm | Auth form | `rodauth_email_auth_request_form.rb` |
-| RodauthFlash | Auth feedback | `rodauth_flash.rb` |
+Run `ls app/components/*.rb` to see the current set — match the naming and structural conventions of the existing files when adding new ones. (Intentionally not listed inline: the component set changes frequently and a static list goes stale the moment a component is added or renamed.)
