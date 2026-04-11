@@ -52,7 +52,7 @@ jobs:
           ssh-keyscan -t rsa,ecdsa,ed25519 65.20.110.89 >> ~/.ssh/known_hosts
 
       - name: Install Doppler CLI
-        uses: dopplerhq/cli-action@v1
+        uses: dopplerhq/cli-action@v4
 
       - name: Deploy
         run: |
