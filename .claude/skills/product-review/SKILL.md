@@ -284,59 +284,11 @@ agent-browser eval 'document.querySelector("#login")?.readOnly'
   docker exec -i catalyst-app-dev bin/rails runner - < /tmp/script.rb
   ```
 
-## Bullet N+1 Query Audit (Mandatory)
+## Bullet N+1 Query Audit
 
-The project uses the `bullet` gem to detect N+1 queries, unused eager loading, and counter cache opportunities. In development mode, Bullet is configured with:
-- `alert = true` — JavaScript alert popup on every page with issues
-- `add_footer = true` — HTML footer injected at the bottom of every page
-- `console = true` — warnings logged to browser console
-- `rails_logger = true` — warnings logged to Rails log
+The `bullet` gem surfaces N+1 queries, unused eager loading, and counter cache opportunities in development. **Every page you visit during this review must be checked for Bullet alerts** — any "USE eager loading" alert is a defect that blocks merge.
 
-**On every page you visit during the review, you MUST check for Bullet alerts.** Bullet alerts are N+1 query problems that degrade performance and must be fixed before merge.
-
-### How to Check for Bullet Alerts
-
-After loading each page, run:
-
-```bash
-# Check for Bullet footer in page HTML
-agent-browser eval "document.getElementById('bullet-footer')?.innerText || 'No Bullet warnings'"
-
-# Check for Bullet alerts in browser console
-agent-browser eval "window.__bullet_alerts || 'No alerts'"
-```
-
-Also check the Docker logs after browsing:
-
-```bash
-docker logs catalyst-app-dev --tail 100 2>&1 | grep -i "bullet\|USE eager\|N+1\|Counter cache"
-```
-
-### Common Bullet Findings and Fixes
-
-| Bullet Message | Meaning | Fix |
-|----------------|---------|-----|
-| `USE eager loading detected: Model => [:association]` | N+1 query — each item triggers a separate query for the association | Add `.includes(:association)` to the controller query |
-| `AVOID eager loading detected: Model => [:association]` | You're eager-loading an association that's never used on this page | Remove the `.includes(:association)` from the query |
-| `Need Counter Cache: Model => [:association]` | Calling `.count` or `.size` on an association in a loop | Add `counter_cache: true` to the `belongs_to` or use `.size` with eager loading |
-
-### Reporting Bullet Issues
-
-List every Bullet warning in the report under a dedicated section:
-
-```
-## Bullet N+1 Alerts
-
-| Page | Alert | Severity |
-|------|-------|----------|
-| /trips | USE eager loading: Trip => [:trip_memberships] | Must fix |
-| /trips/:id | None | Clean |
-| /trips/:id/journal_entries/:id | USE eager loading: JournalEntry => [:comments] | Must fix |
-```
-
-**Every "USE eager loading" alert is a defect that must be fixed.** Add `.includes(...)` or `.preload(...)` in the relevant controller action.
-
-**"AVOID eager loading" alerts are warnings** — remove the unnecessary `.includes(...)`.
+Read `references/bullet_audit.md` for the per-page check commands, alert classification (USE / AVOID / Counter Cache), common fixes, and the reporting format.
 
 ## Handling Failures
 
@@ -355,261 +307,23 @@ If a multi-step journey fails silently:
 3. Check if the mailer was called (look for email in MailCatcher)
 4. Fix the gap in the event/subscriber/job chain
 
-## Step 15: PWA Verification (Mandatory)
+## Step 15: PWA Verification
 
-The app is a Progressive Web App. Buttons (`button_to` forms) behave differently than links (`link_to`) because they use POST/PATCH/DELETE requests. The service worker must not intercept these. Test buttons explicitly -- do NOT assume a page that renders is also interactive.
+This app is a PWA. Buttons (`button_to` forms) use POST/PATCH/DELETE and behave differently than links — the service worker must not intercept them. **A page that renders correctly does NOT mean its buttons work.**
 
-### Button vs Link Distinction
+For any PR that touches service workers, JavaScript, Turbo, form/button behaviour, or the PWA manifest, read `references/pwa_verification.md` before finishing the review. It has the full button test matrix, service worker health checks, and manifest verification commands. For backend-only PRs that don't touch UI or JS, a quick sanity click on one button is usually enough.
 
-- **Links** (`<a href>`) = GET requests = navigation. These are handled by Turbo Drive.
-- **Buttons** (`<form method="post">`) = POST/PATCH/DELETE = mutations. These include reactions, delete, sign out, checklist toggles, comment post, and form submits.
+## Step 16: MCP Server Verification
 
-If links work but buttons don't, the likely cause is:
-1. Service worker intercepting non-GET requests (check `if (request.method !== "GET") return` in `app/views/pwa/service-worker.js.erb`)
-2. Stale cached JavaScript missing Turbo or Stimulus controllers
-3. CSRF token mismatch from cached HTML
+The app exposes 12 MCP tools at `POST /mcp`. The MCP server is a first-class feature — test it alongside the web UI on any PR that could affect it.
 
-### PWA Button Tests
+For PRs that touch `app/mcp/`, `app/tools/`, or any MCP-related code, read `references/mcp_verification.md` before finishing the review. It has the full tools/list sanity check, read/write/upload tool tests, state guard verification (reject write on finished trip), the auth guard check, and the verification criteria. For pure UI-only PRs that can't affect MCP, a minimal `tools/list` count sanity check is usually enough.
 
-After logging in, test every button type on a **writable trip** (started state, e.g. Iceland Road Trip):
+## Step 17: Mobile Viewport Verification
 
-```bash
-# 1. Reaction button (POST via button_to)
-# Navigate to a journal entry on a started trip
-# Click a reaction emoji button (e.g. thumbsup)
-# Verify: count increments, no error, no redirect
+The app is a PWA used on mobile devices. Buttons and links that work on desktop frequently fail on mobile due to touch targets, overflow, or viewport issues. **Test at mobile width for every interactive element in any UI-touching PR.**
 
-# 2. Comment Post button (POST via form_with)
-# Fill the comment textarea, click Post
-# Verify: comment appears via Turbo Stream, form resets
-
-# 3. Comment Delete button (DELETE via button_to)
-# Click Delete on an existing comment
-# Verify: comment removed via Turbo Stream
-
-# 4. Comment Edit (details toggle + PATCH via form_with)
-# Click Edit on a comment, modify text, click Save
-# Verify: comment updates via Turbo Stream
-
-# 5. Journal Entry Delete button (DELETE via button_to)
-# On a journal entry page, click Delete
-# Verify: redirects to trip show, entry removed
-
-# 6. Checklist toggle (PATCH via button_to)
-# Navigate to a checklist, click a checkbox item
-# Verify: item toggles without page reload
-
-# 7. Trip state transition (POST via button_to)
-# On a trip in planning state (Barcelona), click Start
-# Verify: trip transitions to started state
-
-# 8. Sign out button (POST/DELETE)
-# Click Sign out in the sidebar
-# Verify: session ends, redirects to home
-```
-
-### Service Worker Health Check
-
-```bash
-# Check service worker is registered and active
-agent-browser eval "navigator.serviceWorker.ready.then(r => r.active?.state || 'no-sw')"
-
-# Check service worker skips non-GET
-agent-browser eval "fetch('/service-worker').then(r => r.text()).then(t => t.includes('request.method !== \"GET\"') ? 'GOOD: skips non-GET' : 'BAD: may intercept POSTs')"
-
-# Check no stale caches
-agent-browser eval "caches.keys().then(k => k.join(', '))"
-```
-
-### PWA Manifest Check
-
-```bash
-agent-browser eval "fetch('/manifest.json').then(r => r.json()).then(m => JSON.stringify({name: m.name, display: m.display, start_url: m.start_url}))"
-```
-
-Verify: `display` is `standalone`, `start_url` is `/`, `name` is set.
-
-## Step 16: MCP Server Verification (Mandatory)
-
-The app exposes 12 MCP tools at `POST /mcp`. The MCP server is stateless -- every request is independent, no initialize handshake required. Test it alongside the web UI.
-
-### MCP Connection
-
-```bash
-# Set the API key from .env.development
-MCP_KEY=$(grep MCP_API_KEY .env.development | cut -d= -f2)
-
-# Quick health check -- list all tools
-curl -s https://catalyst.workeverywhere.docker/mcp \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $MCP_KEY" \
-  -d '{"jsonrpc":"2.0","id":"1","method":"tools/list"}' \
-  | python3 -c "import json,sys; tools=json.load(sys.stdin)['result']['tools']; print(f'{len(tools)} tools'); [print(f'  - {t[\"name\"]}') for t in tools]"
-```
-
-Expected: 12 tools listed.
-
-### MCP Tool Tests
-
-Test each category of tool against the live Docker app:
-
-```bash
-# 1. Read operation -- get trip status (auto-resolves to started trip)
-curl -s https://catalyst.workeverywhere.docker/mcp \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $MCP_KEY" \
-  -d '{"jsonrpc":"2.0","id":"2","method":"tools/call","params":{"name":"get_trip_status","arguments":{}}}' \
-  | python3 -m json.tool
-
-# 2. Read operation -- list journal entries
-curl -s https://catalyst.workeverywhere.docker/mcp \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $MCP_KEY" \
-  -d '{"jsonrpc":"2.0","id":"3","method":"tools/call","params":{"name":"list_journal_entries","arguments":{"limit":3}}}' \
-  | python3 -m json.tool
-
-# 3. Write operation -- create a journal entry on the started trip
-curl -s https://catalyst.workeverywhere.docker/mcp \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $MCP_KEY" \
-  -d '{"jsonrpc":"2.0","id":"4","method":"tools/call","params":{"name":"create_journal_entry","arguments":{"name":"MCP Test Entry","entry_date":"2026-03-25","body":"<p>Created by product review.</p>","location_name":"Docker"}}}' \
-  | python3 -m json.tool
-
-# 4. Upload image -- use a real image (not a stub!)
-B64_IMG=$(curl -sL "https://picsum.photos/200/150.jpg" | base64 -w0)
-ENTRY_ID=<uuid-from-step-3>
-curl -s https://catalyst.workeverywhere.docker/mcp \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $MCP_KEY" \
-  -d "{\"jsonrpc\":\"2.0\",\"id\":\"5\",\"method\":\"tools/call\",\"params\":{\"name\":\"upload_journal_images\",\"arguments\":{\"journal_entry_id\":\"$ENTRY_ID\",\"images\":[{\"data\":\"$B64_IMG\",\"filename\":\"review_test.jpg\"}]}}}" \
-  | python3 -m json.tool
-
-# 5. Verify the uploaded image renders in the browser
-agent-browser open "https://catalyst.workeverywhere.docker/trips/$TRIP_ID/journal_entries/$ENTRY_ID" && agent-browser wait --load networkidle
-agent-browser eval "document.querySelectorAll('img[alt]').length"  # Count rendered images
-agent-browser screenshot /tmp/rt-mcp-entry.png
-
-# 6. State guard -- reject write on finished trip
-FINISHED_ENTRY_ID=$(docker exec catalyst-app-dev bin/rails runner "puts Trip.find_by(state: :finished).journal_entries.first.id" 2>&1 | tail -1)
-curl -s https://catalyst.workeverywhere.docker/mcp \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $MCP_KEY" \
-  -d "{\"jsonrpc\":\"2.0\",\"id\":\"6\",\"method\":\"tools/call\",\"params\":{\"name\":\"upload_journal_images\",\"arguments\":{\"journal_entry_id\":\"$FINISHED_ENTRY_ID\",\"images\":[{\"data\":\"$B64_IMG\"}]}}}" \
-  | python3 -m json.tool
-# Expected: isError: true, "not writable"
-
-# 7. Auth guard -- reject without API key
-curl -s -w "\nHTTP: %{http_code}\n" https://catalyst.workeverywhere.docker/mcp \
-  -H "Content-Type: application/json" \
-  -d '{"jsonrpc":"2.0","id":"7","method":"tools/list"}'
-# Expected: HTTP 401
-```
-
-### MCP Verification Criteria
-
-- All 12 tools listed
-- Read tools return correct data matching seed data
-- Write tools create records visible in the web UI
-- Uploaded images render in the browser (not broken/stub)
-- State guards reject writes on non-writable trips
-- Auth rejects requests without valid API key
-- Invalid tool name returns JSON-RPC "Method not found"
-
-## Step 17: Mobile Viewport Verification (Mandatory)
-
-The app is a PWA used on mobile devices. Buttons and links that work on desktop may fail on mobile due to touch targets, overflow, or viewport issues. **Test at mobile width for every interactive element.**
-
-### Mobile Setup
-
-```bash
-# Set mobile viewport (iPhone 14 Pro dimensions)
-agent-browser eval "
-  Object.defineProperty(navigator, 'userAgent', {value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)'});
-"
-agent-browser viewport 393 852
-```
-
-### Mobile Page Tests
-
-Test every page at mobile width. Look for:
-- **Buttons/links cut off or overlapping** -- tap targets must be >= 44x44px
-- **Horizontal scrolling** -- no content should overflow the viewport
-- **Sidebar behavior** -- must collapse to hamburger/overlay, not push content off-screen
-- **Forms** -- inputs must be full-width, labels visible, submit buttons reachable
-- **Cards** -- must stack vertically, not overlap
-
-```bash
-# Home page (logged out)
-agent-browser open https://catalyst.workeverywhere.docker/ && agent-browser wait --load networkidle
-agent-browser screenshot /tmp/rt-mobile-home.png
-
-# Login page
-agent-browser open https://catalyst.workeverywhere.docker/login && agent-browser wait --load networkidle
-agent-browser screenshot /tmp/rt-mobile-login.png
-
-# After login -- trips index
-agent-browser screenshot /tmp/rt-mobile-trips.png
-
-# Trip show
-agent-browser screenshot /tmp/rt-mobile-trip-show.png
-
-# Journal entry (images, comments, reactions)
-agent-browser screenshot /tmp/rt-mobile-entry.png
-
-# Scroll to comments and reaction buttons
-agent-browser eval "window.scrollTo(0, document.body.scrollHeight)" && sleep 1
-agent-browser screenshot /tmp/rt-mobile-entry-bottom.png
-```
-
-### Mobile Button Tests (Critical)
-
-Every button must be tappable at mobile width. Test these explicitly:
-
-```bash
-# 1. Sidebar toggle (hamburger menu)
-agent-browser snapshot -i  # Find hamburger/menu button
-agent-browser click @eN  # Tap hamburger
-agent-browser screenshot /tmp/rt-mobile-sidebar.png
-
-# 2. Navigation links in mobile sidebar
-# Tap each nav item and verify navigation works
-
-# 3. Sign in button on home page
-# Must be visible and tappable without scrolling
-
-# 4. Reaction emoji buttons
-# Must be tappable (not too small, not overlapping)
-
-# 5. Comment form submit
-# Textarea and Post button must be usable
-
-# 6. Checklist toggle checkboxes
-# Must be tappable at mobile width
-
-# 7. Dark mode toggle
-# Must be accessible in mobile sidebar/header
-```
-
-### Mobile-Specific Defects to Watch For
-
-| Symptom | Likely Cause | Fix |
-|---------|-------------|-----|
-| Button doesn't respond to tap | Touch target too small (< 44px), or overlapping element intercepts tap | Add `min-h-[44px] min-w-[44px]` or fix z-index |
-| Link works on desktop, not mobile | `hover:` styles hiding the clickable area, or `pointer-events-none` on a parent | Use `@media (hover: hover)` for hover effects |
-| Horizontal scroll on mobile | Fixed-width element or `whitespace-nowrap` without `overflow-hidden` | Add `overflow-hidden` or `max-w-full` |
-| Sidebar pushes content off-screen | Sidebar not using `fixed`/`absolute` positioning on mobile | Use responsive `lg:` breakpoint for sidebar layout |
-| Form input zooms on iOS | Font size < 16px on input | Set `text-base` (16px) on form inputs |
-
-### Viewport Overflow Check
-
-After loading each page at mobile width, run:
-
-```bash
-# Check for horizontal overflow
-agent-browser eval "document.documentElement.scrollWidth > document.documentElement.clientWidth ? 'OVERFLOW: ' + document.documentElement.scrollWidth + ' > ' + document.documentElement.clientWidth : 'OK: no overflow'"
-```
-
-**Any overflow is a defect.**
+Read `references/mobile_verification.md` for the full mobile test matrix, viewport setup, mobile button tests, overflow detection commands, and the mobile-specific defect patterns. Skip only for pure backend/data PRs that don't render any new UI.
 
 ## Checklist
 
