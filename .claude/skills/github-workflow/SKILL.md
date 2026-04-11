@@ -30,13 +30,13 @@ unset GITHUB_TOKEN && gh project item-add ...
 
 ### Kanban Status IDs
 
-| Status | Option ID |
-|--------|-----------|
-| Backlog | `f75ad846` |
-| Ready | `61e4505c` |
+| Status      | Option ID  |
+|-------------|------------|
+| Backlog     | `f75ad846` |
+| Ready       | `61e4505c` |
 | In progress | `47fc9ee4` |
-| In review | `df73e18b` |
-| Done | `98236657` |
+| In review   | `df73e18b` |
+| Done        | `98236657` |
 
 **Status field ID:** `PVTSSF_lAHNFp3OAUj6X84P9YK-`
 
