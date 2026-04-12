@@ -8,7 +8,7 @@ class NotificationMailer < ApplicationMailer
 
     @trip = @entry.trip
     @author = @entry.author
-    @entry_url = trip_journal_entry_url(@trip, @entry)
+    @entry_url = trip_url(@trip, anchor: "journal_entry_#{@entry.id}")
     @email_body_html = sanitize_body_for_email(@entry.body).html_safe # rubocop:disable Rails/OutputSafety
     attach_inline_images
 
@@ -26,7 +26,7 @@ class NotificationMailer < ApplicationMailer
     @entry = @comment.journal_entry
     @trip = @entry.trip
     @commenter = @comment.user
-    @entry_url = trip_journal_entry_url(@trip, @entry)
+    @entry_url = trip_url(@trip, anchor: "journal_entry_#{@entry.id}")
 
     mail(
       to: @recipient.email,

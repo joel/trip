@@ -131,13 +131,14 @@ module Components
       when TripMembership
         view_context.trip_path(notifiable.trip)
       when JournalEntry
-        view_context.trip_journal_entry_path(
-          notifiable.trip, notifiable
+        view_context.trip_path(
+          notifiable.trip,
+          anchor: "journal_entry_#{notifiable.id}"
         )
       when Comment
-        view_context.trip_journal_entry_path(
+        view_context.trip_path(
           notifiable.journal_entry.trip,
-          notifiable.journal_entry
+          anchor: "journal_entry_#{notifiable.journal_entry_id}"
         )
       end
     end
