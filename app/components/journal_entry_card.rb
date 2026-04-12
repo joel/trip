@@ -153,7 +153,7 @@ module Components
     def render_comments
       div(class: "mt-6 space-y-4") do
         h4(class: "font-headline text-lg font-semibold") do
-          count = @entry.comments.size
+          count = @entry.comments.count
           plain "Comments (#{count})"
         end
 
@@ -230,7 +230,7 @@ module Components
     end
 
     def render_reaction_count
-      count = @entry.reactions.size
+      count = @entry.reactions.count
       return unless count.positive?
 
       span(id: "reaction_count_#{@entry.id}") do
@@ -239,7 +239,7 @@ module Components
     end
 
     def render_comment_count
-      count = @entry.comments.size
+      count = @entry.comments.count
       return unless count.positive?
 
       span do
