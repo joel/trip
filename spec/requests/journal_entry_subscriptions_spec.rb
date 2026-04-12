@@ -16,7 +16,7 @@ RSpec.describe "JournalEntrySubscriptions" do
       end.to change(JournalEntrySubscription, :count).by(1)
 
       expect(response).to redirect_to(
-        trip_journal_entry_path(trip, entry)
+        trip_path(trip, anchor: "journal_entry_#{entry.id}")
       )
     end
 
@@ -27,6 +27,17 @@ RSpec.describe "JournalEntrySubscriptions" do
       expect do
         post trip_journal_entry_subscription_path(trip, entry)
       end.not_to change(JournalEntrySubscription, :count)
+    end
+
+    it "responds with turbo_stream" do
+      post trip_journal_entry_subscription_path(trip, entry),
+           headers: { "Accept" => "text/vnd.turbo-stream.html" }
+      expect(response.media_type).to eq(
+        "text/vnd.turbo-stream.html"
+      )
+      expect(response.body).to include(
+        "journal_entry_#{entry.id}_mute"
+      )
     end
   end
 
@@ -42,7 +53,7 @@ RSpec.describe "JournalEntrySubscriptions" do
       end.to change(JournalEntrySubscription, :count).by(-1)
 
       expect(response).to redirect_to(
-        trip_journal_entry_path(trip, entry)
+        trip_path(trip, anchor: "journal_entry_#{entry.id}")
       )
     end
 
@@ -52,7 +63,21 @@ RSpec.describe "JournalEntrySubscriptions" do
       end.not_to change(JournalEntrySubscription, :count)
 
       expect(response).to redirect_to(
-        trip_journal_entry_path(trip, entry)
+        trip_path(trip, anchor: "journal_entry_#{entry.id}")
+      )
+    end
+
+    it "responds with turbo_stream" do
+      create(:journal_entry_subscription,
+             user: admin, journal_entry: entry)
+
+      delete trip_journal_entry_subscription_path(trip, entry),
+             headers: { "Accept" => "text/vnd.turbo-stream.html" }
+      expect(response.media_type).to eq(
+        "text/vnd.turbo-stream.html"
+      )
+      expect(response.body).to include(
+        "journal_entry_#{entry.id}_mute"
       )
     end
   end
