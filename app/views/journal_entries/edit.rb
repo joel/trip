@@ -26,9 +26,10 @@ module Views
 
           div(class: "flex flex-wrap gap-2") do
             link_to(
-              "Back to entry",
-              view_context.trip_journal_entry_path(
-                @trip, @journal_entry
+              "Back to trip",
+              view_context.trip_path(
+                @trip,
+                anchor: "journal_entry_#{@journal_entry.id}"
               ),
               class: "ha-button ha-button-secondary"
             )
