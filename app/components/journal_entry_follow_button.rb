@@ -34,6 +34,7 @@ module Components
                "transition-colors duration-200 " \
                "hover:bg-[var(--ha-primary-fixed)]/40",
         title: "Notifications on \u2014 click to mute",
+        aria_label: "Notifications on \u2014 click to mute",
         form: { class: "inline-flex" }
       ) do
         render Components::Icons::Bell.new(
@@ -53,6 +54,7 @@ module Components
                "transition-colors duration-200 " \
                "hover:bg-[var(--ha-surface-hover)]",
         title: "Notifications off \u2014 click to resume",
+        aria_label: "Notifications off \u2014 click to resume",
         form: { class: "inline-flex" }
       ) do
         render Components::Icons::BellOff.new(
