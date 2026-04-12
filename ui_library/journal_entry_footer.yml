@@ -1,0 +1,24 @@
+component: Components::JournalEntryFooter
+file: app/components/journal_entry_footer.rb
+library_source: null
+library_variant: null
+description: >
+  Collapsed footer for JournalEntryCard. Left side shows up to 3 reaction
+  emoji pills with a total count, plus a comment count label. Right side
+  renders a "Read more" / "Collapse" toggle button with a rotating chevron
+  that triggers the feed-entry Stimulus controller. Separated from card
+  body by a top border.
+stimulus_controller: feed-entry (action target, not controller host)
+design_tokens:
+  - "--ha-primary"
+  - "--ha-on-surface-variant"
+  - "--ha-surface-high"
+tailwind_classes:
+  - mt-4, pt-4, ml-1
+  - flex, items-center, justify-between, gap-2, gap-3
+  - border-t, border-[var(--ha-surface-high)]
+  - text-xs, text-sm, font-semibold
+  - inline-flex, inline-block
+  - cursor-pointer
+  - hover:gap-2
+  - transition-all, transition-transform, duration-200

@@ -1,0 +1,25 @@
+component: Components::ReactionSummary
+file: app/components/reaction_summary.rb
+library_source: null
+library_variant: null
+description: >
+  Row of emoji reaction buttons for a journal entry. Renders one rounded-full
+  pill per allowed emoji (thumbsup, heart, tada, eyes, fire, rocket) with a
+  count badge when positive. Active reactions (user has reacted) use a tinted
+  primary-fixed background. Each pill is a button_to POST form that toggles
+  the reaction via Turbo Stream. Ends with a total reaction count label.
+  Wrapped in a Turbo-replaceable div (id: reaction_summary_<entry_id>).
+design_tokens:
+  - "--ha-primary-fixed"
+  - "--ha-surface-muted"
+  - "--ha-surface-container"
+  - "--ha-on-surface-variant"
+  - ha-ghost-border
+tailwind_classes:
+  - mt-6, ml-1
+  - flex, flex-wrap, items-center, gap-2
+  - inline-flex, rounded-full
+  - bg-[var(--ha-primary-fixed)], bg-[var(--ha-surface-muted)]
+  - hover:bg-[var(--ha-surface-container)]
+  - px-3, py-1, text-sm, text-xs, font-medium
+  - transition-all, duration-150

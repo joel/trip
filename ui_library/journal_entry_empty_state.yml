@@ -1,0 +1,25 @@
+component: Components::JournalEntryEmptyState
+file: app/components/journal_entry_empty_state.rb
+library_source: null
+library_variant: null
+description: >
+  Empty state card shown when a trip has no journal entries. Centered layout
+  with a circular icon container (Plus icon), "No entries yet" heading,
+  descriptive paragraph, and an authorization-gated CTA button linking to
+  the new journal entry form. Uses ha-card with ha-rise entrance animation.
+design_tokens:
+  - ha-card
+  - ha-rise
+  - ha-button
+  - ha-button-primary
+  - font-headline
+  - "--ha-on-surface-variant"
+  - "--ha-surface-muted"
+tailwind_classes:
+  - p-12, text-center
+  - mx-auto, mb-6, mt-2, mt-6
+  - inline-flex, items-center, justify-center, gap-2
+  - h-16, w-16, h-8, w-8, h-5, w-5
+  - rounded-full
+  - text-lg, text-sm, font-medium
+  - max-w-md
