@@ -15,19 +15,21 @@ RSpec.describe "Comments" do
     login_as(user: admin)
   end
 
-  it "creates a comment" do
-    visit trip_journal_entry_path(trip, entry)
+  it "creates a comment", :js do
+    visit trip_path(trip)
+    click_on "Read more"
     fill_in "comment[body]", with: "Nice entry!"
     click_on "Post"
     expect(page).to have_content("Nice entry!")
   end
 
-  it "edits a comment inline" do
+  it "edits a comment inline", :js do
     comment = create(:comment, journal_entry: entry,
                                user: admin,
                                body: "Original text")
 
-    visit trip_journal_entry_path(trip, entry)
+    visit trip_path(trip)
+    click_on "Read more"
     expect(page).to have_content("Original text")
 
     within "#comment_#{comment.id}" do
@@ -44,7 +46,8 @@ RSpec.describe "Comments" do
     comment = create(:comment, journal_entry: entry,
                                user: admin,
                                body: "To be removed")
-    visit trip_journal_entry_path(trip, entry)
+    visit trip_path(trip)
+    click_on "Read more"
     expect(page).to have_content("To be removed")
 
     within "#comment_#{comment.id}" do
