@@ -187,8 +187,11 @@ module Views
       def render_journal_entries
         div(class: "space-y-6") do
           div(class: "flex items-end justify-between") do
-            h2(class: "font-headline text-2xl font-bold") do
-              plain "Journal Entries"
+            div do
+              p(class: "ha-overline") { plain "JOURNAL FEED" }
+              h2(class: "font-headline text-2xl font-bold") do
+                plain "The story so far"
+              end
             end
             if view_context.allowed_to?(
               :create?, @trip.journal_entries.new
@@ -212,10 +215,35 @@ module Views
               end
             end
           else
-            div(class: "ha-card p-8 text-center") do
-              p(class: "text-sm " \
+            div(class: "ha-card p-12 text-center") do
+              div(class: "mx-auto mb-4 text-[var(--ha-on-surface-variant)]") do
+                render Components::Icons::Plus.new(
+                  css: "mx-auto h-12 w-12"
+                )
+              end
+              p(class: "text-lg font-medium " \
                        "text-[var(--ha-on-surface-variant)]") do
-                plain "No journal entries yet."
+                plain "No entries yet"
+              end
+              p(class: "mt-2 mx-auto max-w-md text-sm " \
+                       "text-[var(--ha-on-surface-variant)]") do
+                plain "Capture a moment, a photo, or a thought " \
+                      "from the road. Every entry becomes part " \
+                      "of the trip's timeline."
+              end
+              if view_context.allowed_to?(
+                :create?, @trip.journal_entries.new
+              )
+                link_to(
+                  view_context.new_trip_journal_entry_path(@trip),
+                  class: "mt-6 ha-button ha-button-primary " \
+                         "inline-flex items-center gap-2"
+                ) do
+                  render Components::Icons::Plus.new(
+                    css: "h-5 w-5"
+                  )
+                  plain "Write the first entry"
+                end
               end
             end
           end
