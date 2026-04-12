@@ -18,4 +18,8 @@ class JournalEntry < ApplicationRecord
   scope :chronological, lambda {
     order(entry_date: :asc, created_at: :asc, id: :asc)
   }
+
+  scope :reverse_chronological, lambda {
+    order(entry_date: :desc, created_at: :desc, id: :desc)
+  }
 end

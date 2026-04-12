@@ -41,4 +41,18 @@ RSpec.describe JournalEntry do
       expect(result.to_a).to include(retroactive)
     end
   end
+
+  describe ".reverse_chronological" do
+    it "orders newest first by entry_date, created_at, id" do
+      trip = create(:trip)
+      older = create(:journal_entry, trip: trip,
+                                     entry_date: Date.new(2026, 3, 1))
+      newer = create(:journal_entry, trip: trip,
+                                     entry_date: Date.new(2026, 3, 5))
+
+      result = trip.journal_entries.reverse_chronological
+      expect(result.first).to eq(newer)
+      expect(result.last).to eq(older)
+    end
+  end
 end
