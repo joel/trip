@@ -11,23 +11,50 @@ module Components
     end
 
     def view_template
-      if @subscribed
-        button_to(
-          "Following",
-          view_context.trip_journal_entry_subscription_path(
-            @trip, @journal_entry
-          ),
-          method: :delete,
-          class: "ha-button ha-button-secondary"
+      div(id: "journal_entry_#{@journal_entry.id}_mute") do
+        if @subscribed
+          render_subscribed_button
+        else
+          render_muted_button
+        end
+      end
+    end
+
+    private
+
+    def render_subscribed_button
+      button_to(
+        view_context.trip_journal_entry_subscription_path(
+          @trip, @journal_entry
+        ),
+        method: :delete,
+        class: "inline-flex h-10 w-10 items-center " \
+               "justify-center rounded-full " \
+               "bg-[var(--ha-primary-container)]/10 " \
+               "hover:bg-[var(--ha-surface-hover)]",
+        title: "Notifications on — click to mute",
+        form: { class: "inline-flex" }
+      ) do
+        render Components::Icons::Bell.new(
+          css: "h-5 w-5 text-[var(--ha-primary)]"
         )
-      else
-        button_to(
-          "Follow",
-          view_context.trip_journal_entry_subscription_path(
-            @trip, @journal_entry
-          ),
-          method: :post,
-          class: "ha-button ha-button-secondary"
+      end
+    end
+
+    def render_muted_button
+      button_to(
+        view_context.trip_journal_entry_subscription_path(
+          @trip, @journal_entry
+        ),
+        method: :post,
+        class: "inline-flex h-10 w-10 items-center " \
+               "justify-center rounded-full " \
+               "hover:bg-[var(--ha-surface-hover)]",
+        title: "Notifications off — click to resume",
+        form: { class: "inline-flex" }
+      ) do
+        render Components::Icons::BellOff.new(
+          css: "h-5 w-5 text-[var(--ha-on-surface-variant)]"
         )
       end
     end

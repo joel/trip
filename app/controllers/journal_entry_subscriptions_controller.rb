@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class JournalEntrySubscriptionsController < ApplicationController
+  include TurboStreamable
+
   before_action :require_authenticated_user!
   before_action :set_trip
   before_action :set_journal_entry
@@ -10,16 +12,28 @@ class JournalEntrySubscriptionsController < ApplicationController
     @journal_entry.journal_entry_subscriptions.find_or_create_by!(
       user: current_user
     )
-    redirect_to [@trip, @journal_entry],
-                notice: "You are now following this entry."
+    respond_to do |format|
+      format.turbo_stream { render_mute_button(subscribed: true) }
+      format.html do
+        redirect_to trip_path(@trip, anchor: dom_id(@journal_entry)),
+                    notice: "You are now following this entry."
+      end
+    end
   end
 
   def destroy
     @journal_entry.journal_entry_subscriptions
                   .find_by(user: current_user)&.destroy!
-    redirect_to [@trip, @journal_entry],
-                notice: "You unfollowed this entry.",
-                status: :see_other
+    respond_to do |format|
+      format.turbo_stream do
+        render_mute_button(subscribed: false)
+      end
+      format.html do
+        redirect_to trip_path(@trip, anchor: dom_id(@journal_entry)),
+                    notice: "You unfollowed this entry.",
+                    status: :see_other
+      end
+    end
   end
 
   private
@@ -36,5 +50,15 @@ class JournalEntrySubscriptionsController < ApplicationController
 
   def authorize_entry!
     authorize!(@journal_entry, with: JournalEntryPolicy, to: :show?)
+  end
+
+  def render_mute_button(subscribed:)
+    render turbo_stream: stream_replace(
+      "journal_entry_#{@journal_entry.id}_mute",
+      Components::JournalEntryFollowButton.new(
+        trip: @trip, journal_entry: @journal_entry,
+        subscribed: subscribed
+      )
+    )
   end
 end
