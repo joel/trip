@@ -8,14 +8,6 @@ RSpec.describe "/trips/:trip_id/journal_entries" do
 
   before { stub_current_user(admin) }
 
-  describe "GET /trips/:trip_id/journal_entries/:id" do
-    it "renders the entry" do
-      entry = create(:journal_entry, trip: trip, author: admin)
-      get trip_journal_entry_path(trip, entry)
-      expect(response).to be_successful
-    end
-  end
-
   describe "GET /trips/:trip_id/journal_entries/new" do
     it "renders the new form" do
       get new_trip_journal_entry_path(trip)
@@ -24,7 +16,7 @@ RSpec.describe "/trips/:trip_id/journal_entries" do
   end
 
   describe "POST /trips/:trip_id/journal_entries" do
-    it "creates an entry with valid params" do
+    it "creates an entry and redirects to trip page" do
       expect do
         post trip_journal_entries_path(trip), params: {
           journal_entry: {
@@ -32,6 +24,28 @@ RSpec.describe "/trips/:trip_id/journal_entries" do
           }
         }
       end.to change(JournalEntry, :count).by(1)
+
+      entry = JournalEntry.last
+      expect(response).to redirect_to(
+        trip_path(trip, anchor: "journal_entry_#{entry.id}")
+      )
+    end
+
+    it "auto-subscribes trip members" do
+      member = create(:user)
+      create(:trip_membership, trip: trip, user: member,
+                               role: :contributor)
+
+      post trip_journal_entries_path(trip), params: {
+        journal_entry: {
+          name: "Day 1", entry_date: Date.current.to_s
+        }
+      }
+
+      entry = JournalEntry.last
+      subscriber_ids = entry.journal_entry_subscriptions
+                            .pluck(:user_id)
+      expect(subscriber_ids).to include(admin.id, member.id)
     end
 
     it "rejects invalid params" do
@@ -43,12 +57,15 @@ RSpec.describe "/trips/:trip_id/journal_entries" do
   end
 
   describe "PATCH /trips/:trip_id/journal_entries/:id" do
-    it "updates the entry" do
+    it "updates the entry and redirects to trip page" do
       entry = create(:journal_entry, trip: trip, author: admin)
       patch trip_journal_entry_path(trip, entry), params: {
         journal_entry: { name: "Updated" }
       }
       expect(entry.reload.name).to eq("Updated")
+      expect(response).to redirect_to(
+        trip_path(trip, anchor: "journal_entry_#{entry.id}")
+      )
     end
   end
 
@@ -75,11 +92,6 @@ RSpec.describe "/trips/:trip_id/journal_entries" do
 
     context "when logged in as viewer" do
       before { stub_current_user(viewer_user) }
-
-      it "allows show" do
-        get trip_journal_entry_path(trip, entry)
-        expect(response).to be_successful
-      end
 
       it "forbids create" do
         post trip_journal_entries_path(trip), params: {

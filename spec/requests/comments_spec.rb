@@ -19,11 +19,11 @@ RSpec.describe "/trips/:trip_id/journal_entries/:id/comments" do
       end.to change(Comment, :count).by(1)
     end
 
-    it "redirects to journal entry" do
+    it "redirects to trip page with entry anchor" do
       post trip_journal_entry_comments_path(trip, entry),
            params: { comment: { body: "Nice!" } }
       expect(response).to redirect_to(
-        trip_journal_entry_path(trip, entry)
+        trip_path(trip, anchor: "journal_entry_#{entry.id}")
       )
     end
   end
