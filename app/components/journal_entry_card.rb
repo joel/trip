@@ -135,6 +135,7 @@ module Components
 
     def render_expandable_body
       div(
+        id: "entry_body_#{@entry.id}",
         class: "mt-4",
         data: { feed_entry_target: "body" },
         hidden: true
