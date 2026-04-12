@@ -4,7 +4,7 @@ module JournalEntries
   class Create < BaseAction
     def call(params:, trip:, user:)
       entry = yield persist(params, trip, user)
-      yield subscribe_author(entry, user)
+      yield subscribe_trip_members(entry)
       yield emit_event(entry)
       Success(entry)
     end
@@ -20,10 +20,13 @@ module JournalEntries
       Failure(e.record.errors)
     end
 
-    def subscribe_author(entry, user)
-      entry.journal_entry_subscriptions.find_or_create_by!(
-        user: user
-      )
+    def subscribe_trip_members(entry)
+      user_ids = entry.trip.members.pluck(:id) |
+                 [entry.author_id]
+      user_ids.each do |uid|
+        entry.journal_entry_subscriptions
+             .find_or_create_by!(user_id: uid)
+      end
       Success()
     end
 
