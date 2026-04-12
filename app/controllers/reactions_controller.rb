@@ -40,7 +40,8 @@ class ReactionsController < ApplicationController
         )
       end
       format.html do
-        redirect_to [@trip, @journal_entry], status: :see_other
+        redirect_to trip_path(@trip, anchor: dom_id(@journal_entry)),
+                    status: :see_other
       end
     end
   end
