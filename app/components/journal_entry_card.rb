@@ -137,8 +137,7 @@ module Components
       div(
         id: "entry_body_#{@entry.id}",
         class: "mt-4",
-        data: { feed_entry_target: "body" },
-        hidden: true
+        data: { feed_entry_target: "body" }
       ) do
         render_full_description if @entry.description.present?
         render_body if @entry.body.present?

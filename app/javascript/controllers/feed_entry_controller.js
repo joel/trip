@@ -4,6 +4,14 @@ export default class extends Controller {
   static targets = ["body", "label", "preview", "chevron", "toggle"]
   static values = { expanded: Boolean }
 
+  connect() {
+    this.expandedValue = false
+    this.bodyTarget.hidden = true
+    if (this.hasPreviewTarget) {
+      this.previewTarget.hidden = false
+    }
+  }
+
   toggle() {
     this.expandedValue = !this.expandedValue
     this.bodyTarget.hidden = !this.expandedValue
