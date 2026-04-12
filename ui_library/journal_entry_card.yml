@@ -2,19 +2,35 @@ component: Components::JournalEntryCard
 file: app/components/journal_entry_card.rb
 library_source: application_ui/layout/cards
 library_variant: null
-description: Journal entry card with optional cover image (aspect-[16/9] with hover zoom), overline date, headline title, location, description (line-clamp-2), comment count meta, and Read more/Edit footer links. Uses ha-card base with group hover effects.
+description: >
+  Expandable feed card for the trip journal wall. Collapsed state shows cover
+  image (aspect-[16/9] with hover zoom), overline date, headline title,
+  location + author meta, 2-line clamped description, and a footer with
+  reaction pills, comment count, and "Read more" toggle. Expanded state reveals
+  full description, rich text body, image grid, ReactionSummary, comments list
+  with form, and a Delete button (authorized). Uses Stimulus feed-entry
+  controller for in-place expand/collapse. Delegates footer to
+  JournalEntryFooter, mute toggle to JournalEntryFollowButton, and reactions
+  to ReactionSummary.
+stimulus_controller: feed-entry
 design_tokens:
   - ha-card
   - ha-overline
+  - ha-rise
   - font-headline
   - "--ha-primary"
   - "--ha-on-surface-variant"
+  - "--ha-surface-high"
 tailwind_classes:
-  - group, overflow-hidden
-  - aspect-[16/9], object-cover, transition-transform, duration-700, group-hover:scale-105
-  - p-6, mt-1, mt-2, mt-3, mt-4
+  - group/img, group/photo, overflow-hidden
+  - aspect-[16/9], object-cover, transition-transform, duration-700, group-hover/img:scale-105
+  - p-6, mt-1, mt-2, mt-3, mt-4, mt-6, mb-4, mb-6
   - font-headline, text-xl, font-bold, tracking-tight
-  - text-xs, text-sm, line-clamp-2
-  - flex, items-center, justify-between, gap-1
+  - text-xs, text-sm, line-clamp-2, leading-relaxed
+  - flex, items-start, items-center, justify-between, gap-1, gap-2, gap-3, gap-4
   - font-semibold, font-medium
-  - group-hover:gap-2
+  - prose, prose-lg, dark:prose-invert, max-w-none
+  - grid, grid-cols-2, md:grid-cols-3
+  - rounded-xl, rounded-full
+  - border-t, border-[var(--ha-surface-high)]
+  - ha-button, ha-button-danger

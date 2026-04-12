@@ -1,9 +1,23 @@
 component: Components::JournalEntryFollowButton
 file: app/components/journal_entry_follow_button.rb
-library_source: application_ui/elements/buttons
-library_variant: rounded_secondary_buttons.html
-description: Toggle button for subscribing/unsubscribing to a journal entry's notifications. Shows "Follow" (POST) when not subscribed and "Following" (DELETE) when subscribed. Uses ha-button ha-button-secondary for consistent action bar styling.
+library_source: null
+library_variant: null
+description: >
+  Icon-only mute/unmute toggle for journal entry notifications. Subscribed
+  state shows a filled Bell icon on a tinted primary background (POST to
+  unsubscribe). Muted state shows a BellOff icon with a subtle hover
+  background (DELETE to resubscribe). Rendered as a 10x5 rounded-full
+  button_to form. Turbo Stream replaces the wrapper div on toggle.
+  Title attributes provide tooltip labels.
 design_tokens:
-  - ha-button
-  - ha-button-secondary
-tailwind_classes: []
+  - "--ha-primary"
+  - "--ha-primary-fixed"
+  - "--ha-on-surface-variant"
+  - "--ha-surface-hover"
+tailwind_classes:
+  - inline-flex, items-center, justify-center
+  - h-10, w-10, rounded-full
+  - bg-[var(--ha-primary-fixed)]/20, hover:bg-[var(--ha-primary-fixed)]/40
+  - hover:bg-[var(--ha-surface-hover)]
+  - transition-colors, duration-200
+  - h-5, w-5
