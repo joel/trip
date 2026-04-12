@@ -185,29 +185,10 @@ module Views
       end
 
       def render_journal_entries
-        div(class: "space-y-6") do
-          div(class: "flex items-end justify-between") do
-            div do
-              p(class: "ha-overline") { plain "JOURNAL FEED" }
-              h2(class: "font-headline text-2xl font-bold") do
-                plain "The story so far"
-              end
-            end
-            if view_context.allowed_to?(
-              :create?, @trip.journal_entries.new
-            )
-              link_to(
-                view_context.new_trip_journal_entry_path(@trip),
-                class: "ha-button ha-button-primary"
-              ) do
-                render Components::Icons::Plus.new(css: "h-5 w-5")
-                plain "New Entry"
-              end
-            end
-          end
-
+        div(class: "space-y-8") do
+          render_feed_header
           if @journal_entries.any?
-            div(class: "grid gap-6") do
+            div(class: "space-y-6") do
               @journal_entries.each do |entry|
                 render Components::JournalEntryCard.new(
                   trip: @trip, journal_entry: entry
@@ -215,39 +196,40 @@ module Views
               end
             end
           else
-            div(class: "ha-card p-12 text-center") do
-              div(class: "mx-auto mb-4 text-[var(--ha-on-surface-variant)]") do
-                render Components::Icons::Plus.new(
-                  css: "mx-auto h-12 w-12"
-                )
-              end
-              p(class: "text-lg font-medium " \
-                       "text-[var(--ha-on-surface-variant)]") do
-                plain "No entries yet"
-              end
-              p(class: "mt-2 mx-auto max-w-md text-sm " \
-                       "text-[var(--ha-on-surface-variant)]") do
-                plain "Capture a moment, a photo, or a thought " \
-                      "from the road. Every entry becomes part " \
-                      "of the trip's timeline."
-              end
-              if view_context.allowed_to?(
-                :create?, @trip.journal_entries.new
+            render_empty_feed
+          end
+        end
+      end
+
+      def render_feed_header
+        div(class: "flex items-end justify-between") do
+          div do
+            p(class: "ha-overline") { plain "JOURNAL FEED" }
+            h2(class: "mt-1 font-headline text-2xl " \
+                      "font-bold tracking-tight") do
+              plain "The story so far"
+            end
+          end
+          if view_context.allowed_to?(
+            :create?, @trip.journal_entries.new
+          )
+            link_to(
+              view_context.new_trip_journal_entry_path(@trip),
+              class: "ha-button ha-button-primary"
+            ) do
+              render Components::Icons::Plus.new(
+                css: "h-5 w-5"
               )
-                link_to(
-                  view_context.new_trip_journal_entry_path(@trip),
-                  class: "mt-6 ha-button ha-button-primary " \
-                         "inline-flex items-center gap-2"
-                ) do
-                  render Components::Icons::Plus.new(
-                    css: "h-5 w-5"
-                  )
-                  plain "Write the first entry"
-                end
-              end
+              plain "New Entry"
             end
           end
         end
+      end
+
+      def render_empty_feed
+        render Components::JournalEntryEmptyState.new(
+          trip: @trip
+        )
       end
 
       def date_range_label
