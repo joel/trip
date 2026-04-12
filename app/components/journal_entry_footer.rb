@@ -33,7 +33,7 @@ module Components
 
       div(
         id: "reaction_count_#{@entry.id}",
-        class: "flex items-center gap-1"
+        class: "flex items-center gap-2"
       ) do
         counts.first(3).to_h.each_key do |emoji|
           display = REACTION_EMOJI[emoji]
@@ -50,8 +50,7 @@ module Components
       count = @entry.comments.count
       return unless count.positive?
 
-      span(class: "inline-flex items-center gap-1") do
-        plain "\u{1F4AC}"
+      span do
         plain "#{count} comment#{"s" if count != 1}"
       end
     end
@@ -67,7 +66,11 @@ module Components
         span(data: { feed_entry_target: "label" }) do
           plain "Read more"
         end
-        plain " \u25BE"
+        span(
+          class: "inline-block transition-transform " \
+                 "duration-200",
+          data: { feed_entry_target: "chevron" }
+        ) { plain " \u25BE" }
       end
     end
   end

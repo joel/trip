@@ -185,7 +185,7 @@ module Views
       end
 
       def render_journal_entries
-        div(class: "space-y-8") do
+        div(class: "mt-4 space-y-8") do
           render_feed_header
           if @journal_entries.any?
             div(class: "space-y-6") do

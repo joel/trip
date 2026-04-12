@@ -54,7 +54,7 @@ module Components
       div(class: "flex items-start gap-4") do
         div(class: "flex-1 min-w-0") do
           p(class: "ha-overline") do
-            plain @entry.entry_date.strftime("%B %d, %Y").upcase
+            plain @entry.entry_date.strftime("%b %d, %Y").upcase
           end
           h3(class: "mt-1 font-headline text-xl " \
                     "font-bold tracking-tight") do
@@ -125,7 +125,8 @@ module Components
     def render_description
       p(class: "mt-3 text-sm leading-relaxed " \
                "text-[var(--ha-on-surface-variant)] " \
-               "line-clamp-2") do
+               "line-clamp-2",
+        data: { feed_entry_target: "preview" }) do
         plain @entry.description
       end
     end
