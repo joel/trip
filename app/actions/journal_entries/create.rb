@@ -21,13 +21,19 @@ module JournalEntries
     end
 
     def subscribe_trip_members(entry)
-      user_ids = entry.trip.members.pluck(:id) |
-                 [entry.author_id]
+      user_ids = entry.trip.members
+                      .where.not("email LIKE ?", "%@system.local")
+                      .pluck(:id)
+      user_ids |= [entry.author_id] unless system_actor?(entry.author)
       user_ids.each do |uid|
         entry.journal_entry_subscriptions
              .find_or_create_by!(user_id: uid)
       end
       Success()
+    end
+
+    def system_actor?(user)
+      user&.email&.end_with?("@system.local")
     end
 
     def emit_event(entry)
