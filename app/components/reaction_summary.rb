@@ -67,7 +67,8 @@ module Components
     end
 
     def reaction_counts
-      @reaction_counts ||= @entry.reactions.group(:emoji).count
+      @reaction_counts ||= @entry.reactions.group_by(&:emoji)
+                                 .transform_values(&:size)
     end
 
     def user_reacted?(emoji)
@@ -76,7 +77,9 @@ module Components
       current = view_context.current_user
       return false unless current
 
-      @entry.reactions.exists?(user: current, emoji: emoji)
+      @entry.reactions.any? do |r|
+        r.user_id == current.id && r.emoji == emoji
+      end
     end
 
     def active_class

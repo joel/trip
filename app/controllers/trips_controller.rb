@@ -21,7 +21,9 @@ class TripsController < ApplicationController
                             .reverse_chronological
                             .includes(
                               :author,
+                              :reactions,
                               :journal_entry_subscriptions,
+                              comments: :user,
                               images_attachments: :blob
                             )
     render Views::Trips::Show.new(

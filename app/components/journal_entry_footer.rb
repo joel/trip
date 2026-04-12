@@ -28,26 +28,27 @@ module Components
     end
 
     def render_reaction_pills
-      counts = @entry.reactions.group(:emoji).count
-      return if counts.empty?
+      return if @entry.reactions.empty?
 
+      grouped = @entry.reactions.group_by(&:emoji)
       div(
         id: "reaction_count_#{@entry.id}",
         class: "flex items-center gap-2"
       ) do
-        counts.first(3).to_h.each_key do |emoji|
+        grouped.first(3).to_h.each_key do |emoji|
           display = REACTION_EMOJI[emoji]
           next unless display
 
           span(class: "text-sm") { plain display }
         end
-        total = counts.values.sum
-        span(class: "ml-1") { plain total.to_s }
+        span(class: "ml-1") do
+          plain @entry.reactions.size.to_s
+        end
       end
     end
 
     def render_comment_count
-      count = @entry.comments.count
+      count = @entry.comments.size
       return unless count.positive?
 
       span do
