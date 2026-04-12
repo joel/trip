@@ -30,9 +30,10 @@ module Components
         method: :delete,
         class: "inline-flex h-10 w-10 items-center " \
                "justify-center rounded-full " \
-               "bg-[var(--ha-primary-container)]/10 " \
-               "hover:bg-[var(--ha-surface-hover)]",
-        title: "Notifications on — click to mute",
+               "bg-[var(--ha-primary-fixed)]/20 " \
+               "transition-colors duration-200 " \
+               "hover:bg-[var(--ha-primary-fixed)]/40",
+        title: "Notifications on \u2014 click to mute",
         form: { class: "inline-flex" }
       ) do
         render Components::Icons::Bell.new(
@@ -49,8 +50,9 @@ module Components
         method: :post,
         class: "inline-flex h-10 w-10 items-center " \
                "justify-center rounded-full " \
+               "transition-colors duration-200 " \
                "hover:bg-[var(--ha-surface-hover)]",
-        title: "Notifications off — click to resume",
+        title: "Notifications off \u2014 click to resume",
         form: { class: "inline-flex" }
       ) do
         render Components::Icons::BellOff.new(

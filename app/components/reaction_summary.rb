@@ -23,10 +23,11 @@ module Components
     def view_template
       div(
         id: "reaction_summary_#{@entry.id}",
-        class: "ha-card p-4"
+        class: "mt-6"
       ) do
-        div(class: "flex flex-wrap gap-2") do
+        div(class: "flex flex-wrap items-center gap-2") do
           EMOJIS.each { |emoji| render_emoji_button(emoji) }
+          render_total_count
         end
       end
     end
@@ -36,18 +37,32 @@ module Components
     def render_emoji_button(emoji)
       count = reaction_counts[emoji] || 0
       active = user_reacted?(emoji)
-      css = active ? active_class : inactive_class
 
       button_to(
         view_context.trip_journal_entry_reactions_path(
           @trip, @entry
         ),
         params: { emoji: emoji },
-        class: css,
+        class: active ? active_class : inactive_class,
+        title: "#{EMOJI_DISPLAY[emoji]} #{emoji}",
         form: { class: "inline-flex" }
       ) do
-        span { EMOJI_DISPLAY[emoji] }
-        span(class: "ml-1 text-xs") { count.to_s } if count.positive?
+        span { plain EMOJI_DISPLAY[emoji] }
+        if count.positive?
+          span(class: "ml-1 text-xs font-medium") do
+            plain count.to_s
+          end
+        end
+      end
+    end
+
+    def render_total_count
+      total = reaction_counts.values.sum
+      return unless total.positive?
+
+      span(class: "ml-1 text-xs " \
+                  "text-[var(--ha-on-surface-variant)]") do
+        plain "#{total} reaction#{"s" if total != 1}"
       end
     end
 
@@ -65,16 +80,20 @@ module Components
     end
 
     def active_class
-      "inline-flex items-center rounded-full border " \
-        "border-[var(--ha-accent)]/30 bg-[var(--ha-accent)]/10 " \
-        "px-3 py-1 text-sm transition-all duration-150"
+      "inline-flex items-center rounded-full " \
+        "bg-[var(--ha-primary-fixed)] " \
+        "px-3 py-1 text-sm " \
+        "transition-all duration-150 " \
+        "ha-ghost-border"
     end
 
     def inactive_class
-      "inline-flex items-center rounded-full border " \
-        "border-[var(--ha-border)] bg-[var(--ha-surface)] " \
-        "px-3 py-1 text-sm transition-all duration-150 " \
-        "hover:bg-[var(--ha-surface-hover)]"
+      "inline-flex items-center rounded-full " \
+        "bg-[var(--ha-surface-muted)] " \
+        "px-3 py-1 text-sm " \
+        "transition-all duration-150 " \
+        "ha-ghost-border " \
+        "hover:bg-[var(--ha-surface-container)]"
     end
   end
 end
