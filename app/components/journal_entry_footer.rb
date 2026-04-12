@@ -61,7 +61,12 @@ module Components
                "font-semibold text-[var(--ha-primary)] " \
                "cursor-pointer hover:gap-2 " \
                "transition-all duration-200",
-        data: { action: "feed-entry#toggle" }
+        aria_expanded: "false",
+        aria_controls: "entry_body_#{@entry.id}",
+        data: {
+          action: "feed-entry#toggle",
+          feed_entry_target: "toggle"
+        }
       ) do
         span(data: { feed_entry_target: "label" }) do
           plain "Read more"

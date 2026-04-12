@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["body", "label", "preview", "chevron"]
+  static targets = ["body", "label", "preview", "chevron", "toggle"]
   static values = { expanded: Boolean }
 
   toggle() {
@@ -10,6 +10,13 @@ export default class extends Controller {
     this.labelTarget.textContent = this.expandedValue
       ? "Collapse"
       : "Read more"
+
+    if (this.hasToggleTarget) {
+      this.toggleTarget.setAttribute(
+        "aria-expanded",
+        this.expandedValue.toString()
+      )
+    }
 
     if (this.hasPreviewTarget) {
       this.previewTarget.hidden = this.expandedValue
