@@ -87,26 +87,14 @@ RSpec.describe "Notifications" do
     expect(page).to have_content("All notifications marked as read")
   end
 
-  it "shows follow button on journal entry page" do
-    create(:trip_membership, trip: trip, user: admin)
-    visit trip_journal_entry_path(trip, entry)
-    expect(page).to have_button("Follow")
-  end
-
-  it "follows a journal entry" do
-    create(:trip_membership, trip: trip, user: admin)
-    visit trip_journal_entry_path(trip, entry)
-    click_on "Follow"
-    expect(page).to have_content("following this entry")
-  end
-
-  it "unfollows a journal entry" do
+  it "shows mute toggle on trip feed" do
     create(:trip_membership, trip: trip, user: admin)
     create(:journal_entry_subscription,
            user: admin, journal_entry: entry)
 
-    visit trip_journal_entry_path(trip, entry)
-    click_on "Following"
-    expect(page).to have_content("unfollowed this entry")
+    visit trip_path(trip)
+    expect(page).to have_css(
+      "[title='Notifications on — click to mute']"
+    )
   end
 end
