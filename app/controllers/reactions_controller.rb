@@ -24,7 +24,7 @@ class ReactionsController < ApplicationController
           reaction_summary_component
         )
       end
-      format.html { redirect_to [@trip, @journal_entry] }
+      format.html { redirect_to trip_path(@trip, anchor: dom_id(@journal_entry)) }
     end
   end
 
