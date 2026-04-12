@@ -15,7 +15,9 @@ RSpec.describe "Journal Entries Feed Wall" do
     click_on "Create Journal entry"
     expect(page).to have_content("Entry created")
     expect(page).to have_content("Day One")
-    expect(page).to have_current_path(trip_path(trip), ignore_query: true)
+    expect(page).to have_current_path(
+      trip_path(trip), ignore_query: true
+    )
   end
 
   it "displays entries newest first on the trip page" do
@@ -49,10 +51,12 @@ RSpec.describe "Journal Entries Feed Wall" do
   end
 
   it "edits a journal entry from the feed" do
-    create(:journal_entry, trip: trip, author: admin,
-                           name: "Old Title")
+    entry = create(:journal_entry, trip: trip, author: admin,
+                                   name: "Old Title")
     visit trip_path(trip)
-    click_on "Edit"
+    within "#journal_entry_#{entry.id}" do
+      click_on "Edit"
+    end
     fill_in "Name", with: "New Title"
     click_on "Update Journal entry"
     expect(page).to have_content("Entry updated")
@@ -60,11 +64,13 @@ RSpec.describe "Journal Entries Feed Wall" do
   end
 
   it "deletes a journal entry from the trip page", :js do
-    create(:journal_entry, trip: trip, author: admin,
-                           name: "Deletable")
+    entry = create(:journal_entry, trip: trip, author: admin,
+                                   name: "Deletable")
     visit trip_path(trip)
-    click_on "Read more"
-    accept_confirm { click_on "Delete" }
+    within "#journal_entry_#{entry.id}" do
+      click_on "Read more"
+      accept_confirm { click_on "Delete" }
+    end
     expect(page).to have_content("Entry deleted")
     expect(page).to have_no_content("Deletable")
   end

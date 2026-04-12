@@ -2,10 +2,10 @@
 
 require "rails_helper"
 
-RSpec.describe "Comments" do
+RSpec.describe "Comments", :js do
   let(:admin) { create(:user, :superadmin) }
   let(:trip) { create(:trip, :started, created_by: admin) }
-  let(:entry) do
+  let!(:entry) do
     create(:journal_entry, trip: trip, author: admin)
   end
 
@@ -15,7 +15,7 @@ RSpec.describe "Comments" do
     login_as(user: admin)
   end
 
-  it "creates a comment", :js do
+  it "creates a comment" do
     visit trip_path(trip)
     click_on "Read more"
     fill_in "comment[body]", with: "Nice entry!"
@@ -23,7 +23,7 @@ RSpec.describe "Comments" do
     expect(page).to have_content("Nice entry!")
   end
 
-  it "edits a comment inline", :js do
+  it "edits a comment inline" do
     comment = create(:comment, journal_entry: entry,
                                user: admin,
                                body: "Original text")
@@ -42,7 +42,7 @@ RSpec.describe "Comments" do
     expect(comment.reload.body).to eq("Updated text")
   end
 
-  it "deletes a comment", :js do
+  it "deletes a comment" do
     comment = create(:comment, journal_entry: entry,
                                user: admin,
                                body: "To be removed")
