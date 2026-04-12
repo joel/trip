@@ -1,16 +1,12 @@
 # frozen_string_literal: true
 
 class JournalEntriesController < ApplicationController
+  include ActionView::RecordIdentifier
+
   before_action :require_authenticated_user!
   before_action :set_trip
-  before_action :set_journal_entry, only: %i[show edit update destroy]
+  before_action :set_journal_entry, only: %i[edit update destroy]
   before_action :authorize_journal_entry!
-
-  def show
-    render Views::JournalEntries::Show.new(
-      trip: @trip, journal_entry: @journal_entry
-    )
-  end
 
   def new
     @journal_entry = @trip.journal_entries.new(
@@ -33,7 +29,8 @@ class JournalEntriesController < ApplicationController
     )
     case result
     in Dry::Monads::Success(entry)
-      redirect_to [@trip, entry], notice: "Entry created."
+      redirect_to trip_path(@trip, anchor: dom_id(entry)),
+                  notice: "Entry created."
     in Dry::Monads::Failure(errors)
       @journal_entry = @trip.journal_entries.new(journal_entry_params)
       merge_errors(@journal_entry, errors)
@@ -49,7 +46,8 @@ class JournalEntriesController < ApplicationController
     )
     case result
     in Dry::Monads::Success(entry)
-      redirect_to [@trip, entry], notice: "Entry updated."
+      redirect_to trip_path(@trip, anchor: dom_id(entry)),
+                  notice: "Entry updated."
     in Dry::Monads::Failure(errors)
       merge_errors(@journal_entry, errors)
       render Views::JournalEntries::Edit.new(
