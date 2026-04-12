@@ -20,8 +20,7 @@ class TripsController < ApplicationController
     @journal_entries = @trip.journal_entries
                             .reverse_chronological
                             .includes(
-                              :author, :reactions,
-                              comments: :user,
+                              :author,
                               images_attachments: :blob,
                               journal_entry_subscriptions: :user
                             )
