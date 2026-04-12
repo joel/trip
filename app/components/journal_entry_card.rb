@@ -184,7 +184,7 @@ module Components
       div(class: "mt-6") do
         render_comments_header
         div(id: "comments_#{@entry.id}", class: "mt-4 space-y-3") do
-          comments = @entry.comments.chronological
+          comments = @entry.comments.sort_by { |c| [c.created_at, c.id] }
           if comments.any?
             comments.each do |comment|
               render Components::CommentCard.new(
@@ -204,7 +204,7 @@ module Components
     end
 
     def render_comments_header
-      count = @entry.comments.count
+      count = @entry.comments.size
       div(class: "flex items-center gap-3") do
         h4(class: "font-headline text-base font-semibold") do
           plain "Comments"
