@@ -19,12 +19,12 @@ class CommentsController < ApplicationController
       respond_to do |format|
         format.turbo_stream { render_created_comment(comment) }
         format.html do
-          redirect_to [@trip, @journal_entry],
+          redirect_to trip_path(@trip, anchor: dom_id(@journal_entry)),
                       notice: "Comment added."
         end
       end
     in Dry::Monads::Failure(errors)
-      redirect_to [@trip, @journal_entry],
+      redirect_to trip_path(@trip, anchor: dom_id(@journal_entry)),
                   alert: errors.full_messages.join(", ")
     end
   end
@@ -50,7 +50,7 @@ class CommentsController < ApplicationController
         render turbo_stream: stream_remove(comment_id)
       end
       format.html do
-        redirect_to [@trip, @journal_entry],
+        redirect_to trip_path(@trip, anchor: dom_id(@journal_entry)),
                     notice: "Comment deleted.", status: :see_other
       end
     end
@@ -91,7 +91,7 @@ class CommentsController < ApplicationController
         )
       end
       format.html do
-        redirect_to [@trip, @journal_entry],
+        redirect_to trip_path(@trip, anchor: dom_id(@journal_entry)),
                     notice: "Comment updated."
       end
     end
@@ -106,7 +106,7 @@ class CommentsController < ApplicationController
         ), status: :unprocessable_content
       end
       format.html do
-        redirect_to [@trip, @journal_entry],
+        redirect_to trip_path(@trip, anchor: dom_id(@journal_entry)),
                     alert: errors.full_messages.join(", ")
       end
     end
