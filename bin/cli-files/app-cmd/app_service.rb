@@ -59,6 +59,8 @@ module AppCLI
           return
         end
 
+        FileUtils.rm_f(File.join(AppCLI::ROOT, "tmp/pids/server.pid"))
+
         runner.run(
           [
             "docker run --rm --detach",
