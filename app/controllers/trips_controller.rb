@@ -19,12 +19,13 @@ class TripsController < ApplicationController
   def show
     @journal_entries = @trip.journal_entries
                             .reverse_chronological
+                            .with_rich_text_body
                             .includes(
                               :author,
                               :reactions,
                               :journal_entry_subscriptions,
-                              comments: :user,
-                              images_attachments: :blob
+                              :images_attachments,
+                              comments: :user
                             )
     render Views::Trips::Show.new(
       trip: @trip, journal_entries: @journal_entries
