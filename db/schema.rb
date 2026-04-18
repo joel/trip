@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_01_174314) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_18_120000) do
   create_table "access_requests", id: uuid, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -18,6 +18,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_01_174314) do
     t.string "reviewed_by_id", limit: 36
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false
+    t.index ["email"], name: "idx_access_requests_active_email_uniqueness", unique: true, where: "status IN (0, 1)"
     t.index ["email"], name: "index_access_requests_on_email"
     t.index ["reviewed_by_id"], name: "index_access_requests_on_reviewed_by_id"
   end

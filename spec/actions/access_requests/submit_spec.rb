@@ -18,5 +18,21 @@ RSpec.describe AccessRequests::Submit do
 
       expect(result).to be_failure
     end
+
+    it "returns failure when a pending request already exists for the email" do
+      AccessRequest.create!(email: "dupe@example.com")
+      result = described_class.new.call(params: { email: "dupe@example.com" })
+
+      expect(result).to be_failure
+      expect(result.failure[:email].join).to include("pending request")
+    end
+
+    it "returns failure when a User already exists with the email" do
+      User.create!(email: "registered@example.com")
+      result = described_class.new.call(params: { email: "registered@example.com" })
+
+      expect(result).to be_failure
+      expect(result.failure[:email].join).to include("already registered")
+    end
   end
 end
