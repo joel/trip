@@ -61,6 +61,12 @@ class RodauthMain < Rodauth::Rails::Auth
       require_password_confirmation? false
       require_bcrypt? false
 
+      # Invited signups skip the Verify Account step: the invitation email
+      # already proves the user controls that inbox, so we auto-verify,
+      # skip the verification email, and auto-log them in.
+      create_account_autologin? { param_or_nil("invitation_token").present? }
+      create_account_redirect { "/" }
+
       before_login_attempt do
         login_value = param_or_nil(login_param)
         next if login_value.blank?
@@ -111,6 +117,26 @@ class RodauthMain < Rodauth::Rails::Auth
           autologin_session("verify_account") if verify_account_autologin?
           remove_session_value(verify_account_session_key)
           verify_account_response
+        end
+
+        def account_initial_status_value
+          if param_or_nil("invitation_token").present?
+            account_open_status_value
+          else
+            super
+          end
+        end
+
+        def create_verify_account_key
+          return if param_or_nil("invitation_token").present?
+
+          super
+        end
+
+        def send_verify_account_email
+          return if param_or_nil("invitation_token").present?
+
+          super
         end
       end
 
