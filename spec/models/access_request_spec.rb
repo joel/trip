@@ -51,6 +51,20 @@ RSpec.describe AccessRequest do
       expect(ar).not_to be_valid
       expect(ar.errors[:email].join).to include("already registered")
     end
+
+    it "lets a superadmin approve an existing request even after the invitee has an account" do
+      ar = described_class.create!(email: "later-user@example.com")
+      User.create!(email: "later-user@example.com")
+
+      expect { ar.update!(status: :approved, reviewed_at: Time.current) }.not_to raise_error
+    end
+
+    it "lets a superadmin reject an existing request even after the invitee has an account" do
+      ar = described_class.create!(email: "reject-later@example.com")
+      User.create!(email: "reject-later@example.com")
+
+      expect { ar.update!(status: :rejected, reviewed_at: Time.current) }.not_to raise_error
+    end
   end
 
   describe "defaults" do

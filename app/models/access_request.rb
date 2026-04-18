@@ -6,8 +6,8 @@ class AccessRequest < ApplicationRecord
   belongs_to :reviewed_by, class_name: "User", optional: true
 
   validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
-  validate :email_not_already_active
-  validate :email_not_already_registered
+  validate :email_not_already_active, on: :create
+  validate :email_not_already_registered, on: :create
 
   scope :pending, -> { where(status: :pending) }
 
@@ -15,10 +15,7 @@ class AccessRequest < ApplicationRecord
 
   def email_not_already_active
     return if email.blank?
-
-    scope = self.class.where(email: email, status: %i[pending approved])
-    scope = scope.where.not(id: id) if persisted?
-    return unless scope.exists?
+    return unless self.class.exists?(email: email, status: %i[pending approved])
 
     errors.add(:email, "already has a pending request or approved invitation")
   end
