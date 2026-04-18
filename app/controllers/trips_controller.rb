@@ -24,7 +24,7 @@ class TripsController < ApplicationController
                               :author,
                               :reactions,
                               :journal_entry_subscriptions,
-                              :images_attachments,
+                              { images_attachments: :blob },
                               comments: :user
                             )
     render Views::Trips::Show.new(
