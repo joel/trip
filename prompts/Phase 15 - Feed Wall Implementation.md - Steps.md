@@ -1,5 +1,9 @@
 # Phase 15 — Feed Wall Implementation Steps
 
+```
+claude --dangerously-skip-permissions --resume fde05df5-76bd-4b4a-bfa7-1dff1efdf1c1
+```
+
 ## Execution Date: 2026-04-12
 
 ### Context
