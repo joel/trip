@@ -8,6 +8,16 @@ Rails.application.configure do
     Bullet.console       = true
     Bullet.rails_logger  = true
     Bullet.add_footer    = true
+
+    Bullet.add_safelist(
+      type: :unused_eager_loading,
+      class_name: "JournalEntry",
+      association: :rich_text_body
+    )
+    # Bullet's add_safelist normalizes to symbol via to_sym, but ActionText
+    # tracks rich_text_body as both a symbol and a string in its Set,
+    # so subtraction only removes the symbol. Inject the string form too.
+    Bullet.safelist[:unused_eager_loading]["JournalEntry"] << "rich_text_body"
   end
 
   # Settings specified here will take precedence over those in config/application.rb.
