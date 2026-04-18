@@ -134,9 +134,72 @@ Tests: 580 non-system + 63 system = **643 examples, 0 failures, 2 pending**. Lin
   - Body covers summary, test plan, and `Closes #102`.
 - Move Kanban item to "In Review" deferred — requires `read:project` scope refresh on the local `gh` token (`gh auth refresh -s read:project`). Issue + PR linkage still provides full tracking.
 
-## Step 8 — Outcome
+## Step 8 — Outcome (initial PR state)
 
 - 7 commits, 643 green specs, 0 lint offenses, full runtime verification complete.
 - Files touched: 10 (3 app/, 1 db/migrate/, 1 db/schema.rb, 5 spec/).
 - No schema-shape changes to any existing table; only a partial unique index added.
 - Backwards compatible: existing unverified users can still verify via the old email link flow.
+
+---
+
+## Step 9 — PR review round 1 (chatgpt-codex-connector)
+
+Three comments left on PR #103, all verified valid before implementing fixes:
+
+| # | Severity | File | Concern | Commit |
+|---|----------|------|---------|--------|
+| 1 | P1 | migration | add_index fails on any env with pre-existing duplicate active rows | `950cf27` |
+| 2 | P2 | access_request.rb:10 | email_not_already_registered runs on updates — breaks approve/reject after user signup | `d6eb72f` |
+| 3 | P2 | access_request.rb:19 | no email normalisation — mixed-case duplicates bypass both model and DB guards | `bfa4ef6` |
+
+### Commit `950cf27` — Dedupe in migration
+
+- Rewrote migration to run `reconcile_duplicate_active_requests` before `add_index`.
+- SQL marks older pending/approved rows as rejected (status=2) with `reviewed_at = CURRENT_TIMESTAMP` when a newer active row for the same email exists. No deletions, so audit history is preserved.
+- Tie-breaker: for rows with identical `created_at`, compares `id` lexicographically.
+- Verified locally: rolled back the migration, seeded two active rows via `insert_all!`, re-ran `db:migrate`. Older row (2026-04-15, pending) → rejected; newer row (2026-04-16, approved) → kept. Index created cleanly. Ran again on test DB via `db:migrate:redo` — no issues.
+- `RailsSchemaUpToDate` hook flagged a false positive (migration mtime changed, schema content unchanged). Committed with `SKIP=RailsSchemaUpToDate` and documented the skip in the commit body per AGENTS.md policy.
+
+### Commit `d6eb72f` — `on: :create` scoping
+
+- Added `on: :create` to both `email_not_already_active` and `email_not_already_registered`.
+- Dropped the now-redundant `where.not(id: id) if persisted?` branch from `email_not_already_active`.
+- Two regression tests added: "lets a superadmin approve an existing request even after the invitee has an account" and the symmetric reject case.
+- Initial test draft included a scenario simulating a second active request sneaking in via `insert!` — removed because the partial unique index now prevents exactly that, making the scenario impossible in practice.
+
+### Commit `bfa4ef6` — Email normalisation
+
+- Added `before_validation :normalize_email` → `self.email = email.to_s.downcase.strip.presence`.
+- Changed `email_not_already_registered` to use `User.exists?(["LOWER(email) = ?", email])` for case-insensitive matching against users created with mixed casing (User emails are not themselves normalised on save — separate concern, out of scope for this PR).
+- Three tests added: normalisation-on-save, mixed-case duplicate block, mixed-case existing-User block.
+- First rubocop pass flagged `where("...").exists?` → `exists?([...])` (`Rails/WhereExists`); fixed inline before commit.
+
+### Post-fix test run
+
+- Lint: 424 files, 0 offenses.
+- Non-system specs: **585 examples, 0 failures, 2 pending** (up from 580 due to new cases).
+- System specs: **63 examples, 0 failures**.
+
+### Reply + resolve
+
+- Used `gh api repos/joel/trip/pulls/103/comments/{id}/replies -X POST -f body=…` to reply to each original comment with the fix commit hash and a one-paragraph explanation.
+- Used GraphQL `resolveReviewThread` to mark all three threads resolved in a single mutation.
+
+## Step 10 — Final branch state
+
+```
+bfa4ef6  Normalize AccessRequest email to lowercase before validation
+d6eb72f  Scope access request dedupe validations to create only
+950cf27  Dedupe active access requests in migration before adding unique index
+8a72a41  Add Phase 16 plan and steps audit trail [skip ci]
+66f9784  Override create_account notice for invited signups
+81762e6  Switch unknown-login hook to before_login_route
+293e3b6  Skip verify-account step for invitation-based signups
+65ce60a  Block duplicate and already-registered access requests
+149e32c  Redirect home when create-account is missing a valid invitation token
+13f237a  Redirect home when login is attempted without an account
+a44247e  Remove Sign-in card from logged-out homepage
+```
+
+11 commits total; all green; all review threads resolved.
