@@ -187,9 +187,8 @@ module Views
               plain "Your collaborative trip journal."
             end
           end
-          div(class: "grid gap-6 md:grid-cols-2") do
+          div(class: "mx-auto w-full max-w-md") do
             render_access_card
-            render_signin_card
           end
         end
       end
@@ -206,22 +205,6 @@ module Views
           div(class: "mt-6") do
             link_to("Request Access",
                     view_context.new_access_request_path,
-                    class: "ha-button ha-button-primary")
-          end
-        end
-      end
-
-      def render_signin_card
-        div(class: "ha-card p-6 ha-rise", style: "animation-delay: 240ms;") do
-          p(class: "ha-overline") { "Returning?" }
-          h2(class: "mt-2 font-headline text-2xl font-bold") do
-            plain "Sign in"
-          end
-          p(class: "mt-3 text-sm text-[var(--ha-on-surface-variant)]") do
-            plain "Already have an account? Pick up where you left off."
-          end
-          div(class: "mt-6") do
-            link_to("Sign in", view_context.rodauth.login_path,
                     class: "ha-button ha-button-primary")
           end
         end
