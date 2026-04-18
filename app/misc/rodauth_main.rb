@@ -67,7 +67,15 @@ class RodauthMain < Rodauth::Rails::Auth
       create_account_autologin? { param_or_nil("invitation_token").present? }
       create_account_redirect { "/" }
 
-      before_login_attempt do
+      # Rodauth's :login feature calls account_from_login BEFORE
+      # before_login_attempt, so that hook cannot intercept a missing
+      # account. before_login_route runs first on both GET and POST; we
+      # short-circuit the POST path here and redirect home with a clear
+      # flash instead of re-rendering the login form with
+      # Rodauth's generic "no matching login" error.
+      before_login_route do
+        next unless request.post?
+
         login_value = param_or_nil(login_param)
         next if login_value.blank?
         next if _account_from_login(login_value)
