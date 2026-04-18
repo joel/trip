@@ -18,6 +18,16 @@ Rails.application.configure do
     # tracks rich_text_body as both a symbol and a string in its Set,
     # so subtraction only removes the symbol. Inject the string form too.
     Bullet.safelist[:unused_eager_loading]["JournalEntry"] << "rich_text_body"
+
+    # Preloading image blobs is required: JournalEntryCard calls
+    # url_for(image) which dereferences attachment.blob. Bullet still
+    # flags this as unused when no images render on a given request,
+    # so safelist the false-positive.
+    Bullet.add_safelist(
+      type: :unused_eager_loading,
+      class_name: "ActiveStorage::Attachment",
+      association: :blob
+    )
   end
 
   # Settings specified here will take precedence over those in config/application.rb.
