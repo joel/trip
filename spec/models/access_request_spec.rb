@@ -67,6 +67,29 @@ RSpec.describe AccessRequest do
     end
   end
 
+  describe "email normalization" do
+    it "downcases and strips email before validation" do
+      ar = described_class.create!(email: "  Case@Example.COM  ")
+      expect(ar.email).to eq("case@example.com")
+    end
+
+    it "blocks a duplicate request submitted with different email casing" do
+      described_class.create!(email: "case@example.com")
+      ar = described_class.new(email: "CASE@Example.COM")
+
+      expect(ar).not_to be_valid
+      expect(ar.errors[:email].join).to include("pending request")
+    end
+
+    it "blocks a request when an existing User email matches case-insensitively" do
+      User.create!(email: "JoelDoe@Acme.org")
+      ar = described_class.new(email: "joeldoe@acme.org")
+
+      expect(ar).not_to be_valid
+      expect(ar.errors[:email].join).to include("already registered")
+    end
+  end
+
   describe "defaults" do
     it "defaults to pending status" do
       ar = described_class.create!(email: "test@example.com")

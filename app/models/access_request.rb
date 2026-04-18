@@ -5,6 +5,8 @@ class AccessRequest < ApplicationRecord
 
   belongs_to :reviewed_by, class_name: "User", optional: true
 
+  before_validation :normalize_email
+
   validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validate :email_not_already_active, on: :create
   validate :email_not_already_registered, on: :create
@@ -12,6 +14,10 @@ class AccessRequest < ApplicationRecord
   scope :pending, -> { where(status: :pending) }
 
   private
+
+  def normalize_email
+    self.email = email.to_s.downcase.strip.presence
+  end
 
   def email_not_already_active
     return if email.blank?
@@ -22,7 +28,7 @@ class AccessRequest < ApplicationRecord
 
   def email_not_already_registered
     return if email.blank?
-    return unless User.exists?(email: email)
+    return unless User.exists?(["LOWER(email) = ?", email])
 
     errors.add(:email, "is already registered — please sign in")
   end
