@@ -61,6 +61,15 @@ class RodauthMain < Rodauth::Rails::Auth
       require_password_confirmation? false
       require_bcrypt? false
 
+      before_login_attempt do
+        login_value = param_or_nil(login_param)
+        next if login_value.blank?
+        next if _account_from_login(login_value)
+
+        set_redirect_error_flash "Invitation required. Request access below."
+        redirect "/"
+      end
+
       auth_class_eval do
         def two_factor_authentication_setup?
           false
