@@ -24,6 +24,28 @@ RSpec.describe "/access_requests" do
       post submit_access_request_path, params: { access_request: { email: "" } }
       expect(response).to have_http_status(:unprocessable_content)
     end
+
+    it "rejects a duplicate email while a pending request exists" do
+      AccessRequest.create!(email: "dupe@example.com")
+
+      expect do
+        post submit_access_request_path, params: { access_request: { email: "dupe@example.com" } }
+      end.not_to change(AccessRequest, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("already has a pending request")
+    end
+
+    it "rejects an email that already belongs to a registered user" do
+      create(:user, email: "registered@example.com")
+
+      expect do
+        post submit_access_request_path, params: { access_request: { email: "registered@example.com" } }
+      end.not_to change(AccessRequest, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("already registered")
+    end
   end
 
   describe "GET /access_requests (superadmin)" do

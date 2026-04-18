@@ -20,6 +20,37 @@ RSpec.describe AccessRequest do
       ar = described_class.new(email: "test@example.com")
       expect(ar).to be_valid
     end
+
+    it "blocks a duplicate email while a pending request exists" do
+      described_class.create!(email: "dupe@example.com")
+      ar = described_class.new(email: "dupe@example.com")
+
+      expect(ar).not_to be_valid
+      expect(ar.errors[:email].join).to include("pending request")
+    end
+
+    it "blocks a new request when an approved one already exists" do
+      described_class.create!(email: "approved@example.com", status: :approved)
+      ar = described_class.new(email: "approved@example.com")
+
+      expect(ar).not_to be_valid
+      expect(ar.errors[:email].join).to include("approved invitation")
+    end
+
+    it "allows a new request when the prior one was rejected" do
+      described_class.create!(email: "retry@example.com", status: :rejected)
+      ar = described_class.new(email: "retry@example.com")
+
+      expect(ar).to be_valid
+    end
+
+    it "blocks a request when the email already belongs to a User" do
+      User.create!(email: "registered@example.com")
+      ar = described_class.new(email: "registered@example.com")
+
+      expect(ar).not_to be_valid
+      expect(ar.errors[:email].join).to include("already registered")
+    end
   end
 
   describe "defaults" do

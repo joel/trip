@@ -15,6 +15,10 @@ module AccessRequests
       Success(ar)
     rescue ActiveRecord::RecordInvalid => e
       Failure(e.record.errors)
+    rescue ActiveRecord::RecordNotUnique
+      ar = AccessRequest.new(email: params[:email])
+      ar.errors.add(:email, "already has a pending request or approved invitation")
+      Failure(ar.errors)
     end
 
     def emit_event(access_request)
