@@ -146,6 +146,12 @@ class RodauthMain < Rodauth::Rails::Auth
 
           super
         end
+
+        def create_account_notice_flash
+          return "Welcome! Your account is ready." if param_or_nil("invitation_token").present?
+
+          super
+        end
       end
 
       email_from do
