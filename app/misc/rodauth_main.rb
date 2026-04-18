@@ -94,8 +94,8 @@ class RodauthMain < Rodauth::Rails::Auth
           invitation = token && ::Invitation.valid_tokens.find_by(token: token)
           return if invitation && invitation.email.downcase == email.to_s.downcase
 
-          set_redirect_error_flash "A valid invitation is required to create an account."
-          redirect create_account_path
+          set_redirect_error_flash "Invitation required. Request access below."
+          redirect "/"
         end
 
         def verify_account_view
