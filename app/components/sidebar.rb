@@ -197,12 +197,6 @@ module Components
         icon: Components::Icons::SignIn.new,
         delay: "300ms"
       )
-      render Components::NavItem.new(
-        path: view_context.rodauth.create_account_path,
-        label: "Create account",
-        icon: Components::Icons::CreateAccount.new,
-        delay: "340ms"
-      )
     end
 
     def render_status_footer

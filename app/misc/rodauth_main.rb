@@ -113,6 +113,13 @@ class RodauthMain < Rodauth::Rails::Auth
           nil
         end
 
+        # Drop the "Create a New Account" link from the /login footer.
+        # Account creation is invitation-only; surfacing the public path
+        # here leads to a dead end.
+        def login_form_footer_links
+          super.reject { |_, link, _| link == create_account_path }
+        end
+
         def webauthn_key_insert_hash(webauthn_credential)
           super.merge(name: resolve_passkey_name(webauthn_credential))
         end

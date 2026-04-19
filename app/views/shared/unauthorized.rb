@@ -17,11 +17,6 @@ module Views
           end
           div(class: "mt-5 flex flex-wrap gap-3") do
             link_to("Sign in", view_context.rodauth.login_path, class: "ha-button ha-button-primary")
-            link_to(
-              "Create account",
-              view_context.rodauth.create_account_path,
-              class: "ha-button ha-button-secondary"
-            )
           end
         end
       end
