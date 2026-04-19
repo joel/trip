@@ -22,19 +22,25 @@
 
 ## 2. Branch
 
-_TBD_
+- `feature/phase18-navigation` (off `main`).
 
 ---
 
 ## 3. Commits
 
-_TBD_
+1. `0c3e99c` — Add Sign-out button to Account show page (Task 1).
+2. `ec4c54b` — Restrict trip viewers from Members, Checklists, Exports (Task 2: policy tightening + button guards).
+3. `13d5ce6` — Make `/` a smart router with empty-state fallback (Task 3: controller redirect logic, dead-helper cleanup, request + system spec coverage for all four router branches).
 
 ---
 
 ## 4. Runtime verification
 
-_TBD_
+- `bin/cli app rebuild` / `app restart` — health check `GET /up` returned 200.
+- `bin/cli mail start` — container `mail` up.
+- `agent-browser` sweep of logged-out `/` — renders "Welcome to Catalyst" + "Request an invitation" + "Request Access" (screenshot `tmp/phase18/01_logged_out.png`).
+- **Logged-in smart-router branches:** seed accounts are passkey-only (`get_password_hash` returns nil, only joel/gin/jack have a registered passkey), so a fresh agent-browser session can't drive login without CDP WebAuthn virtual-authenticator setup. Coverage for the four branches comes from the 4 Capybara system specs in `spec/system/welcome_spec.rb` (real browser engine, `login_as` helper bypasses Rodauth) plus 5 request specs in `spec/requests/welcome_spec.rb`. All 9 green.
+- Full validation gate: `rake project:fix-lint` (clean), `project:lint` (clean), `project:tests` (620 examples, 0 failures, 2 pre-existing pending), `project:system-tests` (78 examples, 0 failures).
 
 ---
 
