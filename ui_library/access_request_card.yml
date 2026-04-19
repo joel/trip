@@ -1,0 +1,24 @@
+component: Components::AccessRequestCard
+file: app/components/access_request_card.rb
+library_source: application_ui/layout/cards
+library_variant: with_overline_and_badge.html
+description: Admin review card for a single AccessRequest. Shows "Access Request" overline, applicant email, submitted time-ago, and a coloured status badge (pending/approved/rejected). Pending requests render Approve + Reject action buttons in a ha-card-actions footer. Used on the superadmin /access_requests index page. Not directly changed by Phase 16 but relevant -- Phase 16's new duplicate-scope uniqueness rules mean admins should see fewer repeat rows here.
+design_tokens:
+  - ha-card
+  - ha-card-actions
+  - ha-overline
+  - ha-button
+  - ha-button-primary
+  - ha-button-danger
+  - "--ha-text"
+  - "--ha-muted"
+tailwind_classes:
+  - p-6, mt-1, mt-2
+  - flex, items-start, justify-between, gap-4
+  - text-xs, text-lg, text-xs
+  - font-semibold, font-medium
+  - rounded-full, px-3, py-1
+  - bg-amber-100, bg-emerald-100, bg-red-100
+  - text-amber-800, text-emerald-800, text-red-800
+  - dark:bg-amber-500/10, dark:bg-emerald-500/10, dark:bg-red-500/10
+  - dark:text-amber-300, dark:text-emerald-300, dark:text-red-300

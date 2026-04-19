@@ -1,0 +1,14 @@
+component: Components::NoticeBanner
+file: app/components/notice_banner.rb
+library_source: application_ui/feedback/alerts
+library_variant: with_accent_border.html
+description: Inline success banner rendered as a ha-card with emerald accent border, emerald-tinted background, and emerald text. Used where a persistent success message needs to live inside the page body (not a floating toast). Pairs with FlashToasts for inline-vs-overlay distinction.
+design_tokens:
+  - ha-card
+tailwind_classes:
+  - border, border-emerald-200
+  - bg-emerald-50/80
+  - dark:border-emerald-500/30, dark:bg-emerald-500/10
+  - text-emerald-700, dark:text-emerald-200
+  - px-4, py-3
+  - text-sm, font-medium

@@ -1,0 +1,19 @@
+component: Components::AccessRequestForm
+file: app/components/access_request_form.rb
+library_source: application_ui/forms/input_groups
+library_variant: single_email.html
+description: Public invite-request form. Single email field + primary submit button. On validation failure renders an inline error panel listing all AccessRequest errors (Phase 16 surfaces two new messages here -- "already has a pending request or approved invitation" and "is already registered -- please sign in"). Uses form_with bound to the AccessRequest model.
+design_tokens:
+  - ha-input
+  - ha-button
+  - ha-button-primary
+  - "--ha-error"
+  - "--ha-error-container"
+  - "--ha-on-surface-variant"
+tailwind_classes:
+  - space-y-6
+  - text-sm, font-medium
+  - mt-2, mt-2
+  - flex, flex-wrap, gap-2
+  - rounded-2xl, px-5, py-4
+  - list-disc, space-y-1, pl-5
