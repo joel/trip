@@ -65,7 +65,12 @@ class RodauthMain < Rodauth::Rails::Auth
       # already proves the user controls that inbox, so we auto-verify,
       # skip the verification email, and auto-log them in.
       create_account_autologin? { param_or_nil("invitation_token").present? }
-      create_account_redirect { "/" }
+
+      # Post-auth destination is the trips index — the actual app surface.
+      # "/" stays reachable from the sidebar Overview link.
+      login_redirect "/trips"
+      create_account_redirect { "/trips" }
+      webauthn_setup_redirect "/trips"
 
       # Rodauth's :login feature calls account_from_login BEFORE
       # before_login_attempt, so that hook cannot intercept a missing

@@ -34,7 +34,7 @@ RSpec.describe "Invitations" do
       visit "/create-account?invitation_token=#{invitation.token}"
       click_on "Create Account"
 
-      expect(page).to have_current_path("/")
+      expect(page).to have_current_path("/trips")
 
       user = User.find_by(email: "new-invitee@example.com")
       expect(user).not_to be_nil
