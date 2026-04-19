@@ -5,10 +5,26 @@ run-name: ${{ github.actor }} - CI - ${{ github.event.pull_request.title || gith
 on:
   # 1. Trigger for ANY Pull Request, regardless of target branch
   pull_request:
+    paths-ignore:
+      - '**/*.md'
+      - 'prompts/**'
+      - 'ui_library/**'
+      - 'PRPs/**'
+      - 'docs/**'
+      - 'designs/**'
+      - 'notes/**'
 
   # 2. Trigger only when code actually lands on main (for Deploy/Final Check)
   push:
     branches: [main]
+    paths-ignore:
+      - '**/*.md'
+      - 'prompts/**'
+      - 'ui_library/**'
+      - 'PRPs/**'
+      - 'docs/**'
+      - 'designs/**'
+      - 'notes/**'
 
 env:
   RAILS_ENV: test
