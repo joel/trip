@@ -2,7 +2,7 @@
 
 class TripMembershipPolicy < ApplicationPolicy
   def index?
-    superadmin? || member_of_trip?
+    superadmin? || contributor_of_trip?
   end
 
   def create?
@@ -19,9 +19,9 @@ class TripMembershipPolicy < ApplicationPolicy
 
   private
 
-  def member_of_trip?
+  def contributor_of_trip?
     return false unless user
 
-    record.trip.trip_memberships.exists?(user: user)
+    record.trip.trip_memberships.exists?(user: user, role: :contributor)
   end
 end

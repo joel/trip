@@ -2,11 +2,11 @@
 
 class ExportPolicy < ApplicationPolicy
   def index?
-    superadmin? || member?
+    superadmin? || contributor?
   end
 
   def create?
-    (superadmin? || member?) && trip.commentable?
+    (superadmin? || contributor?) && trip.commentable?
   end
 
   def new?
@@ -14,7 +14,7 @@ class ExportPolicy < ApplicationPolicy
   end
 
   def show?
-    superadmin? || (member? && own_export?)
+    superadmin? || (contributor? && own_export?)
   end
 
   def download?
@@ -33,8 +33,8 @@ class ExportPolicy < ApplicationPolicy
     trip.trip_memberships.find_by(user: user)
   end
 
-  def member?
-    trip_membership.present?
+  def contributor?
+    trip_membership&.contributor?
   end
 
   def own_export?

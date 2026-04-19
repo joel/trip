@@ -2,11 +2,11 @@
 
 class ChecklistPolicy < ApplicationPolicy
   def index?
-    superadmin? || member?
+    superadmin? || contributor?
   end
 
   def show?
-    superadmin? || member?
+    superadmin? || contributor?
   end
 
   def create?

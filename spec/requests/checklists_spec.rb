@@ -74,9 +74,9 @@ RSpec.describe "/trips/:trip_id/checklists" do
       stub_current_user(viewer_user)
     end
 
-    it "allows viewer to see index" do
+    it "denies viewer access to index" do
       get trip_checklists_path(trip)
-      expect(response).to be_successful
+      expect(response).to have_http_status(:forbidden)
     end
 
     it "denies viewer to create" do

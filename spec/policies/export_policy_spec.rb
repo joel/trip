@@ -24,9 +24,14 @@ RSpec.describe ExportPolicy do
         .apply(:index?)).to be(true)
     end
 
-    it "allows member" do
+    it "allows contributor" do
       expect(described_class.new(trip, user: contributor_user)
         .apply(:index?)).to be(true)
+    end
+
+    it "denies viewer" do
+      expect(described_class.new(trip, user: viewer_user)
+        .apply(:index?)).to be(false)
     end
 
     it "denies non-member" do
@@ -41,14 +46,14 @@ RSpec.describe ExportPolicy do
         .apply(:create?)).to be(true)
     end
 
-    it "allows member on commentable trip" do
+    it "allows contributor on commentable trip" do
       expect(described_class.new(trip, user: contributor_user)
         .apply(:create?)).to be(true)
     end
 
-    it "allows viewer member on commentable trip" do
+    it "denies viewer on commentable trip" do
       expect(described_class.new(trip, user: viewer_user)
-        .apply(:create?)).to be(true)
+        .apply(:create?)).to be(false)
     end
 
     it "denies non-member" do
@@ -56,7 +61,7 @@ RSpec.describe ExportPolicy do
         .apply(:create?)).to be(false)
     end
 
-    it "denies member on cancelled trip" do
+    it "denies contributor on cancelled trip" do
       trip.update!(state: :cancelled)
       expect(described_class.new(trip, user: contributor_user)
         .apply(:create?)).to be(false)
