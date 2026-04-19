@@ -1,6 +1,6 @@
 ---
 name: security-review
-description: Use this skill after implementation is complete and before creating a PR, to perform a security and vulnerability review of the code changes. Trigger when the user says "security review", "check for vulnerabilities", "security audit", or after completing a feature that touches authentication, authorization, data handling, file uploads, API endpoints, or user input. Also trigger automatically at the end of any github-workflow phase before the PR is opened. This skill acts as an adversarial reviewer — its job is to find what the main agent missed.
+description: Use this skill after implementation is complete and before creating a PR, to perform a security and vulnerability review of the code changes. Trigger when the user says "security review", "check for vulnerabilities", "security audit", or after completing a feature that touches authentication, authorization, data handling, file uploads, API endpoints, or user input. Also trigger automatically at the end of any execution-plan phase before the PR is opened. This skill acts as an adversarial reviewer — its job is to find what the main agent missed.
 ---
 
 # Security Review
@@ -91,6 +91,6 @@ If no issues are found, state that explicitly — a clean bill of health is a va
 
 ## Fixing Issues
 
-For each Critical finding, open a fix inline before the PR is created. Follow the github-workflow commit conventions. Do not batch multiple fixes into one commit.
+For each Critical finding, open a fix inline before the PR is created. Follow the execution-plan commit conventions. Do not batch multiple fixes into one commit.
 
 For Warnings, ask the user whether to fix now or defer to a follow-up issue.

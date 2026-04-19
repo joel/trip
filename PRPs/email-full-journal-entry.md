@@ -462,7 +462,7 @@ Then verify with `agent-browser`:
 
 ## Workflow
 
-Follow the `/github-workflow` skill:
+Follow the `/execution-plan` skill:
 1. Create GitHub issue for this enhancement
 2. Move to Kanban board
 3. Create feature branch

@@ -1,6 +1,6 @@
 ---
 name: qa-remediation
-description: Process a batch of review findings (from /qa-review, /security-review, /ux-review, /ui-polish, /ui-designer, /code-review, PR review comments, or any audit report) into tracked GitHub issues and atomic fix commits on the current branch. Use this skill as soon as a review phase surfaces findings the user wants to act on, or when they say "remediate", "fix the findings", "work through the review", "create issues for each finding", "address these findings", "apply the review". Always creates one GitHub issue per finding (including ones deferred for later) so the audit trail is complete; explicitly asks the user which findings to fix this round; commits each fix atomically with the issue number as the first token of the subject ("#123 Short description"); closes each issue immediately after its commit is pushed. Unlike /github-workflow this skill stays on the current branch and skips PR creation + Kanban lifecycle — use /github-workflow for single-bug work, new features, or anything that needs its own branch and PR.
+description: Process a batch of review findings (from /qa-review, /security-review, /ux-review, /ui-polish, /ui-designer, /code-review, PR review comments, or any audit report) into tracked GitHub issues and atomic fix commits on the current branch. Use this skill as soon as a review phase surfaces findings the user wants to act on, or when they say "remediate", "fix the findings", "work through the review", "create issues for each finding", "address these findings", "apply the review". Always creates one GitHub issue per finding (including ones deferred for later) so the audit trail is complete; explicitly asks the user which findings to fix this round; commits each fix atomically with the issue number as the first token of the subject ("#123 Short description"); closes each issue immediately after its commit is pushed. Unlike /execution-plan this skill stays on the current branch and skips PR creation + Kanban lifecycle — use /execution-plan for single-bug work, new features, or anything that needs its own branch and PR.
 ---
 
 # QA Remediation
@@ -15,14 +15,14 @@ Turn a list of review findings into tracked GitHub issues and atomic fix commits
 
 **Do not use this skill for:**
 
-- A single bug fix with no prior review artifact → `/github-workflow`.
-- New features → `/github-workflow`.
-- Work that needs a dedicated branch or PR → `/github-workflow`.
+- A single bug fix with no prior review artifact → `/execution-plan`.
+- New features → `/execution-plan`.
+- Work that needs a dedicated branch or PR → `/execution-plan`.
 - Architectural changes that span many branches → a phase plan, not a remediation round.
 
-## Relationship to /github-workflow
+## Relationship to /execution-plan
 
-| Step | /github-workflow | /qa-remediation |
+| Step | /execution-plan | /qa-remediation |
 |------|------------------|------------------|
 | Create issue per unit of work | ✔ | ✔ (one per finding, always) |
 | Kanban lifecycle | ✔ | ✗ |
@@ -203,9 +203,9 @@ When the will-fix list is empty:
 
 - **A review finding turns out to be wrong on closer inspection.** Close the issue with `--reason "not planned"` and a short technical explanation. Do not leave wrong findings open to rot.
 - **A fix grows mid-implementation.** Stop. Commit what you have that is correct and complete. Open a follow-up issue for the remainder. The half-finished work does not go in.
-- **The change requires database migration, data backfill, or a feature flag.** Those are rarely single-commit work — stop and escalate to `/github-workflow` for a proper PR with staged review.
-- **The current branch is shared or protected.** Do not push partial remediation onto a branch other people are using. Switch to `/github-workflow` and open a dedicated remediation branch + PR.
-- **The current branch is not behind a PR yet.** Fine — the skill still works. Mention at wrap-up that the user will need to open the PR via `/github-workflow` when the remediation round is complete.
+- **The change requires database migration, data backfill, or a feature flag.** Those are rarely single-commit work — stop and escalate to `/execution-plan` for a proper PR with staged review.
+- **The current branch is shared or protected.** Do not push partial remediation onto a branch other people are using. Switch to `/execution-plan` and open a dedicated remediation branch + PR.
+- **The current branch is not behind a PR yet.** Fine — the skill still works. Mention at wrap-up that the user will need to open the PR via `/execution-plan` when the remediation round is complete.
 
 ## Quick reference
 

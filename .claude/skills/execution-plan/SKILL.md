@@ -1,11 +1,11 @@
 ---
-name: github-workflow
-description: Use this skill for every task that involves code changes in this project. It governs the full lifecycle from GitHub issue creation through Kanban tracking, branching, implementation, testing, live verification, and PR submission. Trigger whenever the user asks to implement a feature, fix a bug, refactor code, or do any work that will result in a commit. Also trigger when the user says "start work", "new feature", "fix issue", "create PR", "push changes", or asks about the project workflow. This skill ensures no step is skipped - especially the GitHub issue, Kanban board updates, and live runtime verification that are easy to forget.
+name: execution-plan
+description: Drive the end-to-end execution of any coherent piece of code work in this project — from issue creation, through branching, implementation, testing, live verification, PR, and review response. Trigger whenever the user asks to implement a feature, fix a bug, refactor code, ship a change, or act on a phase plan / PRP that will produce commits. Also trigger when they say "start work", "new feature", "fix issue", "create PR", "push changes", "let's implement", "execute the plan", or reference a planning document that needs to be carried out. Keeps the loop intact — GitHub issue first, then Kanban move, then branch, then atomic commits, then live product verification, then PR, then review response — none of the steps silently drop.
 ---
 
-# GitHub Workflow
+# Execution Plan
 
-This skill enforces the full development workflow defined in AGENTS.md. Every code change follows this lifecycle: Issue → Kanban → Branch → Implement → Test → Live Verify → Push → PR → Review → Respond → Resolve.
+This skill enforces the full development workflow defined in AGENTS.md. Every coherent piece of code work follows this lifecycle: Issue → Kanban → Branch → Implement → Test → Live Verify → Push → PR → Review → Respond → Resolve.
 
 ## Why This Matters
 

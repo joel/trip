@@ -1429,9 +1429,9 @@ Then verify with `agent-browser` at `https://catalyst.workeverywhere.docker/`:
 - Dark mode toggle works
 - No runtime errors
 
-### GitHub Workflow (Every Task)
+### Execution Plan (Every Task)
 
-Follow the `/github-workflow` skill:
+Follow the `/execution-plan` skill:
 1. Create GitHub issue with detailed plan
 2. Add to Kanban board
 3. Move through: Backlog -> Ready -> In Progress -> In Review -> Done

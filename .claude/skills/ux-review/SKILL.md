@@ -118,8 +118,8 @@ Also test at a narrow viewport (375px) to catch mobile/responsive issues.
 
 ## Fixing Issues
 
-For each Broken issue, fix before the PR. Follow github-workflow commit conventions.
+For each Broken issue, fix before the PR. Follow execution-plan commit conventions.
 
 For Friction issues, ask the user: fix now or create a follow-up issue?
 
-Use the `/github-workflow` skill to create follow-up issues for deferred items, labelled `enhancement`.
+Use the `/execution-plan` skill to create follow-up issues for deferred items, labelled `enhancement`.

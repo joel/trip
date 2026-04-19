@@ -18,7 +18,7 @@ Steps:
 - Read `PRPs/trip-journal.md`
 - Read CLAUDE.md
 - Read prompts/INITIAL Summary.md
-- Use the project skill /github-workflow to execute the PLAN `prompts/Phase 1.md`
+- Use the project skill /execution-plan to execute the PLAN `prompts/Phase 1.md`
 - Write the Steps taken in `prompts/Phase 1 - Steps.md` for trail and audit
 - QA at runtime is everything works, use the project skill /product-review, it is critical to use the agent-browser to verify that the integration and design proceed as expected. This is a highly visual re-design task that requires a visual check.
 
