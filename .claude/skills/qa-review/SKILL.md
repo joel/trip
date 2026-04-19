@@ -323,6 +323,6 @@ Write the report to `prompts/Phase N - QA Review.md`:
 
 ## Fixing Defects
 
-For each Defect, open a fix before the PR is merged. Follow github-workflow commit conventions. Add a regression spec if the defect is logic-based.
+For each Defect, open a fix before the PR is merged. Follow execution-plan commit conventions. Add a regression spec if the defect is logic-based.
 
 For Edge Case Gaps, ask the user: fix now or create a follow-up issue?
