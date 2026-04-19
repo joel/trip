@@ -23,14 +23,36 @@ RSpec.describe ChecklistPolicy do
         .apply(:index?)).to be(true)
     end
 
-    it "allows member" do
-      expect(described_class.new(checklist, user: viewer_user)
+    it "allows contributor" do
+      expect(described_class.new(checklist, user: contributor)
         .apply(:index?)).to be(true)
+    end
+
+    it "denies viewer" do
+      expect(described_class.new(checklist, user: viewer_user)
+        .apply(:index?)).to be(false)
     end
 
     it "denies non-member" do
       expect(described_class.new(checklist, user: outsider)
         .apply(:index?)).to be(false)
+    end
+  end
+
+  describe "#show?" do
+    it "allows superadmin" do
+      expect(described_class.new(checklist, user: admin)
+        .apply(:show?)).to be(true)
+    end
+
+    it "allows contributor" do
+      expect(described_class.new(checklist, user: contributor)
+        .apply(:show?)).to be(true)
+    end
+
+    it "denies viewer" do
+      expect(described_class.new(checklist, user: viewer_user)
+        .apply(:show?)).to be(false)
     end
   end
 

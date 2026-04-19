@@ -4,11 +4,16 @@ require "rails_helper"
 
 RSpec.describe TripMembershipPolicy do
   let(:admin) { create(:user, :superadmin) }
-  let(:member_user) { create(:user) }
+  let(:contributor_user) { create(:user) }
+  let(:viewer_user) { create(:user) }
   let(:outsider) { create(:user) }
   let(:trip) { create(:trip) }
   let(:membership) do
-    create(:trip_membership, trip: trip, user: member_user)
+    create(:trip_membership, trip: trip, user: contributor_user)
+  end
+
+  before do
+    create(:trip_membership, :viewer, trip: trip, user: viewer_user)
   end
 
   describe "#index?" do
@@ -17,9 +22,14 @@ RSpec.describe TripMembershipPolicy do
         .apply(:index?)).to be(true)
     end
 
-    it "allows trip member" do
-      expect(described_class.new(membership, user: member_user)
+    it "allows contributor" do
+      expect(described_class.new(membership, user: contributor_user)
         .apply(:index?)).to be(true)
+    end
+
+    it "denies viewer" do
+      expect(described_class.new(membership, user: viewer_user)
+        .apply(:index?)).to be(false)
     end
 
     it "denies non-member" do
@@ -34,8 +44,13 @@ RSpec.describe TripMembershipPolicy do
         .apply(:create?)).to be(true)
     end
 
-    it "denies member" do
-      expect(described_class.new(membership, user: member_user)
+    it "denies contributor" do
+      expect(described_class.new(membership, user: contributor_user)
+        .apply(:create?)).to be(false)
+    end
+
+    it "denies viewer" do
+      expect(described_class.new(membership, user: viewer_user)
         .apply(:create?)).to be(false)
     end
   end
@@ -46,8 +61,13 @@ RSpec.describe TripMembershipPolicy do
         .apply(:destroy?)).to be(true)
     end
 
-    it "denies member" do
-      expect(described_class.new(membership, user: member_user)
+    it "denies contributor" do
+      expect(described_class.new(membership, user: contributor_user)
+        .apply(:destroy?)).to be(false)
+    end
+
+    it "denies viewer" do
+      expect(described_class.new(membership, user: viewer_user)
         .apply(:destroy?)).to be(false)
     end
   end
