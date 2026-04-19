@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Set Review - qa-remediation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Lora', Georgia, serif; background: #faf9f5; padding: 2rem; color: #141413; }
+    h1 { font-family: 'Poppins', sans-serif; margin-bottom: 0.5rem; font-size: 1.5rem; }
+    .description { color: #b0aea5; margin-bottom: 1.5rem; font-style: italic; max-width: 900px; }
+    .controls { margin-bottom: 1rem; display: flex; gap: 0.5rem; }
+    .btn { font-family: 'Poppins', sans-serif; padding: 0.5rem 1rem; border: none; border-radius: 6px; cursor: pointer; font-size: 0.875rem; font-weight: 500; }
+    .btn-add { background: #6a9bcc; color: white; }
+    .btn-add:hover { background: #5889b8; }
+    .btn-export { background: #d97757; color: white; }
+    .btn-export:hover { background: #c4613f; }
+    table { width: 100%; max-width: 1100px; border-collapse: collapse; background: white; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    th { font-family: 'Poppins', sans-serif; background: #141413; color: #faf9f5; padding: 0.75rem 1rem; text-align: left; font-size: 0.875rem; }
+    td { padding: 0.75rem 1rem; border-bottom: 1px solid #e8e6dc; vertical-align: top; }
+    tr:nth-child(even) td { background: #faf9f5; }
+    tr:hover td { background: #f3f1ea; }
+    .section-header td { background: #e8e6dc; font-family: 'Poppins', sans-serif; font-weight: 500; font-size: 0.8rem; color: #141413; text-transform: uppercase; letter-spacing: 0.05em; }
+    .query-input { width: 100%; padding: 0.4rem; border: 1px solid #e8e6dc; border-radius: 4px; font-size: 0.875rem; font-family: 'Lora', Georgia, serif; resize: vertical; min-height: 60px; }
+    .query-input:focus { outline: none; border-color: #d97757; box-shadow: 0 0 0 2px rgba(217,119,87,0.15); }
+    .toggle { position: relative; display: inline-block; width: 44px; height: 24px; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle .slider { position: absolute; inset: 0; background: #b0aea5; border-radius: 24px; cursor: pointer; transition: 0.2s; }
+    .toggle .slider::before { content: ""; position: absolute; width: 18px; height: 18px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.2s; }
+    .toggle input:checked + .slider { background: #d97757; }
+    .toggle input:checked + .slider::before { transform: translateX(20px); }
+    .btn-delete { background: #c44; color: white; padding: 0.3rem 0.6rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-family: 'Poppins', sans-serif; }
+    .btn-delete:hover { background: #a33; }
+    .summary { margin-top: 1rem; color: #b0aea5; font-size: 0.875rem; }
+  </style>
+</head>
+<body>
+  <h1>Eval Set Review: <span id="skill-name">qa-remediation</span></h1>
+  <p class="description">Current description: <span id="skill-desc">Process a batch of review findings (from /qa-review, /security-review, /ux-review, /ui-polish, /ui-designer, /code-review, PR review comments, or any audit report) into tracked GitHub issues and atomic fix commits on the current branch. Use this skill as soon as a review phase surfaces findings the user wants to act on, or when they say remediate, fix the findings, work through the review, create issues for each finding, address these findings, apply the review. Always creates one GitHub issue per finding (including ones deferred for later) so the audit trail is complete; explicitly asks the user which findings to fix this round; commits each fix atomically with the issue number as the first token of the subject; closes each issue immediately after its commit is pushed. Unlike /github-workflow this skill stays on the current branch and skips PR creation and Kanban lifecycle.</span></p>
+
+  <div class="controls">
+    <button class="btn btn-add" onclick="addRow()">+ Add Query</button>
+    <button class="btn btn-export" onclick="exportEvalSet()">Export Eval Set</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:65%">Query</th>
+        <th style="width:18%">Should Trigger</th>
+        <th style="width:10%">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="eval-body"></tbody>
+  </table>
+
+  <p class="summary" id="summary"></p>
+
+  <script>
+    const EVAL_DATA = [
+  {
+    "query": "ok so I just ran /qa-review on the current branch and the report at prompts/Phase 18 - QA Review.md has 4 Critical and 7 High findings. lets work through them — make an issue for each and fix the Criticals in this pass",
+    "should_trigger": true
+  },
+  {
+    "query": "the codex bot just dropped 5 review comments on PR #124. go through each one, fix the code, atomic commits referencing the issue please",
+    "should_trigger": true
+  },
+  {
+    "query": "I have the UX review report open — there are 12 findings, 3 of them Critical. Can you remediate the 3 Critical ones now and just track the rest as issues for later",
+    "should_trigger": true
+  },
+  {
+    "query": "apply the review from /security-review to the current branch. every finding gets an issue, fix the P1s, defer the P2s",
+    "should_trigger": true
+  },
+  {
+    "query": "please create a gh issue per finding in prompts/Phase X - UI Polish Review.md and then fix all of them one by one, each as its own commit with the issue number in the subject",
+    "should_trigger": true
+  },
+  {
+    "query": "work through the findings in the deep QA report. I want an audit trail (issue per finding) but only fix the ones that block the merge",
+    "should_trigger": true
+  },
+  {
+    "query": "the last 5 parallel review agents produced a consolidated list of 9 Critical items. atomic commits, close each issue after the commit is pushed",
+    "should_trigger": true
+  },
+  {
+    "query": "remediate the three bugs surfaced by the qa phase — keep the fixes tiny and narrow, one commit each, and reference the issue numbers in the commit titles",
+    "should_trigger": true
+  },
+  {
+    "query": "let's address these accessibility findings from the ux review. open issues for all 8 but only fix the 3 that are wcag AA violations in this round",
+    "should_trigger": true
+  },
+  {
+    "query": "the security review flagged 2 high-severity enumeration vectors plus 4 medium findings. I want issues for all 6 and fixes for the 2 high ones only",
+    "should_trigger": true
+  },
+  {
+    "query": "there's a bug in app/models/trip.rb where finished trips can still receive journal entries via the MCP endpoint. fix it and open a PR",
+    "should_trigger": false
+  },
+  {
+    "query": "I want to start Phase 19 which adds telegram push notifications. can you draft the plan and then implement it",
+    "should_trigger": false
+  },
+  {
+    "query": "run /qa-review on the current branch",
+    "should_trigger": false
+  },
+  {
+    "query": "review the last 3 commits on this branch for security issues",
+    "should_trigger": false
+  },
+  {
+    "query": "check the pr at https://github.com/joel/trip/pull/103 and tell me what you think",
+    "should_trigger": false
+  },
+  {
+    "query": "open an issue called 'Investigate flaky spec in spec/system/comments_spec.rb' and assign it to me",
+    "should_trigger": false
+  },
+  {
+    "query": "the gh issue #67 needs to be closed — its been fixed in commit abc1234 already",
+    "should_trigger": false
+  },
+  {
+    "query": "what's the current open issue count for this repo and which ones don't have labels",
+    "should_trigger": false
+  },
+  {
+    "query": "can you write a phase plan for moving active storage to seaweedfs",
+    "should_trigger": false
+  },
+  {
+    "query": "I want to implement the changes recommended in prompts/Phase 16 Onboarding Improvements.md — can you start with task 1",
+    "should_trigger": false
+  }
+];
+
+    let evalItems = [...EVAL_DATA];
+
+    function render() {
+      const tbody = document.getElementById('eval-body');
+      tbody.innerHTML = '';
+
+      // Sort: should-trigger first, then should-not-trigger
+      const sorted = evalItems
+        .map((item, origIdx) => ({ ...item, origIdx }))
+        .sort((a, b) => (b.should_trigger ? 1 : 0) - (a.should_trigger ? 1 : 0));
+
+      let lastGroup = null;
+      sorted.forEach(item => {
+        const group = item.should_trigger ? 'trigger' : 'no-trigger';
+        if (group !== lastGroup) {
+          const headerRow = document.createElement('tr');
+          headerRow.className = 'section-header';
+          headerRow.innerHTML = `<td colspan="3">${item.should_trigger ? 'Should Trigger' : 'Should NOT Trigger'}</td>`;
+          tbody.appendChild(headerRow);
+          lastGroup = group;
+        }
+
+        const idx = item.origIdx;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><textarea class="query-input" onchange="updateQuery(${idx}, this.value)">${escapeHtml(item.query)}</textarea></td>
+          <td>
+            <label class="toggle">
+              <input type="checkbox" ${item.should_trigger ? 'checked' : ''} onchange="updateTrigger(${idx}, this.checked)">
+              <span class="slider"></span>
+            </label>
+            <span style="margin-left:8px;font-size:0.8rem;color:#b0aea5">${item.should_trigger ? 'Yes' : 'No'}</span>
+          </td>
+          <td><button class="btn-delete" onclick="deleteRow(${idx})">Delete</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+      updateSummary();
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function updateQuery(idx, value) { evalItems[idx].query = value; updateSummary(); }
+    function updateTrigger(idx, value) { evalItems[idx].should_trigger = value; render(); }
+    function deleteRow(idx) { evalItems.splice(idx, 1); render(); }
+
+    function addRow() {
+      evalItems.push({ query: '', should_trigger: true });
+      render();
+      const inputs = document.querySelectorAll('.query-input');
+      inputs[inputs.length - 1].focus();
+    }
+
+    function updateSummary() {
+      const trigger = evalItems.filter(i => i.should_trigger).length;
+      const noTrigger = evalItems.filter(i => !i.should_trigger).length;
+      document.getElementById('summary').textContent =
+        `${evalItems.length} queries total: ${trigger} should trigger, ${noTrigger} should not trigger`;
+    }
+
+    function exportEvalSet() {
+      const valid = evalItems.filter(i => i.query.trim() !== '');
+      const data = valid.map(i => ({ query: i.query.trim(), should_trigger: i.should_trigger }));
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'eval_set.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    render();
+  </script>
+</body>
+</html>

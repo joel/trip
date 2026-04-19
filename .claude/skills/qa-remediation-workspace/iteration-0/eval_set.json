@@ -1,0 +1,82 @@
+[
+  {
+    "query": "ok so I just ran /qa-review on the current branch and the report at prompts/Phase 18 - QA Review.md has 4 Critical and 7 High findings. lets work through them — make an issue for each and fix the Criticals in this pass",
+    "should_trigger": true
+  },
+  {
+    "query": "the codex bot just dropped 5 review comments on PR #124. go through each one, fix the code, atomic commits referencing the issue please",
+    "should_trigger": false
+  },
+  {
+    "query": "I have the UX review report open — there are 12 findings, 3 of them Critical. Can you remediate the 3 Critical ones now and just track the rest as issues for later",
+    "should_trigger": true
+  },
+  {
+    "query": "apply the review from /security-review to the current branch. every finding gets an issue, fix the P1s, defer the P2s",
+    "should_trigger": true
+  },
+  {
+    "query": "please create a gh issue per finding in prompts/Phase X - UI Polish Review.md and then fix all of them one by one, each as its own commit with the issue number in the subject",
+    "should_trigger": true
+  },
+  {
+    "query": "work through the findings in the deep QA report. I want an audit trail (issue per finding) but only fix the ones that block the merge",
+    "should_trigger": true
+  },
+  {
+    "query": "the last 5 parallel review agents produced a consolidated list of 9 Critical items. atomic commits, close each issue after the commit is pushed",
+    "should_trigger": true
+  },
+  {
+    "query": "remediate the three bugs surfaced by the qa phase — keep the fixes tiny and narrow, one commit each, and reference the issue numbers in the commit titles",
+    "should_trigger": true
+  },
+  {
+    "query": "let's address these accessibility findings from the ux review. open issues for all 8 but only fix the 3 that are wcag AA violations in this round",
+    "should_trigger": true
+  },
+  {
+    "query": "the security review flagged 2 high-severity enumeration vectors plus 4 medium findings. I want issues for all 6 and fixes for the 2 high ones only",
+    "should_trigger": true
+  },
+  {
+    "query": "there's a bug in app/models/trip.rb where finished trips can still receive journal entries via the MCP endpoint. fix it and open a PR",
+    "should_trigger": false
+  },
+  {
+    "query": "I want to start Phase 19 which adds telegram push notifications. can you draft the plan and then implement it",
+    "should_trigger": false
+  },
+  {
+    "query": "run /qa-review on the current branch",
+    "should_trigger": false
+  },
+  {
+    "query": "review the last 3 commits on this branch for security issues",
+    "should_trigger": false
+  },
+  {
+    "query": "check the pr at https://github.com/joel/trip/pull/103 and tell me what you think",
+    "should_trigger": false
+  },
+  {
+    "query": "open an issue called 'Investigate flaky spec in spec/system/comments_spec.rb' and assign it to me",
+    "should_trigger": false
+  },
+  {
+    "query": "the gh issue #67 needs to be closed — its been fixed in commit abc1234 already",
+    "should_trigger": false
+  },
+  {
+    "query": "what's the current open issue count for this repo and which ones don't have labels",
+    "should_trigger": false
+  },
+  {
+    "query": "can you write a phase plan for moving active storage to seaweedfs",
+    "should_trigger": false
+  },
+  {
+    "query": "I want to implement the changes recommended in prompts/Phase 16 Onboarding Improvements.md — can you start with task 1",
+    "should_trigger": false
+  }
+]
