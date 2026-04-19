@@ -84,6 +84,21 @@ class RodauthMain < Rodauth::Rails::Auth
         request.redirect "/", 303
       end
 
+      # GET /create-account without a valid invitation token used to
+      # render a fully functional form, then bounce the user on POST —
+      # a honeypot from the user's perspective. Gate the GET path here
+      # so the form only renders when a valid token is already present;
+      # validate_invitation_token still enforces email-match on POST.
+      before_create_account_route do
+        next unless request.get?
+
+        token = param_or_nil("invitation_token")
+        next if token && ::Invitation.valid_tokens.find_by(token: token)
+
+        set_redirect_error_flash "Invitation required. Request access below."
+        request.redirect "/", 303
+      end
+
       auth_class_eval do
         def two_factor_authentication_setup?
           false
