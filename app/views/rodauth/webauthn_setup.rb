@@ -8,6 +8,9 @@ module Views
 
       def view_template
         cred = view_context.rodauth.new_webauthn_credential
+        suggested = Webauthn::NameSuggester.from_user_agent(
+          view_context.request.user_agent
+        )
 
         div(class: "space-y-8") do
           div(class: "ha-card p-8") do
@@ -50,6 +53,8 @@ module Views
                 aria: { hidden: "true" }
               )
 
+              render_name_field(form, suggested)
+
               div(id: "webauthn-setup-button") do
                 form.submit(
                   view_context.rodauth.webauthn_setup_button,
@@ -64,6 +69,29 @@ module Views
           view_context.rodauth.webauthn_setup_js_path,
           extname: false
         )
+      end
+
+      private
+
+      def render_name_field(form, suggested)
+        div(class: "space-y-2") do
+          form.label(
+            :passkey_name,
+            "Passkey name",
+            class: "text-sm font-medium text-[var(--ha-on-surface-variant)]"
+          )
+          form.text_field(
+            :passkey_name,
+            value: suggested,
+            maxlength: 60,
+            autocomplete: "off",
+            placeholder: "e.g. Mac fingerprint, Pixel phone, Bitwarden",
+            class: "ha-input"
+          )
+          p(class: "text-xs text-[var(--ha-muted)]") do
+            plain "Give this device a name you'll recognise later."
+          end
+        end
       end
     end
   end
