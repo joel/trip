@@ -177,7 +177,7 @@ module Views
       end
 
       def render_logged_out
-        div(class: "space-y-12") do
+        div(class: "mx-auto w-full max-w-md space-y-8") do
           section do
             h1(class: "font-headline text-4xl font-bold tracking-tighter " \
                       "md:text-5xl") do
@@ -187,14 +187,12 @@ module Views
               plain "Your collaborative trip journal."
             end
           end
-          div(class: "mx-auto w-full max-w-md") do
-            render_access_card
-          end
+          render_access_card
         end
       end
 
       def render_access_card
-        div(class: "ha-card p-6 ha-rise", style: "animation-delay: 160ms;") do
+        div(class: "ha-card p-6 ha-rise") do
           p(class: "ha-overline") { "Access" }
           h2(class: "mt-2 font-headline text-2xl font-bold") do
             plain "Request an invitation"
