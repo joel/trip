@@ -7,7 +7,8 @@ module Components
     def view_template
       return unless flash.any?
 
-      div(class: "pointer-events-none fixed right-6 top-6 z-50 flex w-full max-w-sm flex-col gap-3") do
+      div(class: "pointer-events-none fixed right-6 top-20 md:top-6 z-50 " \
+                 "flex w-[calc(100vw-3rem)] max-w-sm flex-col gap-3") do
         flash.each do |type, message|
           if type.to_s == "notice"
             render_notice_toast(message)

@@ -1,0 +1,24 @@
+component: Components::FlashToasts
+file: app/components/flash_toasts.rb
+library_source: application_ui/overlays/notifications
+library_variant: simple_with_actions.html
+description: Fixed top-right flash notification stack. Renders one toast per flash entry. Uses emerald styling for notice and rose styling for alert. Each toast is dismissable via the Stimulus toast controller (auto-timeout 4000ms notice, 4500ms alert). Used by the application layout to surface Rails flash on every page -- including the Phase 16 onboarding redirect flashes ("Invitation required. Request access below." and "Welcome! Your account is ready.").
+design_tokens:
+  - ha-card-shadow (implicit via custom shadow values)
+tailwind_classes:
+  - pointer-events-none, pointer-events-auto
+  - fixed, right-6, top-6, z-50
+  - flex, flex-col, gap-3, items-start, gap-3
+  - w-full, max-w-sm, min-w-0, flex-1
+  - rounded-2xl, rounded-xl, rounded-full
+  - border, border-emerald-300/30, border-rose-300/30
+  - bg-emerald-400/20, bg-rose-400/20
+  - text-emerald-100, text-emerald-200, text-emerald-100/80
+  - text-rose-100, text-rose-200, text-rose-100/80
+  - h-9, w-9, h-7, w-7, h-3.5, w-3.5
+  - p-4, mt-1
+  - text-sm, font-semibold
+  - transition, transition-all, duration-300, ease-out
+  - hover:bg-emerald-200/10, hover:bg-rose-200/10
+stimulus_controllers:
+  - toast (dismiss action + toast_timeout_value)
