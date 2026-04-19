@@ -81,7 +81,7 @@ class RodauthMain < Rodauth::Rails::Auth
         next if _account_from_login(login_value)
 
         set_redirect_error_flash "Invitation required. Request access below."
-        redirect "/"
+        request.redirect "/", 303
       end
 
       auth_class_eval do
@@ -109,7 +109,7 @@ class RodauthMain < Rodauth::Rails::Auth
           return if invitation && invitation.email.downcase == email.to_s.downcase
 
           set_redirect_error_flash "Invitation required. Request access below."
-          redirect "/"
+          request.redirect "/", 303
         end
 
         def verify_account_view
