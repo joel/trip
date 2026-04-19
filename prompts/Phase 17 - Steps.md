@@ -18,6 +18,10 @@ Flight recorder for Phase 17. Append-only.
   - In Progress → In Review (PR open)
   - In Review → Done (merge)
 
+## 9. PR
+
+- **PR:** [joel/trip#113](https://github.com/joel/trip/pull/113) — "Phase 17: Passkey UX round 2 — names, mutex, /trips redirect"
+
 ## 4. Branch
 
 - **Branch:** `feature/phase17-passkey-ux`
