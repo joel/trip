@@ -21,5 +21,12 @@ RSpec.describe "Welcome" do
       expect(page).to have_content(/Welcome,/)
       expect(page).to have_content("New Trip")
     end
+
+    it "does not render the Add a passkey security panel" do
+      visit root_path
+      expect(page).to have_content(/Welcome,/) # anchor to ensure page loaded
+      expect(page).to have_no_content("Add a passkey")
+      expect(page).to have_no_content("Register a passkey per device")
+    end
   end
 end
