@@ -130,9 +130,10 @@ module Views
       end
 
       def render_info_cards
-        div(class: "grid gap-6 md:grid-cols-2") do
-          render_users_card if view_context.allowed_to?(:index?, User)
-          render_passkey_card
+        return unless view_context.allowed_to?(:index?, User)
+
+        div(class: "mx-auto w-full max-w-md") do
+          render_users_card
         end
       end
 
@@ -150,28 +151,6 @@ module Views
                     class: "ha-button ha-button-primary")
             link_to("Browse", view_context.users_path,
                     class: "ha-button ha-button-secondary")
-          end
-        end
-      end
-
-      def render_passkey_card
-        div(class: "ha-card p-6 ha-rise", style: "animation-delay: 240ms;") do
-          p(class: "ha-overline") { "Security" }
-          h2(class: "mt-2 font-headline text-2xl font-bold") do
-            plain "Add a passkey"
-          end
-          p(class: "mt-3 text-sm text-[var(--ha-on-surface-variant)]") do
-            plain "Register a passkey per device for faster, safer sign-ins."
-          end
-          div(class: "mt-6 flex flex-wrap gap-3") do
-            link_to("Add passkey",
-                    view_context.rodauth.webauthn_setup_path,
-                    class: "ha-button ha-button-primary")
-            if view_context.rodauth.webauthn_setup?
-              link_to("Manage passkeys",
-                      view_context.rodauth.webauthn_remove_path,
-                      class: "ha-button ha-button-secondary")
-            end
           end
         end
       end
