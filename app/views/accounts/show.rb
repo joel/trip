@@ -19,6 +19,10 @@ module Views
           ) do
             link_to("Edit account", view_context.edit_account_path,
                     class: "ha-button ha-button-secondary")
+            button_to("Sign out", view_context.rodauth.logout_path,
+                      method: :post,
+                      form: { class: "inline-flex" },
+                      class: "ha-button ha-button-secondary")
             button_to("Delete account", view_context.account_path,
                       method: :delete,
                       class: "ha-button ha-button-danger",
