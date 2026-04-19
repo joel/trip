@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_18_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_19_134652) do
   create_table "access_requests", id: uuid, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -239,6 +239,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_18_120000) do
 
   create_table "user_webauthn_keys", primary_key: ["user_id", "webauthn_id"], force: :cascade do |t|
     t.datetime "last_use", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.string "name", limit: 80
     t.string "public_key", null: false
     t.integer "sign_count", null: false
     t.string "user_id", limit: 36
