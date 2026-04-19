@@ -40,6 +40,25 @@ unset GITHUB_TOKEN && gh project item-add ...
 
 **Status field ID:** `PVTSSF_lAHNFp3OAUj6X84P9YK-`
 
+## Audit Trail — `prompts/<phase> - Steps.md`
+
+Every phase keeps a running Steps document next to its plan. The file lives at `prompts/<phase> - Steps.md` — e.g. `prompts/Phase 16 - Steps.md`.
+
+**Why it exists.** Git and GitHub record *what* happened; the Steps file records *why* and *in what order*, readable sequentially by a human without clicking through commit bodies and issue threads. It's the phase's flight recorder — indispensable when picking up a phase after a context reset or when explaining to a reviewer how the work unfolded.
+
+**How to maintain it.** Append-only. Create it alongside the GitHub issue (Step 1) and update at these points:
+
+| At step | Append |
+|---------|--------|
+| 1 (issue) | issue number, title, link to the plan, "User approved the plan." |
+| 4 (branch) | branch name |
+| 7 (commit) | `<sha>` + one-line rationale; note any `SKIP=<hook>` with reason |
+| 8 (runtime test) | pages verified, anything that broke and the fix commit |
+| 11 (PR review round) | per-comment action + fix commit + resolution, as a table |
+| 12 (done) | final summary table: issue → commit → status |
+
+**Tone.** Factual, short. The audience is future-you (or a reviewer) reconstructing what decisions were made, not re-arguing them. Match `prompts/Phase 16 - Steps.md` for style.
+
 ## Workflow Steps
 
 ### Step 1: Create GitHub Issue
@@ -299,16 +318,16 @@ unset GITHUB_TOKEN && gh project item-edit \
 ## Quick Reference: Complete Flow
 
 ```
-1.  gh issue create          → Create issue with plan
-2.  gh project item-add      → Add to Kanban (Backlog)
-3.  gh project item-edit     → Move to Ready, then In Progress
-4.  git checkout -b feature/ → Create branch
-5.  <implement changes>      → Write code
-6.  bundle exec rake         → Lint + tests + system tests
-7.  git commit               → Overcommit hooks validate
-8.  /product-review           → Live browser verification
-9.  git push + gh pr create  → Push and open PR (Closes #N)
-10. gh project item-edit     → Move to In Review
-11. gh api .../comments      → Reply to every review comment + resolve threads
-12. gh project item-edit     → Move to Done (after merge)
+1.  gh issue create + open prompts/<phase> - Steps.md  → Create issue with plan
+2.  gh project item-add                                → Add to Kanban (Backlog)
+3.  gh project item-edit                               → Move to Ready, then In Progress
+4.  git checkout -b feature/                           → Create branch
+5.  <implement changes>                                → Write code
+6.  bundle exec rake                                   → Lint + tests + system tests
+7.  git commit (+ append sha to Steps.md)              → Overcommit hooks validate
+8.  /product-review                                    → Live browser verification
+9.  git push + gh pr create                            → Push and open PR (Closes #N)
+10. gh project item-edit                               → Move to In Review
+11. gh api .../comments (+ log replies in Steps.md)    → Reply + resolve threads
+12. gh project item-edit + final summary in Steps.md   → Move to Done (after merge)
 ```
