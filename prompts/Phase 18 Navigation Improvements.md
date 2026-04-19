@@ -1,5 +1,9 @@
 # Phase 18: Navigation Improvements
 
+```
+claude --resume f0ae9582-92a7-4d52-b543-4f3126efc417
+```
+
 **Status:** Draft — product decisions resolved (see §8)
 **Date:** 2026-04-19
 **Confidence Score:** 9/10 (all four open questions answered; scope is fully concrete)
