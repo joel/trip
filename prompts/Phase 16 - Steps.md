@@ -203,3 +203,74 @@ a44247e  Remove Sign-in card from logged-out homepage
 ```
 
 11 commits total; all green; all review threads resolved.
+
+---
+
+## Step 11 — Deep QA phase (5 parallel review agents)
+
+Five review agents dispatched in parallel: `qa-review`, `security-review`, `ux-review`, `ui-polish`, `ui-designer` (+ `ui_library/` sync).
+
+Reports on disk under `prompts/Phase X - {Name}.md`.
+
+### Consolidated Critical findings (6)
+
+| # | Source | Finding |
+|---|---|---|
+| C1 | QA | Null-byte email crashes `/request-access` with HTTP 500 (raw input hits DB before format validation) |
+| C2 | QA | Login + create-account redirects use HTTP 302 instead of 303 — strict clients re-POST and 404 |
+| C3 | UX | GET `/create-account` without token renders a honeypot form |
+| C4 | UX | Homepage greeting "Welcome BACK, <name>" for first-time invited signups |
+| C5 | UI Polish | Flash toasts overlap mobile top bar + hero on ≤393px viewports |
+| C6 | UI Polish | At 1920+ the logged-out home is 65% empty; hero/card horizontal axes disagree |
+
+### Non-Critical worth noting
+
+- Security: 0 Critical, 2 High (account enumeration: `/login` response differential + `/request-access` inline error text).
+- UI Designer: 0 Critical, +5 YAML entries synced (`flash_toasts`, `notice_banner`, `rodauth_flash`, `access_request_form`, `access_request_card`).
+- UX / QA: multiple High findings on accessibility, sidebar dead-end, subtitle copy — filed for follow-up.
+
+## Step 12 — QA round 2 fixes (6 GitHub issues, 6 atomic commits)
+
+Issues opened: #104–#109. One atomic commit each.
+
+### Commit `b59b334` — Closes #104
+- `app/models/access_request.rb`: both dedupe validations now short-circuit via `email_safe_for_query?` (present + matches `URI::MailTo::EMAIL_REGEXP`) before hitting the DB.
+- `spec/requests/access_requests_spec.rb`: null-byte POST returns 422, not 500.
+
+### Commit `b326d09` — Closes #105
+- `app/misc/rodauth_main.rb`: both redirect sites (`before_login_route` hook, `validate_invitation_token` in `auth_class_eval`) now call `request.redirect "/", 303`.
+- `spec/requests/onboarding_redirects_spec.rb`: new request spec asserting `:see_other` on both POST paths.
+
+### Commit `71e96b0` — Closes #106
+- `app/misc/rodauth_main.rb`: new `before_create_account_route` hook — on GET without a valid invitation token, 303 redirect to `/` with the standard flash. POST path unchanged (still gated by `validate_invitation_token`).
+- `spec/system/onboarding_redirects_spec.rb`: two new scenarios — GET without token redirects; GET with valid token renders the form.
+
+### Commit `c238863` — Closes #107
+- `app/views/welcome/home.rb`: greeting copy `"Welcome back, #{user_first_name}"` → `"Welcome, #{user_first_name}"`.
+- Three dependent system specs updated to match: `welcome_spec`, `google_one_tap_spec`, `webauthn_autofill_spec` (all now use `/Welcome,/` regex).
+
+### Commit `c3a714b` — Closes #108
+- `app/components/flash_toasts.rb`: container classes responsive — `top-20 md:top-6` (clears the 64px mobile top bar on mobile) and `w-[calc(100vw-3rem)] max-w-sm` (viewport-aware width, still caps at 384px on desktop).
+- `ui_library/flash_toasts.yml` YAML entry updated to reflect new classes.
+- Follow-up `eca1b34` ensured YAML sync committed correctly (earlier Edit tool had missed the file).
+
+### Commit `c5939fa` — Closes #109
+- `app/views/welcome/home.rb`: wrap entire `render_logged_out` in `mx-auto w-full max-w-md space-y-8` so hero and access card share a centred axis.
+- Dropped the `animation-delay: 160ms` inline style on the access card (UI Designer M-2 — stagger is meaningless with only one card).
+
+### Post-fix verification
+
+- Lint: clean (425 files, 0 offenses).
+- Non-system specs: **588 examples, 0 failures, 2 pending**.
+- System specs: **65 examples, 0 failures**.
+- Live runtime: `bin/cli app rebuild` + `bin/cli app restart`; all 6 fixes verified via agent-browser:
+  - C1: `curl -sk -X POST /request-access` with null-byte email → 422 (not 500). ✓
+  - C2: request spec asserts `:see_other` (303) on POST `/login` + `/create-account`. ✓
+  - C3: `curl -sk /create-account` → `HTTP 303 Location: /`. ✓
+  - C4: live signup via invited token → sidebar shows "phase16r2", hero says "Welcome, phase16r2" (no "back"). ✓
+  - C5: Tailwind rebuilt; computed styles at 1280 viewport show `top: 24px` (md:top-6 applied) and `maxWidth: 384px`; at <768 the `top-20` = 80px clears the top bar. ✓
+  - C6: screenshot at 1920 shows hero H1 and access card share the same 448px column centred in the content area. ✓
+
+### Round 2 total
+
+6 atomic commits + 1 YAML sync fixup = **7 commits**. All on `feature/phase16-onboarding-improvements`. All tests green.
