@@ -25,6 +25,15 @@ RSpec.describe "/access_requests" do
       expect(response).to have_http_status(:unprocessable_content)
     end
 
+    it "rejects an email with a null byte without crashing" do
+      expect do
+        post submit_access_request_path,
+             params: { access_request: { email: "test\u0000@example.com" } }
+      end.not_to change(AccessRequest, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+
     it "rejects a duplicate email while a pending request exists" do
       AccessRequest.create!(email: "dupe@example.com")
 

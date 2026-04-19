@@ -20,16 +20,24 @@ class AccessRequest < ApplicationRecord
   end
 
   def email_not_already_active
-    return if email.blank?
+    return unless email_safe_for_query?
     return unless self.class.exists?(email: email, status: %i[pending approved])
 
     errors.add(:email, "already has a pending request or approved invitation")
   end
 
   def email_not_already_registered
-    return if email.blank?
+    return unless email_safe_for_query?
     return unless User.exists?(["LOWER(email) = ?", email])
 
     errors.add(:email, "is already registered — please sign in")
+  end
+
+  # Prevents hostile input (null bytes, oversize, arbitrary binary) from
+  # reaching the database. The format validator will add its own error
+  # message; these dedupe checks should short-circuit rather than raise
+  # ActiveRecord::StatementInvalid.
+  def email_safe_for_query?
+    email.present? && email.match?(URI::MailTo::EMAIL_REGEXP)
   end
 end
