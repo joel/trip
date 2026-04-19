@@ -1,0 +1,19 @@
+Split: 13 train, 7 test (holdout=0.4)
+
+============================================================
+Iteration 1/5
+Description: Process a batch of review findings (from /qa-review, /security-review, /ux-review, /ui-polish, /ui-designer, /code-review, PR review comments, or any audit report) into tracked GitHub issues and atomic fix commits on the current branch. Use this skill as soon as a review phase surfaces findings the user wants to act on, or when they say "remediate", "fix the findings", "work through the review", "create issues for each finding", "address these findings", "apply the review". Always creates one GitHub issue per finding (including ones deferred for later) so the audit trail is complete; explicitly asks the user which findings to fix this round; commits each fix atomically with the issue number as the first token of the subject ("#123 Short description"); closes each issue immediately after its commit is pushed. Unlike /github-workflow this skill stays on the current branch and skips PR creation + Kanban lifecycle — use /github-workflow for single-bug work, new features, or anything that needs its own branch and PR.
+============================================================
+open Icon.png: no such file or directory
+
+failed to call grep for determining a .desktop entry for env BAMF_DESKTOP_FILE_HINT=/var/lib/snapd/desktop/applications/firefox_firefox.desktop /snap/bin/firefox %u: exit status 1
+open Icon.png: no such file or directory
+open Icon.png: no such file or directory
+open Icon.png: no such file or directory
+open Icon.png: no such file or directory
+open Icon.png: no such file or directory
+open Icon.png: no such file or directory
+open Icon.png: no such file or directory
+open Icon.png: no such file or directory
+open Icon.png: no such file or directory
+Opening URL with browser: Google Chrome (beta); remember the choice: false
