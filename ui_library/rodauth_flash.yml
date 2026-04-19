@@ -1,0 +1,15 @@
+component: Components::RodauthFlash
+file: app/components/rodauth_flash.rb
+library_source: application_ui/feedback/alerts
+library_variant: with_accent_border.html
+description: Inline flash panel used inside Rodauth forms (login, create-account, verify-account, etc.). Renders one ha-card per flash type -- emerald for notice, error-container for alert. Not used on logged-out home page (that surface relies on FlashToasts only). Post-Phase-16, the same flash copy ("Invitation required. Request access below.") is surfaced as a floating toast on / instead of an inline panel on the Rodauth form.
+design_tokens:
+  - ha-card
+  - "--ha-error"
+  - "--ha-error-container"
+tailwind_classes:
+  - border, border-emerald-200, dark:border-emerald-500/30
+  - bg-emerald-50/80, dark:bg-emerald-500/10
+  - text-emerald-700, dark:text-emerald-200
+  - px-4, py-3
+  - text-sm, font-medium
