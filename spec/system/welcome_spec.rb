@@ -18,7 +18,7 @@ RSpec.describe "Welcome" do
 
     it "renders the home page for authenticated users" do
       visit root_path
-      expect(page).to have_content("Welcome back")
+      expect(page).to have_content(/Welcome,/)
       expect(page).to have_content("New Trip")
     end
   end

@@ -28,7 +28,7 @@ module Views
         section(class: "mb-2") do
           h1(class: "font-headline text-4xl font-bold tracking-tighter " \
                     "md:text-5xl") do
-            plain "Welcome back, #{user_first_name}"
+            plain "Welcome, #{user_first_name}"
           end
           p(class: "mt-2 text-lg text-[var(--ha-on-surface-variant)]") do
             plain "Ready for your next adventure?"
