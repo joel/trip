@@ -97,7 +97,7 @@ When a PR receives code review comments:
 
 - **Never disable overcommit entirely** (`OVERCOMMIT_DISABLE=1`). When a hook indicates a false positive, skip **only** the specific hook: `SKIP=<HookName> git commit ...` (e.g., `SKIP=RailsSchemaUpToDate`). Always add a footnote in the commit message body explaining which hook was skipped and why, for audit trail purposes.
 
-- **Use `[skip ci]`** in commit messages when the change does not require CI. This includes documentation-only changes (`.md` files, skill files, `AGENTS.md`, `CLAUDE.md`), comment-only code changes, and config changes that do not affect runtime behavior. Place `[skip ci]` at the end of the commit subject line or in the commit body. When in doubt, let CI run.
+- **Always add `[skip ci]`** to any commit that does not require CI to run. Default is skip; CI only runs when the commit actually changes runtime behaviour. Examples that must carry `[skip ci]`: documentation (`.md` files, skill files, `AGENTS.md`, `CLAUDE.md`), comment-only code changes, config changes that do not affect runtime behaviour, changes under `prompts/`, `ui_library/`, `PRPs/`, and other non-runtime directories. Place `[skip ci]` at the end of the subject line or in the body. If the commit touches runtime code in any way, let CI run.
 
 - **Test full user journeys, not just page rendering.** Runtime tests must verify multi-step flows end-to-end (e.g., request access → admin approves → invitation email sent → user signs up → user verified). A page rendering correctly does not guarantee the business logic behind it works. If a feature involves events, subscribers, or background jobs, verify the downstream effects actually happen (check emails in MailCatcher, check database records).
 

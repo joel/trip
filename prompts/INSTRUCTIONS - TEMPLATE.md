@@ -1,6 +1,3 @@
-# Steps
-
-
 # PREPARATION - Phase Implemenation Preps
 
 Context:
@@ -52,13 +49,11 @@ Task 4 - UI Polish
 
 Task 5 - UI Designer
   Instructions: Read .claude/skills/ui-designer/SKILL.md and follow it in full for the current branch.
-  Ensure UI Component Library is Sync.
+  Ensure UI Component Library is Sync (`ui_library/README.md`).
   Write the complete report to prompts/Phase <NUMBER> - UI Designer Review.md.
 
-Ensure it respects UI Designer specifications, and keep the local UI Element Library in Sync: `ui_library/README.md`
-
-Once all three tasks complete, read the three reports and give me a consolidated summary of all 🔴 Critical/Broken/Defect findings
+Once all five tasks complete, read the five reports and give me a consolidated summary of all 🔴 Critical/Broken/Defect findings.
 
 # QA Remediation
 
-/qa-remediation
+Once the DEEP QA findings are reviewed and we've agreed which to address, invoke `/qa-remediation` to turn them into tracked GitHub issues + atomic fix commits.
