@@ -1,6 +1,6 @@
 # Catalyst -- Trip Journal
 
-A collaborative trip journaling web application built with Rails 8.1, Phlex components, and Hotwire.
+A collaborative trip journaling web application built with Rails 8.1, Phlex components, and Hotwire 🔥
 
 ## Architecture Overview
 
