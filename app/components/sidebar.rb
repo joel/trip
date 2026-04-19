@@ -161,21 +161,20 @@ module Components
         icon: Components::Icons::Person.new,
         delay: "260ms"
       )
-      render Components::NavItem.new(
-        path: view_context.rodauth.webauthn_setup_path,
-        label: "Add passkey",
-        icon: Components::Icons::Key.new,
-        delay: "300ms"
-      )
-      if view_context.rodauth.webauthn_setup?
-        render Components::NavItem.new(
-          path: view_context.rodauth.webauthn_remove_path,
-          label: "Manage passkeys",
-          icon: Components::Icons::KeyRemove.new,
-          delay: "340ms"
-        )
-      end
+      render Components::NavItem.new(**passkey_nav_attrs)
       render_logout_button
+    end
+
+    def passkey_nav_attrs
+      if view_context.rodauth.webauthn_setup?
+        { path: view_context.rodauth.webauthn_remove_path,
+          label: "Manage passkeys",
+          icon: Components::Icons::KeyRemove.new, delay: "300ms" }
+      else
+        { path: view_context.rodauth.webauthn_setup_path,
+          label: "Add passkey",
+          icon: Components::Icons::Key.new, delay: "300ms" }
+      end
     end
 
     def render_logout_button
