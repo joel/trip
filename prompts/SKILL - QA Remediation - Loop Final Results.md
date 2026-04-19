@@ -52,3 +52,26 @@ Optimisation loop — final results
   current description, keep it discoverable by name, move on.
 
   Want me to write this up as a self-eval section in the skill itself, plus keep the workspace artefacts for the record? Or just end here?
+
+Committed and pushed.
+
+  What landed
+
+  Commit 572356f (6 files, 252 insertions):
+  - app/.claude/skills/qa-remediation/SKILL.md — appended Triggering notes section at the end: scores table across all 4 iterations, root-cause analysis, the "call by name" usage guidance, pointer to
+   the workspace artefacts.
+  - .claude/skills/qa-remediation-workspace/loop.log — full iteration log (committed as-is, verbatim).
+  - .claude/skills/qa-remediation-workspace/2026-04-19_121047/logs/improve_iter_{1,2,3}.json — per-iteration improver prompt/response pairs, so a future maintainer can see exactly what the optimiser
+  proposed and why.
+  - prompts/SKILL - QA Remediation - Loop Final Results.md — your saved record of the final summary.
+
+  What remains available to the user
+
+  - /qa-remediation via the Skill tool — still registered, still discoverable by name.
+  - /find-skills — can surface it if you describe the shape of the task.
+  - The SKILL.md itself — now carries its own honest caveat section so nobody reading it wonders why it's not auto-firing.
+
+  Hook skip
+
+  SKIP=TrailingWhitespace was used and documented in the commit body: the flagged lines are produced verbatim by run_loop.py's query truncation (trailing space after a cut-off string); scrubbing them
+   would mutate the run output we wanted to preserve.
