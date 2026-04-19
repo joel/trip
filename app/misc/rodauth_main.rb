@@ -108,6 +108,29 @@ class RodauthMain < Rodauth::Rails::Auth
           nil
         end
 
+        def webauthn_key_insert_hash(webauthn_credential)
+          super.merge(name: resolve_passkey_name(webauthn_credential))
+        end
+
+        def resolve_passkey_name(webauthn_credential)
+          submitted = param_or_nil("passkey_name").to_s.strip
+          return submitted[0, 80] if submitted.present?
+
+          aaguid = extract_aaguid(webauthn_credential)
+          Webauthn::AaguidLookup.lookup(aaguid) ||
+            Webauthn::NameSuggester.from_user_agent(request.user_agent)
+        end
+
+        def extract_aaguid(webauthn_credential)
+          webauthn_credential
+            .response
+            .authenticator_data
+            .attested_credential_data
+            &.aaguid
+        rescue StandardError
+          nil
+        end
+
         def before_create_account
           super
           validate_invitation_token
