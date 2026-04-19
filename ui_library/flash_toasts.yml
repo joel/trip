@@ -7,9 +7,9 @@ design_tokens:
   - ha-card-shadow (implicit via custom shadow values)
 tailwind_classes:
   - pointer-events-none, pointer-events-auto
-  - fixed, right-6, top-6, z-50
+  - fixed, right-6, top-20, md:top-6, z-50
   - flex, flex-col, gap-3, items-start, gap-3
-  - w-full, max-w-sm, min-w-0, flex-1
+  - w-[calc(100vw-3rem)], max-w-sm, min-w-0, flex-1
   - rounded-2xl, rounded-xl, rounded-full
   - border, border-emerald-300/30, border-rose-300/30
   - bg-emerald-400/20, bg-rose-400/20
