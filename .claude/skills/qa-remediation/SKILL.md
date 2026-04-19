@@ -247,3 +247,34 @@ print one summary table for the user
 4. On "fix all 6", create 6 issues in parallel via `gh issue create`.
 5. Work C1 → C6 in order, one atomic commit per fix, close each issue after push.
 6. After C6 is closed, append a section to `prompts/Phase 16 - Steps.md` summarising issue → commit → status, and show the same table to the user.
+
+---
+
+## Triggering notes
+
+**Rely on explicit invocation for this skill.** A full description-optimisation loop (skill-creator, Opus 4.7, 5 iterations × 9 should-trigger / 11 should-not queries, 3 runs each) produced **0% recall** across every description variant tested:
+
+| Iteration | Variant | Train recall | Test recall |
+|---|---|:-:|:-:|
+| 1 | original | 0% | 0% |
+| 2 | "pushy" rewrite | 0% | 0% |
+| 3 | triggers-first structure | 0% | 0% |
+| 4 | signals-and-artifacts structure | 0% | 0% |
+
+Precision was 100% (never false-triggered), but the skill was never consulted on any of the should-trigger queries — even strong matches like *"apply the review from /security-review to the current branch"* or *"ok so I just ran /qa-review and the report has 4 Critical and 7 High findings. lets work through them"*.
+
+### Why
+
+The skill describes a **procedure** built entirely from primitives Claude already has in its default toolkit: `gh issue create`, `git commit`, `git push`, `gh issue close`. There is no new **capability** that would force Claude to look outside its defaults. When a user says *"remediate these findings"*, Claude can (and does) just do the work directly without consulting a skill file. The skill-creator guide flags this exact failure mode:
+
+> Claude only consults skills for tasks it can't easily handle on its own … simple, one-step queries like "read this PDF" may not trigger a skill even if the description matches perfectly.
+
+### Consequence
+
+- **Call `/qa-remediation` by name** when you want this workflow — the Skill tool will pick it up directly.
+- **Ask `/find-skills`** if you've forgotten the name but remember the shape of the task.
+- **Don't rely on prose-based triggering** — it won't fire. The current description is already as good as a description alone is going to get.
+
+### Artefacts
+
+The optimisation-run artefacts (log, iteration-0 eval set, improver prompt/response logs) are committed at `.claude/skills/qa-remediation-workspace/` so a future maintainer can see what was tried, what scored, and in what order the optimiser proposed rewrites. A fresh run should start a new timestamped subdirectory rather than overwriting these.
