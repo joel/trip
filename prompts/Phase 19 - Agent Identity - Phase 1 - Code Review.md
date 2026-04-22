@@ -123,3 +123,6 @@ Codex Comment 1 (P1) — Backfill should create Jack when missing
 ● Monitor "PR 117 CI final result (round 2)" stream ended
 
 ● Monitor cleanup — no action needed, round 2 summary already sent above.
+
+Resume this session with:
+claude --resume 84920a3e-3b53-4d7a-8aa1-b0fd4aa332c8
