@@ -19,11 +19,12 @@ module Tools
       required: %w[journal_entry_id emoji]
     )
 
-    def self.call(journal_entry_id:, emoji:, _server_context: {})
+    def self.call(journal_entry_id:, emoji:, server_context: {})
       entry = JournalEntry.find(journal_entry_id)
       require_commentable!(entry.trip)
+      user = resolve_agent_user(server_context)
       result = Reactions::Toggle.new.call(
-        reactable: entry, user: resolve_jack_user, emoji: emoji
+        reactable: entry, user: user, emoji: emoji
       )
       format_result(result, emoji, journal_entry_id)
     rescue ToolError => e

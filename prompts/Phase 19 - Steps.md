@@ -22,7 +22,7 @@
 
 ## 3. Commits
 
-_TBD_
+1. `10cf542` — Introduce Agent model + migrations + specs + `:system_actor` user factory trait + Phase 19 Steps.md.
 
 ## 4. Runtime verification
 
