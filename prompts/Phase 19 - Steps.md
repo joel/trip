@@ -24,6 +24,7 @@
 
 1. `10cf542` — Introduce Agent model + migrations + specs + `:system_actor` user factory trait + Phase 19 Steps.md.
 2. `aac8f83` — Wire agent identity through MCP stack: controller reads `X-Agent-Identifier`, server templates instructions, base_tool exposes `resolve_agent_user`, write-path tools pipe server_context through, Phase 1.5 cleanup drops `actor_type`/`actor_id` params + `VALID_ACTOR_TYPES`. Specs updated.
+3. `09d192a` — Seed Marée system user and both Agent records (idempotent).
 
 ## 4. Runtime verification
 
