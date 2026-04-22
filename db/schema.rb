@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_19_134652) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_22_100002) do
   create_table "access_requests", id: uuid, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -59,6 +59,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_19_134652) do
     t.string "blob_id", limit: 36, null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "agents", id: uuid, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name", null: false
+    t.string "slug", null: false
+    t.datetime "updated_at", null: false
+    t.string "user_id", limit: 36, null: false
+    t.index ["slug"], name: "index_agents_on_slug", unique: true
+    t.index ["user_id"], name: "index_agents_on_user_id", unique: true
   end
 
   create_table "checklist_items", id: uuid, force: :cascade do |t|
@@ -264,6 +275,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_19_134652) do
   add_foreign_key "access_requests", "users", column: "reviewed_by_id"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "agents", "users"
   add_foreign_key "checklist_items", "checklist_sections"
   add_foreign_key "checklist_sections", "checklists"
   add_foreign_key "checklists", "trips"

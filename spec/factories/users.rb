@@ -3,6 +3,8 @@
 FactoryBot.define do
   sequence(:email) { |n| "user#{n}@example.com" }
 
+  sequence(:system_actor_email) { |n| "agent#{n}@system.local" }
+
   factory :user do
     name { "MyString" }
     email { generate(:email) }
@@ -17,6 +19,11 @@ FactoryBot.define do
 
     trait :viewer do
       roles { [:viewer] }
+    end
+
+    trait :system_actor do
+      email { generate(:system_actor_email) }
+      name { "System Actor" }
     end
   end
 end
