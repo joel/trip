@@ -45,7 +45,23 @@
 
 - **PR:** [#117 — Phase 19 Phase 1 — Agent Identity (Registered Agents)](https://github.com/joel/trip/pull/117) (branch: `feature/phase19-agent-identity`, closes #116).
 - **Kanban:** card move to **In Review** deferred — `gh auth` missing `read:project`/`write:project` scopes. Maintainer to move manually or run `gh auth refresh -s read:project,project`.
-- **Reviews:** _TBD_
+
+### Round 1 — CI fix
+
+- **CI red on first push:** `spec/system/accounts_spec.rb:29` (`Capybara::Ambiguous` — two visible "Sign out" buttons: sidebar + Account page header). Pre-existing on main (commit `4a79475` was already failing with the same error), unrelated to Phase 19.
+- `b2d487f` — Scope the click to `within("main")` so the Account-page button wins over the sidebar link.
+
+### Round 2 — Codex review
+
+| Finding | Severity | Action | Commit |
+|---------|----------|--------|--------|
+| `agents` table can be empty in cold-start envs (`BackfillJackAgent` no-ops when Jack user absent) | P1 | Migration now `find_or_create_by!`s the Jack user itself — self-sufficient in any environment that has run migrations | `1033943` |
+| `Agent` allows non-system-actor User → human accidentally attributed/auto-subscribed | P2 | Added `User#system_actor?`, Agent validation, refactored `JournalEntries::Create#subscribe_trip_members` to use the method | `285ce6e` |
+| Feedback: no system test covers agent attribution in the UI | — | Added spec asserting Marée-authored entry renders "Marée" in feed card; tightened agent factory so user.name tracks agent.name by default | `2b07613` |
+
+Both codex threads replied and resolved (`https://github.com/joel/trip/pull/117#discussion_r3123585034`, `r3123585200`).
+
+- **Final validation:** lint clean, 640 unit/request specs green, 79 system specs green (+1 new system test for agent attribution, +4 new model specs from P2).
 
 ## 6. Final summary
 
