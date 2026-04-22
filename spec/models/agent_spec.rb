@@ -46,6 +46,14 @@ RSpec.describe Agent do
       expect(dup).not_to be_valid
       expect(dup.errors[:user_id]).to include("has already been taken")
     end
+
+    it "rejects a non-system-actor user" do
+      human = create(:user, email: "human@example.com")
+      agent = build(:agent, user: human)
+      expect(agent).not_to be_valid
+      expect(agent.errors[:user].join)
+        .to include("system actor", "@system.local")
+    end
   end
 
   describe ".by_slug" do

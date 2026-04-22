@@ -26,4 +26,8 @@ class User < ApplicationRecord
   has_many :journal_entry_subscriptions, dependent: :destroy
 
   validates :email, presence: true, uniqueness: { case_sensitive: false }
+
+  def system_actor?
+    email.to_s.end_with?("@system.local")
+  end
 end
