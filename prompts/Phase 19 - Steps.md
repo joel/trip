@@ -43,7 +43,9 @@
 
 ## 5. PR + review
 
-_TBD_
+- **PR:** [#117 — Phase 19 Phase 1 — Agent Identity (Registered Agents)](https://github.com/joel/trip/pull/117) (branch: `feature/phase19-agent-identity`, closes #116).
+- **Kanban:** card move to **In Review** deferred — `gh auth` missing `read:project`/`write:project` scopes. Maintainer to move manually or run `gh auth refresh -s read:project,project`.
+- **Reviews:** _TBD_
 
 ## 6. Final summary
 
