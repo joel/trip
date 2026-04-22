@@ -39,6 +39,25 @@ RSpec.describe User do
     end
   end
 
+  describe "#system_actor?" do
+    it "returns true for @system.local emails" do
+      user = described_class.new(email: "maree@system.local",
+                                 name: "Marée")
+      expect(user.system_actor?).to be(true)
+    end
+
+    it "returns false for regular emails" do
+      user = described_class.new(email: "alice@acme.org",
+                                 name: "Alice")
+      expect(user.system_actor?).to be(false)
+    end
+
+    it "is safe for nil email" do
+      user = described_class.new(name: "Unsaved")
+      expect(user.system_actor?).to be(false)
+    end
+  end
+
   describe "notification cleanup on destroy" do
     it "destroys actor-side notifications when user is deleted" do
       actor = create(:user)
