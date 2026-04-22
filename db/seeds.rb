@@ -79,6 +79,26 @@ jack = create_user(
 )
 log "System actor: #{jack.email}"
 
+maree = create_user(
+  email: "maree@system.local",
+  name: "Marée", roles: []
+)
+log "System actor: #{maree.email}"
+
+# ---------------------------------------------------------------------------
+# 1a. Agents (MCP identity layer)
+# ---------------------------------------------------------------------------
+
+Agent.find_or_create_by!(slug: "jack") do |a|
+  a.name = "Jack"
+  a.user = jack
+end
+Agent.find_or_create_by!(slug: "maree") do |a|
+  a.name = "Marée"
+  a.user = maree
+end
+log "Agents: #{Agent.pluck(:slug).join(', ')}"
+
 alice = create_user(
   email: "alice@acme.org",
   name: "Alice Martin", roles: [:contributor]
