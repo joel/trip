@@ -26,9 +26,18 @@ RSpec.describe TripJournalServer do
         Tools::UploadJournalImages
       )
     end
+  end
 
-    it "includes server instructions" do
-      expect(described_class::INSTRUCTIONS).to include("Jack")
+  describe ".instructions_for" do
+    it "personalises the instructions with the agent's name" do
+      agent = build(:agent, name: "Marée")
+      expect(described_class.instructions_for(agent))
+        .to include("You are Marée")
+    end
+
+    it "falls back to generic phrasing when no agent is given" do
+      expect(described_class.instructions_for(nil))
+        .to include("You are an AI travel assistant")
     end
   end
 end

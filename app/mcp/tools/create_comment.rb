@@ -20,13 +20,14 @@ module Tools
     )
 
     def self.call(journal_entry_id:, body:,
-                  telegram_message_id: nil, _server_context: {})
+                  telegram_message_id: nil, server_context: {})
       entry = JournalEntry.find(journal_entry_id)
       require_commentable!(entry.trip)
+      user = resolve_agent_user(server_context)
       idempotent = find_existing(entry, telegram_message_id)
       return comment_response(idempotent) if idempotent
 
-      create_comment(entry, body, telegram_message_id)
+      create_comment(entry, body, telegram_message_id, user)
     rescue ToolError => e
       error_response(e.message)
     rescue ActiveRecord::RecordNotUnique
@@ -46,11 +47,10 @@ module Tools
       entry.comments.find_by(telegram_message_id: msg_id)
     end
 
-    private_class_method def self.create_comment(entry, body, msg_id)
+    private_class_method def self.create_comment(entry, body, msg_id, user)
       params = { body: body, telegram_message_id: msg_id }.compact
       result = Comments::Create.new.call(
-        params: params, journal_entry: entry,
-        user: resolve_jack_user
+        params: params, journal_entry: entry, user: user
       )
       case result
       in Dry::Monads::Success(comment)

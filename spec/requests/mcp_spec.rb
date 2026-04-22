@@ -4,6 +4,7 @@ require "rails_helper"
 
 RSpec.describe "MCP Endpoint" do
   let(:api_key) { "test-mcp-api-key" }
+  let!(:agent) { create(:agent, slug: "jack", name: "Jack") }
 
   before do
     allow(ENV).to receive(:fetch).and_call_original
@@ -14,7 +15,8 @@ RSpec.describe "MCP Endpoint" do
     let(:headers) do
       {
         "Authorization" => "Bearer #{api_key}",
-        "Content-Type" => "application/json"
+        "Content-Type" => "application/json",
+        "X-Agent-Identifier" => agent.slug
       }
     end
 
@@ -79,7 +81,32 @@ RSpec.describe "MCP Endpoint" do
       end
     end
 
-    context "with valid API key" do
+    context "without X-Agent-Identifier header" do
+      it "returns JSON-RPC error -32001 with a helpful message" do
+        post "/mcp", params: init_payload,
+                     headers: headers.except("X-Agent-Identifier")
+        expect(response).to have_http_status(:ok)
+
+        body = response.parsed_body
+        expect(body["error"]["code"]).to eq(-32_001)
+        expect(body["error"]["message"])
+          .to include("X-Agent-Identifier")
+      end
+    end
+
+    context "with unknown agent slug" do
+      it "returns JSON-RPC error -32001 with the slug echoed back" do
+        post "/mcp", params: init_payload,
+                     headers: headers.merge("X-Agent-Identifier" => "ghost")
+        expect(response).to have_http_status(:ok)
+
+        body = response.parsed_body
+        expect(body["error"]["code"]).to eq(-32_001)
+        expect(body["error"]["message"]).to include("'ghost'")
+      end
+    end
+
+    context "with valid API key and agent" do
       it "responds to initialize request" do
         post "/mcp", params: init_payload, headers: headers
         expect(response).to have_http_status(:ok)
@@ -87,6 +114,13 @@ RSpec.describe "MCP Endpoint" do
         body = response.parsed_body
         expect(body["result"]["serverInfo"]["name"])
           .to eq("trip_journal")
+      end
+
+      it "personalises instructions with the resolved agent name" do
+        post "/mcp", params: init_payload, headers: headers
+
+        instructions = response.parsed_body["result"]["instructions"]
+        expect(instructions).to include("You are Jack")
       end
 
       it "lists all 12 tools" do
@@ -110,32 +144,31 @@ RSpec.describe "MCP Endpoint" do
         )
       end
 
-      it "executes tools/call and creates a journal entry" do # rubocop:disable RSpec/ExampleLength
+      it "executes tools/call and creates a journal entry " \
+         "attributed to the agent" do
         trip = create(:trip, :started)
         post "/mcp", params: init_payload, headers: headers
 
-        call_payload = {
-          jsonrpc: "2.0", id: "3",
-          method: "tools/call",
+        expect { post("/mcp", params: create_entry_call(trip), headers: headers) }
+          .to change(JournalEntry, :count).by(1)
+
+        expect(response).to have_http_status(:ok)
+        data = JSON.parse(response.parsed_body["result"]["content"].first["text"])
+        expect(data["name"]).to eq("MCP Test Entry")
+        expect(JournalEntry.find(data["id"]).author).to eq(agent.user)
+      end
+
+      def create_entry_call(trip)
+        {
+          jsonrpc: "2.0", id: "3", method: "tools/call",
           params: {
             name: "create_journal_entry",
             arguments: {
-              trip_id: trip.id,
-              name: "MCP Test Entry",
+              trip_id: trip.id, name: "MCP Test Entry",
               entry_date: Date.current.to_s
             }
           }
         }.to_json
-
-        expect do
-          post "/mcp", params: call_payload, headers: headers
-        end.to change(JournalEntry, :count).by(1)
-
-        expect(response).to have_http_status(:ok)
-        content = response.parsed_body["result"]["content"]
-        data = JSON.parse(content.first["text"])
-        expect(data["name"]).to eq("MCP Test Entry")
-        expect(data["trip_id"]).to eq(trip.id)
       end
     end
   end

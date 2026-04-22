@@ -4,23 +4,30 @@ require "rails_helper"
 
 RSpec.describe Tools::CreateComment do
   let(:entry) { create(:journal_entry) }
+  let(:agent) { create(:agent) }
+  let(:context) { { agent: agent } }
 
   describe ".call" do
-    it "creates a comment on the journal entry" do
+    it "creates a comment on the journal entry attributed to the agent" do
       result = described_class.call(
-        journal_entry_id: entry.id, body: "Great photo!"
+        journal_entry_id: entry.id, body: "Great photo!",
+        server_context: context
       )
 
       data = JSON.parse(result.content.first[:text])
       expect(data["body"]).to eq("Great photo!")
       expect(data["journal_entry_id"]).to eq(entry.id)
+
+      comment = Comment.find(data["id"])
+      expect(comment.user).to eq(agent.user)
     end
 
     it "rejects comments on non-commentable trips" do
       entry.trip.update!(state: :archived)
 
       result = described_class.call(
-        journal_entry_id: entry.id, body: "Should fail"
+        journal_entry_id: entry.id, body: "Should fail",
+        server_context: context
       )
 
       expect(result.error?).to be true
@@ -30,13 +37,15 @@ RSpec.describe Tools::CreateComment do
     it "returns idempotent response for duplicate telegram_message_id" do
       first = described_class.call(
         journal_entry_id: entry.id, body: "First",
-        telegram_message_id: "tg-456"
+        telegram_message_id: "tg-456",
+        server_context: context
       )
       first_data = JSON.parse(first.content.first[:text])
 
       second = described_class.call(
         journal_entry_id: entry.id, body: "Second",
-        telegram_message_id: "tg-456"
+        telegram_message_id: "tg-456",
+        server_context: context
       )
       second_data = JSON.parse(second.content.first[:text])
 
@@ -45,7 +54,8 @@ RSpec.describe Tools::CreateComment do
 
     it "returns error for nonexistent journal entry" do
       result = described_class.call(
-        journal_entry_id: "nonexistent", body: "Hello"
+        journal_entry_id: "nonexistent", body: "Hello",
+        server_context: context
       )
 
       expect(result.error?).to be true

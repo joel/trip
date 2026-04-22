@@ -4,8 +4,6 @@ module Tools
   class BaseTool < MCP::Tool
     class ToolError < StandardError; end
 
-    VALID_ACTOR_TYPES = %w[Jack System].freeze
-
     # -- Shared response helpers --
 
     private_class_method def self.success_response(data)
@@ -48,11 +46,13 @@ module Tools
       raise ToolError, "Trip not found: #{trip_id}"
     end
 
-    private_class_method def self.resolve_jack_user
-      User.find_or_create_by!(email: "jack@system.local") do |u|
-        u.name = "Jack"
-        u.status = 2
-      end
+    # -- Agent resolution --
+
+    private_class_method def self.resolve_agent_user(server_context)
+      agent = server_context&.dig(:agent)
+      raise ToolError, "No agent in server context" if agent.nil?
+
+      agent.user
     end
 
     # -- Guards --
@@ -71,14 +71,6 @@ module Tools
       raise ToolError,
             "Trip '#{trip.name}' is not commentable " \
             "(state: #{trip.state})"
-    end
-
-    private_class_method def self.validate_actor_type!(actor_type)
-      return if VALID_ACTOR_TYPES.include?(actor_type)
-
-      raise ToolError,
-            "Invalid actor_type \"#{actor_type}\". " \
-            "Must be one of: #{VALID_ACTOR_TYPES.join(", ")}"
     end
   end
 end
