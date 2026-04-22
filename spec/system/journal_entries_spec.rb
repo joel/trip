@@ -63,6 +63,18 @@ RSpec.describe "Journal Entries Feed Wall" do
     expect(page).to have_content("New Title")
   end
 
+  it "attributes agent-authored entries to the agent's display name" do
+    maree = create(:agent, slug: "maree", name: "Marée")
+    create(:journal_entry, trip: trip, author: maree.user,
+                           name: "Visited Mont Saint-Michel")
+
+    visit trip_path(trip)
+
+    within "article", text: "Visited Mont Saint-Michel" do
+      expect(page).to have_content("Marée")
+    end
+  end
+
   it "deletes a journal entry from the trip page", :js do
     entry = create(:journal_entry, trip: trip, author: admin,
                                    name: "Deletable")

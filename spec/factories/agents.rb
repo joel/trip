@@ -6,6 +6,9 @@ FactoryBot.define do
   factory :agent do
     slug { generate(:agent_slug) }
     name { slug.capitalize }
-    user factory: %i[user system_actor]
+
+    user do
+      association(:user, :system_actor, name: name)
+    end
   end
 end
