@@ -161,3 +161,113 @@
 Resume this session with:
 claude --resume 84920a3e-3b53-4d7a-8aa1-b0fd4aa332c8
 
+I've slept on it and here's my fresh take:
+
+Let's keep brainstorming.
+
+# Phase 1
+
+Agent identity: We need to add MCP Server entries so the Agent can provide its identity.
+
+We need the datalayout to support that. We record and save the Agent identity.
+
+We do not touch API Key authentication; we do not add extra information. It is a shared SECRET that any agent must use to talk to the MCP Server.
+
+# Phase 2
+
+We add a pairing system, so when creating a Trip, we generate a KEY that the Agent need to use to talk to the Trip. The default KEY only provides minimum read-only access through the MCP Server. Or none,
+
+# Phase 3
+
+We implement full OAuth authentication for the Agent to the Trip App, and scope authorisation to see the trips.
+
+What are your thoughts?
+
+I like this phasing a lot — it's a clean progression where each phase solves its own concrete problem and doesn't paint you into a corner for the next. A few honest reactions.
+
+  What I like
+
+  Phase 1 solves the actual reported bug. Marée signs as Marée. Ship it, done. No key rotation, no pairing UX, no consent screens. The fact that attribution is asserted rather than enforced is fine
+  because the shared secret is already the trust boundary — anyone who has MCP_API_KEY already has full access, so letting them also pick their name isn't a new attack surface.
+
+  Phase 2 is the one that actually matters for real-world use. Per-trip capability tokens = "Marée can touch this trip, not my honeymoon trip." That's a problem you'll have the moment you onboard a
+  second agent, regardless of whether you ever reach Phase 3. Even if Phase 3 never happens, Phase 2 is self-sufficient.
+
+  Phase 3 is optional, not destination. OAuth only earns its complexity if agents become third-party (other users, marketplace, dynamic registration). If it's forever your personal fleet, Phase 2
+  bearer tokens are indistinguishable from OAuth bearer tokens without the ceremony.
+
+  Things to sharpen
+
+  1. Phase 1 — asserted vs registered identity. Two flavors, pick one now because it shapes Phase 2:
+  - Asserted per-call: agent sends {agent_name, agent_identifier} on each write. Server find_or_create_by(identifier). Zero config, but two agents spelling the same name differently become duplicate
+  records.
+  - Registered once: an Agent admin page lets you create {name, identifier} rows; agents reference an existing identifier. Slightly more setup, but identity is canonical.
+
+  My lean: registered. Phase 2 needs stable agent rows anyway (to attach trip keys to), so you may as well model them up front. "One-time setup in the admin UI per agent" is a trivial burden for a
+  personal tool.
+
+  2. The Agent → User relationship. Reactions, comments, journal entries all need a user_id. Options:
+  - Agent has_one :user (user is a system actor created per agent)
+  - Agent is a User with system_actor: true flag
+
+  I'd lean the first — keeps User clean of agent-specific columns (api config, scopes later) and makes it natural to grow Agent independently. Migration from today is: rename jack@system.local user
+  to "Jack's user," create an Agent(name: "Jack", user: that_user).
+
+  3. Phase 2 — "minimum read-only" default needs a concrete answer.
+  - If default = "list trip names," every holder of the shared key sees your trip list. Leaky.
+  - If default = "nothing until paired," the bootstrap story is cleaner: agent connects → sees "no trips paired" → you generate a key from the trip page → agent can now work.
+
+  I'd pick "nothing until paired." It's also closer to how Phase 3 works (no scopes → no access), which makes the migration to OAuth feel like "swap the issuance mechanism" rather than "rewrite the
+  authz model."
+
+  4. Phase 2 — shared key: keep or kill? Two paths:
+  - Kill it: trip keys are the only credential. Clean, but means every connection must already be paired.
+  - Keep it as a channel auth: shared key gets you into the door; trip key authorizes the trip. Two-layer.
+
+  I'd lean keep both — the shared key stays as "is this even my server?" and trip keys answer "what can you do here?" It's the same pattern as API Gateway + per-resource tokens.
+
+  5. Shape Phase 2's trip-key table so Phase 3 is a drop-in. If you model it as agent_trip_grants(agent_id, trip_id, token_digest, scopes, issued_at, revoked_at, last_used_at) from day one, Phase 3
+  becomes "OAuth issues the same row, just via a consent flow instead of a trip-page button." No data migration.
+
+  6. Pairing UX — don't over-engineer Phase 2. "Click button on trip page → copy key → paste into agent config" is fine for personal use. QR codes / deep links / auto-injection are cute but Phase 4
+  material.
+
+  The one thing I'd change about the phasing
+
+  Phase 1.5 — kill the actor_type / actor_id params on create_journal_entry. They exist today as an artifact of the hardcoded-Jack era (default: "Jack", default: "jack") and if you're introducing
+  real agent identity, the journal entry's attribution should come from the resolved agent, not from a client-supplied string. One small cleanup that lands with Phase 1 and removes ambiguity forever.
+
+  On rollout
+
+  Phase 1 is genuinely a weekend. Phase 2 is a couple of evenings if you keep the pairing UX dumb. Phase 3 is a project — and the ecosystem is still settling (MCP's OAuth + Dynamic Client
+  Registration support shipped recently but tooling is uneven). I wouldn't commit to Phase 3 until you know whether you actually want third-party agents.
+
+  Net: ship Phase 1 soon to stop Marée from signing as Jack. Let Phase 2 bake a bit (decide the "default access = nothing" question, pin down the Agent model). Leave Phase 3 as a branch you can take,
+   not one you must take.
+
+  Want me to write up Phase 1 as an issue, or keep brainstorming the Phase 2 shape?
+
+Here my answers:
+
+Here are my answers:
+
+1. Phase 1 — Registered once, makes more sense, I agree.
+
+2. The Agent → User relationship. Reactions, comments, and journal entries all need a user_id. Options:
+  - Agent has_one: user (user is a system actor created per agent)
+
+Yeah, I hate flags on tables to give extra meaning; it feels like a code smell ...
+
+ 3. Phase 2 — "minimum read-only" default needs a concrete answer.
+  - If default = "nothing until paired," the bootstrap story is cleaner: agent connects → sees "no trips paired" → you generate a key from the trip page → agent can now work.
+
+I was thinking of it. I defo not want to expose other data, but I wanted to make sure an Agent can reach the MCP Server and get a message back, instead of being stuck in an authentication issue, which is hard to understand what is going on.
+
+ 4. Phase 2 — shared key: keep or kill? Keep both for the reasons mentioned above.
+
+5. Shape Phase 2's trip-key table so Phase 3 is a drop-in.
+
+ 6. Pairing UX — don't over-engineer Phase 2. "Click button on trip page → copy key → paste into agent config" is fine for personal use
+
+Phase 1.5 — kill the actor_type / actor_id params on create_journal_entry.
+
