@@ -9,20 +9,22 @@ The Model Context Protocol (MCP) server exposes trip journaling capabilities to 
 ```
   MCP Client (Claude, Cursor, etc.)
        |
-       | POST /mcp  (Bearer token, application/json)
+       | POST /mcp  (Bearer token, application/json,
+       |             X-Agent-Identifier: <slug>)
        v
   McpController
-       | authenticate_api_key!
-       | validate_content_type! (415 if not JSON)
-       | rescue JSON::ParserError (-32700)
+       | authenticate_api_key!              --> 401 if Bearer invalid
+       | validate_content_type!             --> 415 if not JSON
+       | rescue JSON::ParserError           --> -32700
+       | resolve X-Agent-Identifier         --> -32001 if missing/unknown
        v
   TripJournalServer (MCP::Server)
        | routes JSON-RPC: initialize, tools/list, tools/call
+       | instructions_for(agent) templates the persona
        v
   Tools::BaseTool
-       | resolve_trip, resolve_jack_user
+       | resolve_trip, resolve_agent_user(server_context)
        | require_writable!, require_commentable!
-       | validate_actor_type!
        | success_response / error_response
        v
   12 MCP Tools  -->  Actions (Dry::Monads)  -->  ActiveRecord
@@ -33,15 +35,27 @@ The Model Context Protocol (MCP) server exposes trip journaling capabilities to 
 | | |
 |---|---|
 | **URL** | `POST /mcp` |
-| **Auth** | `Authorization: Bearer <MCP_API_KEY>` |
+| **Auth** | `Authorization: Bearer <MCP_API_KEY>` + `X-Agent-Identifier: <slug>` |
 | **Content-Type** | `application/json` (required, returns 415 otherwise) |
 | **Protocol** | JSON-RPC 2.0 (MCP specification) |
 
-## API Key Scope
+## Authentication and Agent Identity
 
-The `MCP_API_KEY` grants **unrestricted read/write access to all domain data** through the 12 registered tools. All actions are attributed to the **Jack** system actor (`jack@system.local`). This is by design -- Jack is the AI travel assistant and needs full access to operate.
+Requests carry two identity layers:
 
-Set the key in `.env.development`:
+- **`MCP_API_KEY`** (HTTP `Authorization: Bearer …`) — shared channel secret. Grants access to the endpoint. Missing/wrong → HTTP 401.
+- **`X-Agent-Identifier`** — slug of a registered `Agent` record. Resolves to the agent's `@system.local` User, used as author/actor for all writes. Missing/unknown → JSON-RPC `-32001` (HTTP 200 so the client sees the message).
+
+Each agent has a `Agent(slug, name, user)` record. Register via Rails console:
+
+```ruby
+user = User.find_or_create_by!(email: "maree@system.local") { |u|
+  u.name = "Marée"; u.status = 2
+}
+Agent.create!(slug: "maree", name: "Marée", user: user)
+```
+
+Set the endpoint secret in `.env.development`:
 
 ```
 MCP_API_KEY=your-secret-key
@@ -96,7 +110,6 @@ When `trip_id` is omitted, tools automatically resolve to the single trip in `st
 
 | Constraint | Details |
 |-----------|---------|
-| **actor_type** | Must be `Jack` or `System` (enum) |
 | **emoji** | Must be one of: `thumbsup`, `heart`, `tada`, `eyes`, `fire`, `rocket` (enum) |
 | **new_state** | Must be one of: `planning`, `started`, `finished`, `cancelled`, `archived` (enum) |
 | **limit** | Clamped to 1-100 |

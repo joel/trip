@@ -22,7 +22,10 @@ The only three JSON-RPC methods the server understands are:
 Endpoint:     POST https://catalyst.workeverywhere.app/mcp
 Content-Type: application/json
 Auth:         Authorization: Bearer <MCP_API_KEY>
+Agent:        X-Agent-Identifier: <agent-slug>   (e.g. jack, maree)
 ```
+
+Both `Authorization` and `X-Agent-Identifier` are required. Missing bearer → HTTP 401. Missing/unknown agent → JSON-RPC `-32001` (200 OK with `error` in the body so the message is readable).
 
 ## Template
 
@@ -32,6 +35,7 @@ Every request follows this exact shape:
 curl -s https://catalyst.workeverywhere.app/mcp \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $MCP_API_KEY" \
+  -H "X-Agent-Identifier: jack" \
   -d '{
     "jsonrpc": "2.0",
     "id": "1",
@@ -85,6 +89,7 @@ Find the active trip and its stats. No arguments needed if exactly one trip is i
 curl -s https://catalyst.workeverywhere.app/mcp \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $MCP_API_KEY" \
+  -H "X-Agent-Identifier: jack" \
   -d '{
     "jsonrpc": "2.0",
     "id": "1",
@@ -107,6 +112,7 @@ With explicit trip:
 curl -s https://catalyst.workeverywhere.app/mcp \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $MCP_API_KEY" \
+  -H "X-Agent-Identifier: jack" \
   -d '{
     "jsonrpc": "2.0",
     "id": "2",
@@ -126,6 +132,7 @@ Optional: `trip_id`, `limit` (1-100, default 10), `offset` (default 0).
 curl -s https://catalyst.workeverywhere.app/mcp \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $MCP_API_KEY" \
+  -H "X-Agent-Identifier: jack" \
   -d '{
     "jsonrpc": "2.0",
     "id": "3",
@@ -142,7 +149,7 @@ curl -s https://catalyst.workeverywhere.app/mcp \
   }'
 ```
 
-Required: `name`, `entry_date`. Optional: `trip_id`, `body` (HTML), `location_name`, `description`, `actor_type` (default "Jack"), `actor_id` (default "jack").
+Required: `name`, `entry_date`. Optional: `trip_id`, `body` (HTML), `location_name`, `description`, `telegram_message_id`. Attribution is derived from the `X-Agent-Identifier` header — not a tool parameter.
 
 ### Update Journal Entry
 
@@ -150,6 +157,7 @@ Required: `name`, `entry_date`. Optional: `trip_id`, `body` (HTML), `location_na
 curl -s https://catalyst.workeverywhere.app/mcp \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $MCP_API_KEY" \
+  -H "X-Agent-Identifier: jack" \
   -d '{
     "jsonrpc": "2.0",
     "id": "4",
@@ -172,6 +180,7 @@ Required: `journal_entry_id` + at least one of `name`, `body`, `entry_date`, `lo
 curl -s https://catalyst.workeverywhere.app/mcp \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $MCP_API_KEY" \
+  -H "X-Agent-Identifier: jack" \
   -d '{
     "jsonrpc": "2.0",
     "id": "5",
@@ -197,6 +206,7 @@ Max 5 URLs per call, HTTPS only, 10MB per image, jpeg/png/webp/gif.
 curl -s https://catalyst.workeverywhere.app/mcp \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $MCP_API_KEY" \
+  -H "X-Agent-Identifier: jack" \
   -d '{
     "jsonrpc": "2.0",
     "id": "6",
@@ -222,6 +232,7 @@ Max 5 images per call, 10MB each. `filename` is optional (auto-generated from MI
 curl -s https://catalyst.workeverywhere.app/mcp \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $MCP_API_KEY" \
+  -H "X-Agent-Identifier: jack" \
   -d '{
     "jsonrpc": "2.0",
     "id": "7",
@@ -244,6 +255,7 @@ Toggle an emoji on a journal entry. Call again to remove.
 curl -s https://catalyst.workeverywhere.app/mcp \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $MCP_API_KEY" \
+  -H "X-Agent-Identifier: jack" \
   -d '{
     "jsonrpc": "2.0",
     "id": "8",
@@ -266,6 +278,7 @@ Allowed emojis: `thumbsup`, `heart`, `tada`, `eyes`, `fire`, `rocket`.
 curl -s https://catalyst.workeverywhere.app/mcp \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $MCP_API_KEY" \
+  -H "X-Agent-Identifier: jack" \
   -d '{
     "jsonrpc": "2.0",
     "id": "9",
@@ -286,6 +299,7 @@ curl -s https://catalyst.workeverywhere.app/mcp \
 curl -s https://catalyst.workeverywhere.app/mcp \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $MCP_API_KEY" \
+  -H "X-Agent-Identifier: jack" \
   -d '{
     "jsonrpc": "2.0",
     "id": "10",
@@ -307,6 +321,7 @@ Valid states: `planning`, `started`, `finished`, `cancelled`, `archived`. Transi
 curl -s https://catalyst.workeverywhere.app/mcp \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $MCP_API_KEY" \
+  -H "X-Agent-Identifier: jack" \
   -d '{
     "jsonrpc": "2.0",
     "id": "11",
@@ -324,6 +339,7 @@ curl -s https://catalyst.workeverywhere.app/mcp \
 curl -s https://catalyst.workeverywhere.app/mcp \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $MCP_API_KEY" \
+  -H "X-Agent-Identifier: jack" \
   -d '{
     "jsonrpc": "2.0",
     "id": "12",
@@ -361,6 +377,7 @@ export MCP_API_KEY="your-key-here"
 curl -s https://catalyst.workeverywhere.app/mcp \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $MCP_API_KEY" \
+  -H "X-Agent-Identifier: jack" \
   -d '{"jsonrpc":"2.0","id":"test","method":"tools/list"}' \
   | python3 -c "import json,sys; tools=json.load(sys.stdin)['result']['tools']; print(f'{len(tools)} tools:'); [print(f'  - {t[\"name\"]}') for t in tools]"
 ```

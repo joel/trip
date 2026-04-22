@@ -28,16 +28,22 @@ You are connecting to the Trip Journal MCP server as **Jack**, an AI travel assi
     "trip-journal": {
       "url": "https://catalyst.workeverywhere.docker/mcp",
       "headers": {
-        "Authorization": "Bearer <MCP_API_KEY>"
+        "Authorization": "Bearer <MCP_API_KEY>",
+        "X-Agent-Identifier": "jack"
       }
     }
   }
 }
 ```
 
-### API Key Scope
+The `X-Agent-Identifier` header is **required** — it must match the slug of a registered `Agent` record. Missing or unknown slug returns JSON-RPC error `-32001` with a readable message. Swap the slug when configuring a different agent (e.g. `"maree"` for Marée).
 
-The `MCP_API_KEY` grants **unrestricted read/write access to all domain data**. All actions are attributed to the Jack system actor (`jack@system.local`). This is by design -- Jack operates on behalf of the user across all trips.
+### Authentication and Agent Identity
+
+Two layers:
+
+- `MCP_API_KEY` (Bearer): shared channel secret. Grants access to the endpoint. Missing/wrong → HTTP 401.
+- `X-Agent-Identifier`: slug of a registered Agent. Resolves to the agent's `@system.local` User, used as author/actor for writes. All actions attributed to that user. Missing/unknown → JSON-RPC `-32001`.
 
 ## Tools Reference
 
@@ -45,7 +51,7 @@ The `MCP_API_KEY` grants **unrestricted read/write access to all domain data**. 
 
 | Tool | Description | Required | Optional |
 |------|-------------|----------|----------|
-| `create_journal_entry` | Create a journal entry | `name`, `entry_date` | `trip_id`, `body`, `location_name`, `description`, `actor_type`, `actor_id`, `telegram_message_id` |
+| `create_journal_entry` | Create a journal entry | `name`, `entry_date` | `trip_id`, `body`, `location_name`, `description`, `telegram_message_id` |
 | `update_journal_entry` | Update an existing entry | `journal_entry_id` + at least one field | `name`, `body`, `entry_date`, `location_name`, `description` |
 | `list_journal_entries` | List entries with pagination | (none) | `trip_id`, `limit` (1-100, default 10), `offset` (>= 0) |
 
@@ -98,7 +104,6 @@ Use `get_trip_status` without a `trip_id` to discover the active trip, or use `l
 
 | Field | Constraint |
 |-------|-----------|
-| `actor_type` | Enum: `Jack`, `System` |
 | `emoji` | Enum: `thumbsup`, `heart`, `tada`, `eyes`, `fire`, `rocket` |
 | `new_state` | Enum: `planning`, `started`, `finished`, `cancelled`, `archived` |
 | `limit` | Clamped to 1-100 |
@@ -144,14 +149,16 @@ Tools enforce state constraints. Calling a tool on an incompatible trip state re
 | Level | Behavior |
 |-------|----------|
 | **Transport** | 415 for wrong Content-Type, JSON-RPC `-32700` for malformed JSON |
-| **Auth** | 401 for missing/invalid Bearer token |
+| **Auth (Bearer)** | 401 for missing/invalid Bearer token |
+| **Auth (Agent)** | JSON-RPC `-32001` (HTTP 200) for missing/unknown `X-Agent-Identifier` |
 | **Tool** | `isError: true` in MCP response with descriptive message |
 
 Error messages are actionable:
 - `"Trip not found: <uuid>"` -- invalid trip_id
 - `"Trip '<name>' is not writable (state: finished)"` -- state guard violation
 - `"No updatable parameters provided"` -- empty update rejected
-- `"Invalid actor_type \"hacker\". Must be one of: Jack, System"` -- enum violation
+- `"Missing X-Agent-Identifier header. Configure your MCP client with the slug of your registered agent (e.g. 'jack')."` -- no header
+- `"Agent 'ghost' is not registered. Ask the admin to create an Agent record with this slug."` -- unknown slug
 
 ## Common Workflows
 

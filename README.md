@@ -234,7 +234,12 @@ MCP Client  --POST /mcp-->  McpController  -->  TripJournalServer  -->  12 Tools
 
 ### Configuration
 
-Set `MCP_API_KEY` in your environment. The key grants full read/write access to all domain data via the Jack system actor (`jack@system.local`).
+Two pieces of configuration are required:
+
+1. `MCP_API_KEY` — the shared Bearer token for the endpoint (channel auth).
+2. `X-Agent-Identifier` header — the slug of a registered `Agent` record (e.g. `jack`, `maree`). Attribution flows from the resolved agent's user; each agent has its own `@system.local` User.
+
+Missing or unknown `X-Agent-Identifier` returns JSON-RPC error `-32001` with a readable message. Register new agents via Rails console: `Agent.create!(slug: "...", name: "...", user: <system_user>)`.
 
 ```json
 {
@@ -242,7 +247,8 @@ Set `MCP_API_KEY` in your environment. The key grants full read/write access to 
     "trip-journal": {
       "url": "https://catalyst.workeverywhere.docker/mcp",
       "headers": {
-        "Authorization": "Bearer your-mcp-api-key"
+        "Authorization": "Bearer your-mcp-api-key",
+        "X-Agent-Identifier": "jack"
       }
     }
   }
