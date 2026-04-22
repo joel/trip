@@ -2,8 +2,10 @@
 
 class BackfillJackAgent < ActiveRecord::Migration[8.1]
   def up
-    jack_user = User.find_by(email: "jack@system.local")
-    return unless jack_user
+    jack_user = User.find_or_create_by!(email: "jack@system.local") do |u|
+      u.name = "Jack"
+      u.status = 2 # Rodauth verified
+    end
 
     Agent.find_or_create_by!(slug: "jack") do |a|
       a.name = "Jack"
