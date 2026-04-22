@@ -28,8 +28,10 @@ RSpec.describe "Accounts" do
 
   it "signs the user out from the account page" do
     visit account_path
-    expect(page).to have_button("Sign out")
-    click_on "Sign out"
+    within("main") do
+      expect(page).to have_button("Sign out")
+      click_on "Sign out"
+    end
     expect(page).to have_content("Welcome to Catalyst")
   end
 end
