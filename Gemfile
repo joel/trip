@@ -43,7 +43,7 @@ gem "webauthn"
 gem "action_policy"
 
 # Business logic
-gem "dry-monads", "~> 1.6"
+gem "dry-monads", "~> 1.10"
 
 # MCP (Model Context Protocol) server
 gem "mcp", "~> 0.13"
