@@ -49,7 +49,7 @@ gem "dry-monads", "~> 1.10"
 gem "mcp", "~> 0.16"
 
 # Export
-gem "gepub"
+gem "gepub", "~> 2.0"
 gem "reverse_markdown"
 gem "rubyzip", require: "zip"
 
