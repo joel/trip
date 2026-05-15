@@ -89,7 +89,7 @@ When a PR receives code review comments:
 3. **For actionable feedback:** Fix the code, commit, push, then reply explaining what was fixed and in which commit.
 4. **For incorrect feedback:** Reply with a clear technical explanation of why no action is needed.
 5. **For deferred feedback:** Reply acknowledging the concern and stating which phase or PR will address it.
-6. **Reply to every comment** using `gh api repos/joel/trip/pulls/comments/<ID>/replies -X POST -f body='...'`.
+6. **Reply to every comment** using `gh api repos/joel/trip/pulls/<PR>/comments/<ID>/replies -X POST -f body='...'`. The `<PR>` number is required — omitting it (`gh api repos/joel/trip/pulls/comments/<ID>/replies`) returns `HTTP 404: Not Found`.
 7. **Resolve every conversation** after replying using the GraphQL `resolveReviewThread` mutation.
 8. Never leave review comments unanswered or unresolved.
 
