@@ -71,7 +71,7 @@ class TripsController < ApplicationController
   end
 
   def destroy
-    @trip.destroy!
+    Trips::Delete.new.call(trip: @trip)
     redirect_to trips_path, notice: "Trip deleted.",
                             status: :see_other
   end
