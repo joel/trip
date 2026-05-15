@@ -37,4 +37,41 @@ Verified that the 6 new events Phase 20 newly emits via the MCP surface do not t
 
 ## 4. Commits
 
-_To be appended as each commit lands._
+### Branch-setup commit
+
+- `ee4cc81` — Add Phase 20 plan + this Steps audit trail (`[skip ci]`).
+
+### Blocker: pre-existing env break (resolved out-of-band)
+
+While running commit 1's specs, `bundle exec` could not boot Rails:
+`LoadError: cannot load such file -- zip/zip`. Root cause: dependabot
+merged `rubyzip 3.3` (#129) to `main`, but `gepub 0.6.4.6` still uses
+the removed `require 'zip/zip'`. Two further dependabot bumps
+(rubocop 1.86.2 / rubocop-rails 2.35 / rubocop-capybara) activated CI
+cops the local `--lint`-only task never caught.
+
+Per the user's call, fixed on a dedicated branch first:
+
+- **Issue #139**, **PR #140** (`fix/gepub-rubyzip-3-compat`), merged to
+  `main` (commits `855c55a`, `85ca5fa`).
+  - `c97e880` — bump `gepub ~> 2.0` (uses `require 'zip'`, pins rubyzip
+    `>=3.0,<3.3`); rename stale `Capybara/NegationMatcherAfterVisit`
+    todo entry.
+  - `711c9d4` — autocorrect `have_content`→`have_text` (88) +
+    `Layout/MultilineMethodCallIndentation` (1); defer
+    `Rails/StrongParametersExpect` (30) to `.rubocop_todo.yml` with a
+    rationale (require→expect changes failure semantics; warrants its
+    own reviewed refactor).
+- **Follow-up owed:** dedicated issue for the `Rails/StrongParametersExpect`
+  migration across 14 controllers (deferred, not dropped).
+- Phase 20 branch rebased on the new `main`; commit-1 WIP restored from
+  stash; local validation now fully functional.
+
+### Tool commits
+
+| # | SHA | Tool | Notes |
+|---|-----|------|-------|
+| 1 | `a50c1ae` | `get_journal_entry` | HTML body via `body.to_s`; spec split to satisfy `RSpec/MultipleExpectations` |
+| 2 | `91fcdda` | `list_trips` | All states incl. archived; counts batched via grouped queries (Bullet-clean); uses raw `start_date`/`end_date` not effective (avoids per-row N+1) |
+| 3 | `4e46f18` | `list_comments` | Both `author_email` + `author_name`; `includes(:user)` |
+| 4 | `eaa019b` | `list_reactions` | Unpaginated (bounded); refactored server-spec registry assertion to `match_array` against a `let` (old `include` list tripped `RSpec/ExampleLength` as tools grew) |
