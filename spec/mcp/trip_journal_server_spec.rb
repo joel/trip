@@ -26,7 +26,8 @@ RSpec.describe TripJournalServer do
       Tools::DeleteComment,
       Tools::CreateChecklist,
       Tools::UpdateChecklist,
-      Tools::DeleteChecklist
+      Tools::DeleteChecklist,
+      Tools::CreateChecklistItem
     ]
   end
 
