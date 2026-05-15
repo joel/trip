@@ -122,6 +122,20 @@ Each agent has its own `@system.local` User. Subscription filters (`JournalEntri
 
 ---
 
+## Audit Journal (Phase 21)
+
+Every `Rails.event` domain event is persisted as an append-only `AuditLog` row by `AuditLogSubscriber` → `AuditLog::Builder` → `RecordAuditLogJob` (off the request path; idempotent on `event_uid`).
+
+- **Actor attribution.** `Current` (`ActiveSupport::CurrentAttributes`, set in `ApplicationController`/`McpController`) carries the actor. `Rails.event` dispatches subscribers **synchronously in the request thread** (verified), so `Current.actor` is populated when the subscriber runs. Resolution priority: payload `actor_id` → `Current.actor` → the record's owner → `nil` (labelled `System`). When adding a new event, prefer letting `Current` supply the actor; only the dirty diff must be added to the payload (`changes:`), because the async writer cannot reconstruct it.
+- **Append-only.** `AuditLog#readonly?` returns `true` once persisted — rows are never updated or destroyed. Reverts are new forward events, not history edits.
+- **Denormalised.** `actor_label`, `summary`, `metadata` are written at capture time so the feed renders join-free and survives deletion of the trip/actor/target.
+- **`source` enum.** `web | mcp | telegram | system` — drives the feed's source badge.
+- **Visibility.** Trip-scoped feed at `/trips/:id/activity` (`AuditLogPolicy`: superadmin or trip contributor). Viewers/guests are **hidden entirely** — `AuditLogsController` returns **404** (deliberate deviation from the app-wide `ActionPolicy::Unauthorized → 403`, so the feed's existence is not disclosed). App-wide (nil `trip_id`) rows + auth events are captured now; the superadmin General console is Phase 22.
+- **Low-signal tier.** `reaction.*` and `checklist_item.toggled` are captured but hidden behind the feed's "Show low-signal" toggle.
+- **Never block the user.** `AuditLogSubscriber` swallows and logs every error — a broken audit log must never break a user action.
+
+---
+
 ## 5. Runtime Test Workflow (Mandatory)
 
 After all code changes are committed and tests pass, you **must** perform a live runtime verification before pushing the branch or creating a PR.
