@@ -156,6 +156,16 @@ After all code changes are committed and tests pass, you **must** perform a live
 
 6. **Fix any runtime errors** found during live testing, commit the fix, and re-run the full test suite before pushing.
 
+### Runtime Verification Scripts
+
+When verifying server-side logic via `bin/rails runner` (e.g. MCP tools, service objects), build fixtures with **FactoryBot factories** rather than raw `Model.create!`:
+
+```ruby
+entry = FactoryBot.create(:journal_entry, trip: trip)
+```
+
+Raw `create!` silently misses required associations (e.g. `JournalEntry#author`, `Comment#user`), causing avoidable `RecordInvalid` failures and wasted rebuild/run cycles. Factories already encode every required association and a valid default state.
+
 ### Checklist
 
 This checklist must be satisfied before pushing:
