@@ -115,7 +115,7 @@ When a PR receives code review comments:
 
 MCP requests carry two pieces of identity:
 
-1. **`MCP_API_KEY`** — shared Bearer token for the endpoint (channel auth). A valid key grants **unrestricted read/write access to all domain data** through the 12 registered MCP tools (journal entries, images, comments, reactions, trips, checklists). Missing/wrong key → HTTP 401.
+1. **`MCP_API_KEY`** — shared Bearer token for the endpoint (channel auth). A valid key grants **unrestricted read/write access to all domain data** through the 23 registered MCP tools (journal entries, images, comments, reactions, checklists, plus read access to trips). Trip creation and member administration are deliberately not exposed — those remain human-only. Missing/wrong key → HTTP 401.
 2. **`X-Agent-Identifier` header** — slug of a registered `Agent` record (e.g. `jack`, `maree`). Resolves to the agent's system User, which is used as the author/actor for all writes (journal entries, comments, reactions). Missing or unknown slug → JSON-RPC error `-32001` with a readable message (HTTP 200 so the client sees it in-band). Register agents via Rails console: `Agent.create!(slug: "...", name: "...", user: <system_user>)`.
 
 Each agent has its own `@system.local` User. Subscription filters (`JournalEntries::Create#subscribe_trip_members`) exclude system actors from auto-subscription, so agents don't email themselves.

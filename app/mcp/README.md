@@ -27,7 +27,7 @@ The Model Context Protocol (MCP) server exposes trip journaling capabilities to 
        | require_writable!, require_commentable!
        | success_response / error_response
        v
-  12 MCP Tools  -->  Actions (Dry::Monads)  -->  ActiveRecord
+  23 MCP Tools  -->  Actions (Dry::Monads)  -->  ActiveRecord
 ```
 
 ## Endpoint
@@ -69,7 +69,9 @@ MCP_API_KEY=your-secret-key
 |------|-------------|-----------------|
 | `create_journal_entry` | Create a journal entry for a trip | `name`, `entry_date` |
 | `update_journal_entry` | Update an existing journal entry | `journal_entry_id` + at least one field |
+| `delete_journal_entry` | Delete an entry (writable trips only) | `journal_entry_id` |
 | `list_journal_entries` | List entries with pagination (limit 1-100) | (none) |
+| `get_journal_entry` | Get one entry: HTML body, counts, image URLs | `journal_entry_id` |
 
 ### Images
 
@@ -85,7 +87,11 @@ Allowed types: jpeg, png, webp, gif. Max 20 images per entry. `add_journal_image
 | Tool | Description | Required Params |
 |------|-------------|-----------------|
 | `create_comment` | Add a comment to a journal entry | `journal_entry_id`, `body` |
+| `update_comment` | Edit a comment's body (writable trips only) | `comment_id`, `body` |
+| `delete_comment` | Delete a comment (writable trips only) | `comment_id` |
+| `list_comments` | List an entry's comments, paginated, with author email + name | `journal_entry_id` |
 | `add_reaction` | Toggle an emoji reaction on an entry | `journal_entry_id`, `emoji` |
+| `list_reactions` | List an entry's reactions with reacting user | `journal_entry_id` |
 
 ### Trip Management
 
@@ -94,13 +100,33 @@ Allowed types: jpeg, png, webp, gif. Max 20 images per entry. `add_journal_image
 | `update_trip` | Update a trip's name or description | at least one of `name`, `description` |
 | `transition_trip` | Transition a trip to a new state | `new_state` |
 | `get_trip_status` | Get status, dates, counts for a trip | (none) |
+| `list_trips` | List all trips (any state, incl. archived), paginated | (none) |
 
 ### Checklists
 
 | Tool | Description | Required Params |
 |------|-------------|-----------------|
 | `list_checklists` | List all checklists with sections/items | (none) |
+| `create_checklist` | Create a checklist on a trip (writable only) | `name` |
+| `update_checklist` | Rename / reposition a checklist (writable only) | `checklist_id` + at least one field |
+| `delete_checklist` | Delete a checklist + its sections/items (writable only) | `checklist_id` |
+| `create_checklist_item` | Add an item to an existing section (writable only) | `checklist_section_id`, `content` |
 | `toggle_checklist_item` | Toggle a checklist item's completion | `checklist_item_id` |
+
+### Scope boundary (deliberately human-only)
+
+The MCP surface is intentionally limited to **content curation**. The
+following are **not** exposed and remain human-only operations:
+
+- **Trip creation** — a human sets the context the agent works inside.
+- **Member administration** — `assign`/`remove`/`list` trip members.
+- **Invitations** — onboarding new people is a human concern.
+- **Exports** — `Export#user` is a human recipient; needs an explicit
+  permission decision.
+
+Also out of scope until the underlying domain actions exist: image
+removal/replacement, checklist-item update/delete, checklist-section
+CRUD, and hard trip deletion.
 
 ## Trip Resolution
 
@@ -152,6 +178,17 @@ app/mcp/
     get_trip_status.rb
     add_journal_images.rb
     upload_journal_images.rb
+    get_journal_entry.rb       # Phase 20
+    delete_journal_entry.rb    # Phase 20
+    update_comment.rb          # Phase 20
+    delete_comment.rb          # Phase 20
+    list_comments.rb           # Phase 20
+    list_reactions.rb          # Phase 20
+    list_trips.rb              # Phase 20
+    create_checklist.rb        # Phase 20
+    update_checklist.rb        # Phase 20
+    delete_checklist.rb        # Phase 20
+    create_checklist_item.rb   # Phase 20
 ```
 
 ## Testing

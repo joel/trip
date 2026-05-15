@@ -28,7 +28,7 @@ Trip Journal is a **private, invite-only** collaborative trip journal. A small g
 | Uploads | **Active Storage** — disk dev; SeaweedFS planned for prod (#44) | |
 | Events | **Rails.event** structured subscribers | subscribers respond to `#emit(event)`, not `#call` |
 | Actions | **Dry::Monads** `Success`/`Failure` | see `app/actions/CLAUDE.md` for the pattern |
-| MCP | `mcp` gem at `POST /mcp`, 12 tools, API key via `MCP_API_KEY` | attributed to Jack |
+| MCP | `mcp` gem at `POST /mcp`, 23 tools, API key via `MCP_API_KEY` | attributed to the resolved agent |
 
 ---
 

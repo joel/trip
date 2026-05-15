@@ -1,6 +1,6 @@
 ---
 name: trip-journal-mcp
-description: Connect to and operate the Trip Journal MCP server as Jack, the AI travel assistant. Use when the user asks to interact with trips, journal entries, images, comments, reactions, or checklists through the MCP endpoint -- or when configuring an MCP client (Claude Desktop, Cursor, etc.) to connect to this service. Covers all 12 tools, authentication, input validation, trip state constraints, and common workflows.
+description: Connect to and operate the Trip Journal MCP server as Jack, the AI travel assistant. Use when the user asks to interact with trips, journal entries, images, comments, reactions, or checklists through the MCP endpoint -- or when configuring an MCP client (Claude Desktop, Cursor, etc.) to connect to this service. Covers all 23 tools, authentication, input validation, trip state constraints, and common workflows.
 compatibility: Requires a running Trip Journal instance with MCP_API_KEY configured
 metadata:
   author: joel
@@ -53,7 +53,9 @@ Two layers:
 |------|-------------|----------|----------|
 | `create_journal_entry` | Create a journal entry | `name`, `entry_date` | `trip_id`, `body`, `location_name`, `description`, `telegram_message_id` |
 | `update_journal_entry` | Update an existing entry | `journal_entry_id` + at least one field | `name`, `body`, `entry_date`, `location_name`, `description` |
+| `delete_journal_entry` | Delete an entry (writable trips only) | `journal_entry_id` | (none) |
 | `list_journal_entries` | List entries with pagination | (none) | `trip_id`, `limit` (1-100, default 10), `offset` (>= 0) |
+| `get_journal_entry` | Get one entry: HTML body, counts, image URLs | `journal_entry_id` | (none) |
 
 ### Images
 
@@ -74,7 +76,11 @@ Both tools emit the same `journal_entry.images_added` event and reuse the same d
 | Tool | Description | Required | Optional |
 |------|-------------|----------|----------|
 | `create_comment` | Add a comment to an entry | `journal_entry_id`, `body` | `telegram_message_id` |
+| `update_comment` | Edit a comment's body (writable trips only) | `comment_id`, `body` | (none) |
+| `delete_comment` | Delete a comment (writable trips only) | `comment_id` | (none) |
+| `list_comments` | List an entry's comments, paginated | `journal_entry_id` | `limit`, `offset` |
 | `add_reaction` | Toggle an emoji reaction | `journal_entry_id`, `emoji` | (none) |
+| `list_reactions` | List an entry's reactions with reacting user | `journal_entry_id` | (none) |
 
 ### Trip Management
 
@@ -83,12 +89,20 @@ Both tools emit the same `journal_entry.images_added` event and reuse the same d
 | `update_trip` | Update name or description | at least one of `name`, `description` | `trip_id` |
 | `transition_trip` | Change trip state | `new_state` | `trip_id` |
 | `get_trip_status` | Get status, dates, counts | (none) | `trip_id` |
+| `list_trips` | List all trips (any state, incl. archived) | (none) | `limit`, `offset` |
+
+> Trip **creation** and **member administration** are deliberately not
+> exposed via MCP — those remain human-only. Likewise exports.
 
 ### Checklists
 
 | Tool | Description | Required | Optional |
 |------|-------------|----------|----------|
 | `list_checklists` | List all checklists with sections/items | (none) | `trip_id` |
+| `create_checklist` | Create a checklist (writable trips only) | `name` | `trip_id`, `position` |
+| `update_checklist` | Rename / reposition (writable trips only) | `checklist_id` + a field | `name`, `position` |
+| `delete_checklist` | Delete a checklist + contents (writable only) | `checklist_id` | (none) |
+| `create_checklist_item` | Add item to a section (writable only) | `checklist_section_id`, `content` | `position` |
 | `toggle_checklist_item` | Toggle item completion | `checklist_item_id` | (none) |
 
 ## Trip Resolution
@@ -137,8 +151,10 @@ Tools enforce state constraints. Calling a tool on an incompatible trip state re
 
 | Guard | Allowed states | Tools |
 |-------|---------------|-------|
-| `writable` | planning, started | create/update journal entry, add/upload images, update trip, toggle checklist |
+| `writable` | planning, started | create/update/delete journal entry, add/upload images, update trip, toggle checklist, update/delete comment, create/update/delete checklist, create checklist item |
 | `commentable` | planning, started, finished | create comment, add reaction |
+
+Read-only tools (`get_journal_entry`, `list_comments`, `list_reactions`, `list_trips`) have no state guard.
 
 ## Idempotency
 
