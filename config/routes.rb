@@ -48,6 +48,7 @@ Rails.application.routes.draw do
         get :download
       end
     end
+    resources :audit_logs, only: [:index], path: "activity"
     member do
       patch :transition
     end
