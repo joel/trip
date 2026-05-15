@@ -34,8 +34,18 @@ module Tools
 
     private_class_method def self.blob_url(blob)
       Rails.application.routes.url_helpers.rails_blob_url(
-        blob, host: ENV.fetch("APP_HOST", "localhost")
+        blob, **url_options
       )
+    end
+
+    # Derive the host/protocol from the per-environment Rails URL config
+    # (action_mailer.default_url_options) so external MCP clients receive
+    # reachable links. ENV["APP_HOST"] still overrides when set explicitly.
+    private_class_method def self.url_options
+      configured = Rails.application.config
+                        .action_mailer.default_url_options || {}
+      host = ENV["APP_HOST"].presence || configured[:host] || "localhost"
+      { host: host, protocol: configured[:protocol] }.compact
     end
   end
 end
