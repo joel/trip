@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_22_100002) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_15_100000) do
   create_table "access_requests", id: uuid, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -70,6 +70,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_22_100002) do
     t.string "user_id", limit: 36, null: false
     t.index ["slug"], name: "index_agents_on_slug", unique: true
     t.index ["user_id"], name: "index_agents_on_user_id", unique: true
+  end
+
+  create_table "audit_logs", id: uuid, force: :cascade do |t|
+    t.string "action", null: false
+    t.string "actor_id", limit: 36
+    t.string "actor_label", null: false
+    t.string "auditable_id", limit: 36
+    t.string "auditable_type"
+    t.datetime "created_at", null: false
+    t.string "event_uid", null: false
+    t.json "metadata", default: {}, null: false
+    t.datetime "occurred_at", null: false
+    t.string "request_id"
+    t.integer "source", default: 0, null: false
+    t.string "summary", null: false
+    t.string "trip_id", limit: 36
+    t.datetime "updated_at", null: false
+    t.index ["actor_id"], name: "index_audit_logs_on_actor_id"
+    t.index ["auditable_type", "auditable_id"], name: "idx_audit_logs_target"
+    t.index ["event_uid"], name: "idx_audit_logs_event_uid", unique: true
+    t.index ["occurred_at", "id"], name: "idx_audit_logs_global_feed"
+    t.index ["request_id"], name: "idx_audit_logs_request"
+    t.index ["trip_id", "occurred_at", "id"], name: "idx_audit_logs_trip_feed"
+    t.index ["trip_id"], name: "index_audit_logs_on_trip_id"
   end
 
   create_table "checklist_items", id: uuid, force: :cascade do |t|
@@ -276,6 +300,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_22_100002) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "agents", "users"
+  add_foreign_key "audit_logs", "users", column: "actor_id"
   add_foreign_key "checklist_items", "checklist_sections"
   add_foreign_key "checklist_sections", "checklists"
   add_foreign_key "checklists", "trips"
