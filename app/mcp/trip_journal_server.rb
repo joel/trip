@@ -21,7 +21,8 @@ class TripJournalServer
     Tools::DeleteJournalEntry,
     Tools::UpdateComment,
     Tools::DeleteComment,
-    Tools::CreateChecklist
+    Tools::CreateChecklist,
+    Tools::UpdateChecklist
   ].freeze
 
   def self.build(server_context: {})
