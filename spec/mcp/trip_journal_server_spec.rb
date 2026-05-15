@@ -4,13 +4,13 @@ require "rails_helper"
 
 RSpec.describe TripJournalServer do
   describe ".build" do
-    it "creates an MCP server with all 13 tools" do
+    it "creates an MCP server with all 14 tools" do
       server = described_class.build
       expect(server).to be_a(MCP::Server)
     end
 
     it "registers all expected tools" do
-      expect(described_class::TOOLS.size).to eq(13)
+      expect(described_class::TOOLS.size).to eq(14)
       expect(described_class::TOOLS).to include(
         Tools::CreateJournalEntry,
         Tools::UpdateJournalEntry,
@@ -24,7 +24,8 @@ RSpec.describe TripJournalServer do
         Tools::GetTripStatus,
         Tools::AddJournalImages,
         Tools::UploadJournalImages,
-        Tools::GetJournalEntry
+        Tools::GetJournalEntry,
+        Tools::ListTrips
       )
     end
   end
