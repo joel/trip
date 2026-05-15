@@ -123,7 +123,7 @@ RSpec.describe "MCP Endpoint" do
         expect(instructions).to include("You are Jack")
       end
 
-      it "lists all 12 tools" do
+      it "lists exactly the registered tools" do
         post "/mcp", params: init_payload, headers: headers
 
         list_payload = {
@@ -134,13 +134,14 @@ RSpec.describe "MCP Endpoint" do
 
         tool_names = response.parsed_body["result"]["tools"]
                              .pluck("name")
-        expect(tool_names).to contain_exactly(
-          "create_journal_entry", "update_journal_entry",
-          "list_journal_entries", "create_comment",
-          "add_reaction", "update_trip", "transition_trip",
-          "toggle_checklist_item", "list_checklists",
-          "get_trip_status", "add_journal_images",
-          "upload_journal_images"
+        expect(tool_names)
+          .to match_array(TripJournalServer::TOOLS.map(&:name_value))
+        expect(tool_names).to include(
+          "get_journal_entry", "delete_journal_entry",
+          "update_comment", "delete_comment", "list_comments",
+          "list_reactions", "list_trips", "create_checklist",
+          "update_checklist", "delete_checklist",
+          "create_checklist_item"
         )
       end
 
