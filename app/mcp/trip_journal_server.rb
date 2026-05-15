@@ -20,7 +20,8 @@ class TripJournalServer
     Tools::ListReactions,
     Tools::DeleteJournalEntry,
     Tools::UpdateComment,
-    Tools::DeleteComment
+    Tools::DeleteComment,
+    Tools::CreateChecklist
   ].freeze
 
   def self.build(server_context: {})
