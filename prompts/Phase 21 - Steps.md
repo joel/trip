@@ -68,4 +68,15 @@
 
 ## 7. PR + review
 
-- _pending push_
+- Branch `feature/audit-journal` pushed; **PR [#144](https://github.com/joel/trip/pull/144)** — "Phase 21: Audit Journal — append-only, role-gated activity feed", `Closes #143`.
+- CI triggered on push (lint + brakeman + bundle-audit + 760 unit + 84 system, rack_test).
+- **Kanban:** board moves (Backlog→…→In Review) blocked throughout — `gh` token lacks `read:project`/`project` scope (`gh auth refresh -s project` was requested but not granted). Issue #143 + PR #144 are the tracking artifacts; board can be moved once the scope is added.
+- Review response: pending reviewer comments (none yet).
+
+## 8. Final summary
+
+| Issue | PR | Branch | Commits | Status |
+|-------|----|--------|---------|--------|
+| #143 | #144 | `feature/audit-journal` | 13 (12 atomic feature/docs + Steps) | In review — CI running |
+
+Phase 21 delivered: foundation (`AuditLog`, `Current`, `Builder`, `Subscriber`, `Job`), trip-scoped live feed (policy, controller, route, Phlex view+card, channel, Stimulus), `trip.deleted` gap closed, full spec pyramid, docs + Stitch prompt. Phase 22 deferrals unchanged (superadmin General console, search, filters, auth-event emit points).
