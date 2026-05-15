@@ -21,7 +21,8 @@ RSpec.describe TripJournalServer do
       Tools::ListTrips,
       Tools::ListComments,
       Tools::ListReactions,
-      Tools::DeleteJournalEntry
+      Tools::DeleteJournalEntry,
+      Tools::UpdateComment
     ]
   end
 
