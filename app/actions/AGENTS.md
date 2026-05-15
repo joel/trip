@@ -170,6 +170,7 @@ Events follow the pattern `entity.action`:
 | `trip.created` | Trips::Create | `{ trip_id }` |
 | `trip.updated` | Trips::Update | `{ trip_id, changes }` |
 | `trip.state_changed` | Trips::TransitionState | `{ trip_id, from_state, to_state }` |
+| `trip.deleted` | Trips::Delete | `{ trip_id, trip_name }` |
 | `journal_entry.created` | JournalEntries::Create | `{ journal_entry_id, trip_id, actor_id }` |
 | `journal_entry.updated` | JournalEntries::Update | `{ journal_entry_id, trip_id, changes }` |
 | `journal_entry.deleted` | JournalEntries::Delete | `{ journal_entry_id, trip_id }` |
@@ -239,6 +240,7 @@ app/actions/
     remove.rb
   trips/
     create.rb
+    delete.rb
     transition_state.rb
     update.rb
 ```
