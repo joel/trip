@@ -18,7 +18,11 @@ module Trips
     end
 
     def emit_event(trip)
-      Rails.event.notify("trip.updated", trip_id: trip.id)
+      Rails.event.notify(
+        "trip.updated",
+        trip_id: trip.id,
+        changes: trip.saved_changes.except("created_at", "updated_at")
+      )
       Success()
     end
   end

@@ -21,7 +21,8 @@ module Comments
       Rails.event.notify(
         "comment.updated",
         comment_id: comment.id,
-        journal_entry_id: comment.journal_entry_id
+        journal_entry_id: comment.journal_entry_id,
+        changes: comment.saved_changes.except("created_at", "updated_at")
       )
       Success()
     end

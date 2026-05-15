@@ -20,7 +20,9 @@ module Checklists
     def emit_event(checklist)
       Rails.event.notify(
         "checklist.updated",
-        checklist_id: checklist.id, trip_id: checklist.trip_id
+        checklist_id: checklist.id,
+        trip_id: checklist.trip_id,
+        changes: checklist.saved_changes.except("created_at", "updated_at")
       )
       Success()
     end

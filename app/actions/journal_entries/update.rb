@@ -21,7 +21,8 @@ module JournalEntries
       Rails.event.notify(
         "journal_entry.updated",
         journal_entry_id: journal_entry.id,
-        trip_id: journal_entry.trip_id
+        trip_id: journal_entry.trip_id,
+        changes: journal_entry.saved_changes.except("created_at", "updated_at")
       )
       Success()
     end
