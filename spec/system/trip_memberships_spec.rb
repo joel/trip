@@ -13,8 +13,8 @@ RSpec.describe "Trip Memberships" do
 
   it "lists trip members" do
     visit trip_trip_memberships_path(trip)
-    expect(page).to have_content("Trip Members")
-    expect(page).to have_content(admin.email)
+    expect(page).to have_text("Trip Members")
+    expect(page).to have_text(admin.email)
   end
 
   it "adds a member to a trip" do
@@ -22,15 +22,15 @@ RSpec.describe "Trip Memberships" do
     visit new_trip_trip_membership_path(trip)
     select new_member.email, from: "User"
     click_on "Add member"
-    expect(page).to have_content("Member added")
+    expect(page).to have_text("Member added")
   end
 
   it "removes a member from a trip" do
     member = create(:user, name: "Removable")
     create(:trip_membership, trip: trip, user: member)
     visit trip_trip_memberships_path(trip)
-    expect(page).to have_content(member.email)
+    expect(page).to have_text(member.email)
     click_on "Remove", match: :first
-    expect(page).to have_content("Member removed")
+    expect(page).to have_text("Member removed")
   end
 end

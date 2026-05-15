@@ -20,7 +20,7 @@ RSpec.describe "Trip viewer visibility" do
 
     it "hides Members, Checklists, and Exports buttons on trip show" do
       visit trip_path(trip)
-      expect(page).to have_content("Family Trip")
+      expect(page).to have_text("Family Trip")
       expect(page).to have_no_link("Members")
       expect(page).to have_no_link("Checklists")
       expect(page).to have_no_link("Exports")
@@ -28,17 +28,17 @@ RSpec.describe "Trip viewer visibility" do
 
     it "denies direct access to /trip_memberships" do
       visit trip_trip_memberships_path(trip)
-      expect(page).to have_content("Access denied")
+      expect(page).to have_text("Access denied")
     end
 
     it "denies direct access to /checklists" do
       visit trip_checklists_path(trip)
-      expect(page).to have_content("Access denied")
+      expect(page).to have_text("Access denied")
     end
 
     it "denies direct access to /exports" do
       visit trip_exports_path(trip)
-      expect(page).to have_content("Access denied")
+      expect(page).to have_text("Access denied")
     end
   end
 
@@ -47,7 +47,7 @@ RSpec.describe "Trip viewer visibility" do
 
     it "shows Members, Checklists, and Exports buttons on trip show" do
       visit trip_path(trip)
-      expect(page).to have_content("Family Trip")
+      expect(page).to have_text("Family Trip")
       expect(page).to have_link("Members")
       expect(page).to have_link("Checklists")
       expect(page).to have_link("Exports")

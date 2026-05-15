@@ -23,7 +23,7 @@ RSpec.describe "Google One Tap" do
       login_as(user: user)
       visit "/"
       # Assert page loaded first (positive matcher), then check absence
-      expect(page).to have_content(/Welcome,/)
+      expect(page).to have_text(/Welcome,/)
       expect(page).to have_no_css(
         "[data-controller='google-one-tap']", visible: :all
       )
@@ -41,7 +41,7 @@ RSpec.describe "Google One Tap" do
     it "does not render the One Tap controller div" do
       visit "/"
       # Assert page loaded first (positive matcher), then check absence
-      expect(page).to have_content("Welcome to Catalyst")
+      expect(page).to have_text("Welcome to Catalyst")
       expect(page).to have_no_css(
         "[data-controller='google-one-tap']", visible: :all
       )

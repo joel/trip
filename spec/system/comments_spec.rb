@@ -20,7 +20,7 @@ RSpec.describe "Comments", :js do
     click_on "Read more"
     fill_in "comment[body]", with: "Nice entry!"
     click_on "Post"
-    expect(page).to have_content("Nice entry!")
+    expect(page).to have_text("Nice entry!")
   end
 
   it "edits a comment inline" do
@@ -30,7 +30,7 @@ RSpec.describe "Comments", :js do
 
     visit trip_path(trip)
     click_on "Read more"
-    expect(page).to have_content("Original text")
+    expect(page).to have_text("Original text")
 
     within "#comment_#{comment.id}" do
       find("summary", text: "Edit").click
@@ -38,7 +38,7 @@ RSpec.describe "Comments", :js do
       click_on "Save"
     end
 
-    expect(page).to have_content("Updated text")
+    expect(page).to have_text("Updated text")
     expect(comment.reload.body).to eq("Updated text")
   end
 
@@ -48,12 +48,12 @@ RSpec.describe "Comments", :js do
                                body: "To be removed")
     visit trip_path(trip)
     click_on "Read more"
-    expect(page).to have_content("To be removed")
+    expect(page).to have_text("To be removed")
 
     within "#comment_#{comment.id}" do
       accept_confirm { click_on "Delete" }
     end
 
-    expect(page).to have_no_content("To be removed")
+    expect(page).to have_no_text("To be removed")
   end
 end

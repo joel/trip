@@ -10,8 +10,8 @@ RSpec.describe "Onboarding redirects" do
       click_on "Login"
 
       expect(page).to have_current_path("/")
-      expect(page).to have_content("Invitation required")
-      expect(page).to have_content("Request an invitation")
+      expect(page).to have_text("Invitation required")
+      expect(page).to have_text("Request an invitation")
     end
   end
 
@@ -20,8 +20,8 @@ RSpec.describe "Onboarding redirects" do
       visit "/create-account"
 
       expect(page).to have_current_path("/")
-      expect(page).to have_content("Invitation required")
-      expect(page).to have_content("Request an invitation")
+      expect(page).to have_text("Invitation required")
+      expect(page).to have_text("Request an invitation")
     end
   end
 
@@ -31,7 +31,7 @@ RSpec.describe "Onboarding redirects" do
 
       expect(page).to have_current_path("/")
       expect(page).to have_no_field("Email")
-      expect(page).to have_content("Invitation required")
+      expect(page).to have_text("Invitation required")
     end
   end
 
