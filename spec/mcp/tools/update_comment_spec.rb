@@ -17,7 +17,19 @@ RSpec.describe Tools::UpdateComment do
       expect(comment.reload.body).to eq("New")
     end
 
-    it "rejects edits on a non-writable trip" do
+    it "allows edits on a finished (commentable) trip" do
+      trip = create(:trip, :finished)
+      entry = create(:journal_entry, trip: trip)
+      comment = create(:comment, journal_entry: entry, body: "Old")
+
+      result = described_class.call(comment_id: comment.id, body: "New")
+      data = JSON.parse(result.content.first[:text])
+
+      expect(data["body"]).to eq("New")
+      expect(comment.reload.body).to eq("New")
+    end
+
+    it "rejects edits on a non-commentable trip" do
       trip = create(:trip, :archived)
       entry = create(:journal_entry, trip: trip)
       comment = create(:comment, journal_entry: entry, body: "Old")
@@ -25,7 +37,7 @@ RSpec.describe Tools::UpdateComment do
       result = described_class.call(comment_id: comment.id, body: "New")
 
       expect(result.error?).to be(true)
-      expect(result.content.first[:text]).to include("not writable")
+      expect(result.content.first[:text]).to include("not commentable")
       expect(comment.reload.body).to eq("Old")
     end
 
