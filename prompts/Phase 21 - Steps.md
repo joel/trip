@@ -48,12 +48,24 @@
 
 ## 5. Validation
 
-- _pending_
+- `bundle exec rake project:lint` → 485 files, **0 offenses** (RuboCop + ErbLint)
+- `bundle exec rake project:tests` → **760 examples, 0 failures**, 2 pending (pre-existing helper stubs, unrelated)
+- `bundle exec rspec spec/system` (rack_test, CI parity) → **84 examples, 0 failures**
 
 ## 6. Runtime verification
 
-- _pending_
+`/product-review` against the rebuilt Docker app (dev `:async` adapter runs jobs in-process):
+
+- `bin/cli app rebuild` + `restart` + `mail start` → health 200; new Tailwind/Stimulus/Clock-icon compiled cleanly
+- Home (logged out) renders — no regression
+- Email-auth login as `joel@acme.org` (superadmin) works
+- Trip page shows the gated **Activity** link; feed renders the empty state (Clock icon + "No activity yet")
+- **Write path proven live:** edited the Iceland trip description in the UI → `trip.updated` → `AuditLogSubscriber` → `RecordAuditLogJob` → row persisted (`Joel Azemar updated trip "Iceland Road Trip" — Description: …`, `metadata.changes` correct), actor resolved via `Current` (payload had none)
+- Feed renders the row: avatar, summary, strikethrough→new diff block, relative time
+- Viewer `dave@acme.org` (Iceland viewer): **0 Activity links**, direct `/activity` → **404** (log: `AuditLogPolicy#index? false` → rescue → 404). Flag #1 confirmed.
+- Dark mode renders the feed correctly (only `--ha-*` tokens used)
+- No runtime errors in `docker logs` (only the expected, correct `ActionPolicy::Unauthorized` rescue for the viewer)
 
 ## 7. PR + review
 
-- _pending_
+- _pending push_
