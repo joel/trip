@@ -2,7 +2,7 @@
 
 module Tools
   class DeleteComment < BaseTool
-    description "Delete a comment (only on writable trips)"
+    description "Delete a comment (only on commentable trips)"
 
     input_schema(
       properties: {
@@ -15,7 +15,7 @@ module Tools
 
     def self.call(comment_id:, _server_context: {})
       comment = Comment.find(comment_id)
-      require_writable!(comment.journal_entry.trip)
+      require_commentable!(comment.journal_entry.trip)
 
       result = Comments::Delete.new.call(comment: comment)
 

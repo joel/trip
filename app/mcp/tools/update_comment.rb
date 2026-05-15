@@ -2,7 +2,7 @@
 
 module Tools
   class UpdateComment < BaseTool
-    description "Edit a comment's body (only on writable trips)"
+    description "Edit a comment's body (only on commentable trips)"
 
     input_schema(
       properties: {
@@ -18,7 +18,7 @@ module Tools
 
     def self.call(comment_id:, body:, _server_context: {})
       comment = Comment.find(comment_id)
-      require_writable!(comment.journal_entry.trip)
+      require_commentable!(comment.journal_entry.trip)
 
       params = { body: body }.compact
       raise ToolError, "No updatable parameters provided" if params.empty?
