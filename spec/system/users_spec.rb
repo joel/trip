@@ -9,7 +9,7 @@ RSpec.describe "Users" do
 
   it "lists users" do
     visit users_path
-    expect(page).to have_content("Users")
+    expect(page).to have_text("Users")
   end
 
   it "creates a new user" do
@@ -17,13 +17,13 @@ RSpec.describe "Users" do
     fill_in "Name", with: "New User"
     fill_in "Email", with: "newuser@example.com"
     click_on "Create User"
-    expect(page).to have_content("User was successfully created")
+    expect(page).to have_text("User was successfully created")
   end
 
   it "shows user details" do
     user = create(:user, name: "Bob Detail")
     visit user_path(user)
-    expect(page).to have_content("Bob Detail")
+    expect(page).to have_text("Bob Detail")
   end
 
   it "edits a user" do
@@ -31,13 +31,13 @@ RSpec.describe "Users" do
     visit edit_user_path(user)
     fill_in "Name", with: "New Name"
     click_on "Update User"
-    expect(page).to have_content("User was successfully updated")
+    expect(page).to have_text("User was successfully updated")
   end
 
   it "deletes a user" do
     user = create(:user, name: "Deletable User")
     visit user_path(user)
     click_on "Delete"
-    expect(page).to have_content("User was successfully destroyed")
+    expect(page).to have_text("User was successfully destroyed")
   end
 end

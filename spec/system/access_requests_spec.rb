@@ -7,7 +7,7 @@ RSpec.describe "Access Requests" do
     visit new_access_request_path
     fill_in "Email", with: "visitor@example.com"
     click_on "Request Access"
-    expect(page).to have_content("Your access request has been submitted")
+    expect(page).to have_text("Your access request has been submitted")
   end
 
   context "when logged in as superadmin" do
@@ -18,21 +18,21 @@ RSpec.describe "Access Requests" do
     it "lists access requests" do
       AccessRequest.create!(email: "pending@example.com")
       visit access_requests_path
-      expect(page).to have_content("pending@example.com")
+      expect(page).to have_text("pending@example.com")
     end
 
     it "approves an access request" do
       AccessRequest.create!(email: "approveme@example.com")
       visit access_requests_path
       click_on "Approve"
-      expect(page).to have_content("approved")
+      expect(page).to have_text("approved")
     end
 
     it "rejects an access request" do
       AccessRequest.create!(email: "rejectme@example.com")
       visit access_requests_path
       click_on "Reject"
-      expect(page).to have_content("rejected")
+      expect(page).to have_text("rejected")
     end
   end
 end

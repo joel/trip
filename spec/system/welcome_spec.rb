@@ -5,10 +5,10 @@ require "rails_helper"
 RSpec.describe "Welcome" do
   it "renders the home page for visitors" do
     visit root_path
-    expect(page).to have_content("Welcome to Catalyst")
-    expect(page).to have_content("Request an invitation")
+    expect(page).to have_text("Welcome to Catalyst")
+    expect(page).to have_text("Request an invitation")
     expect(page).to have_link("Request Access")
-    expect(page).to have_no_content("Returning?")
+    expect(page).to have_no_text("Returning?")
   end
 
   context "when logged in" do
@@ -19,8 +19,8 @@ RSpec.describe "Welcome" do
     context "with no trips" do
       it "renders the empty-state hero" do
         visit root_path
-        expect(page).to have_content(/Welcome,/)
-        expect(page).to have_content(
+        expect(page).to have_text(/Welcome,/)
+        expect(page).to have_text(
           "No trips yet! Don't worry, a new one will be added in no time."
         )
       end
@@ -32,9 +32,9 @@ RSpec.describe "Welcome" do
 
       it "does not render the Add a passkey security panel" do
         visit root_path
-        expect(page).to have_content(/Welcome,/)
-        expect(page).to have_no_content("Add a passkey")
-        expect(page).to have_no_content("Register a passkey per device")
+        expect(page).to have_text(/Welcome,/)
+        expect(page).to have_no_text("Add a passkey")
+        expect(page).to have_no_text("Register a passkey per device")
       end
     end
 

@@ -9,21 +9,21 @@ RSpec.describe "Accounts" do
 
   it "shows account details" do
     visit account_path
-    expect(page).to have_content("My account")
-    expect(page).to have_content("Alice Test")
+    expect(page).to have_text("My account")
+    expect(page).to have_text("Alice Test")
   end
 
   it "navigates to edit account" do
     visit account_path
     click_on "Edit account"
-    expect(page).to have_content("Edit account")
+    expect(page).to have_text("Edit account")
   end
 
   it "updates account name" do
     visit edit_account_path
     fill_in "Name", with: "Alice Updated"
     click_on "Save changes"
-    expect(page).to have_content("Alice Updated")
+    expect(page).to have_text("Alice Updated")
   end
 
   it "signs the user out from the account page" do
@@ -32,6 +32,6 @@ RSpec.describe "Accounts" do
       expect(page).to have_button("Sign out")
       click_on "Sign out"
     end
-    expect(page).to have_content("Welcome to Catalyst")
+    expect(page).to have_text("Welcome to Catalyst")
   end
 end

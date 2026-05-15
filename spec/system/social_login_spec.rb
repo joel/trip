@@ -13,7 +13,7 @@ RSpec.describe "Social Login" do
         .with("GOOGLE_CLIENT_ID").and_return(nil)
 
       visit "/login"
-      expect(page).to have_content("Sign in")
+      expect(page).to have_text("Sign in")
       expect(page).to have_no_button("Sign in with Google")
     end
   end

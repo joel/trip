@@ -28,7 +28,7 @@ RSpec.describe "WebAuthn autofill on login page" do
     login_as(user: user)
     visit "/"
     # Positive matcher first to confirm page loaded
-    expect(page).to have_content(/Welcome,/)
+    expect(page).to have_text(/Welcome,/)
     expect(page).to have_no_css(
       "#webauthn-login-form", visible: :all
     )

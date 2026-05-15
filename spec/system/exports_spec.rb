@@ -13,14 +13,14 @@ RSpec.describe "Exports" do
 
   it "shows empty exports index" do
     visit trip_exports_path(trip)
-    expect(page).to have_content("Exports")
-    expect(page).to have_content("No exports yet")
+    expect(page).to have_text("Exports")
+    expect(page).to have_text("No exports yet")
   end
 
   it "requests a new export" do
     visit new_trip_export_path(trip)
-    expect(page).to have_content("New Export")
+    expect(page).to have_text("New Export")
     click_on "Request Export"
-    expect(page).to have_content("Export requested")
+    expect(page).to have_text("Export requested")
   end
 end

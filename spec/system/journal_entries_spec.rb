@@ -13,8 +13,8 @@ RSpec.describe "Journal Entries Feed Wall" do
     fill_in "Name", with: "Day One"
     fill_in "Entry date", with: Date.current.to_s
     click_on "Create Journal entry"
-    expect(page).to have_content("Entry created")
-    expect(page).to have_content("Day One")
+    expect(page).to have_text("Entry created")
+    expect(page).to have_text("Day One")
     expect(page).to have_current_path(
       trip_path(trip), ignore_query: true
     )
@@ -42,9 +42,9 @@ RSpec.describe "Journal Entries Feed Wall" do
                            description: "Short preview")
 
     visit trip_path(trip)
-    expect(page).to have_content("Expandable Entry")
+    expect(page).to have_text("Expandable Entry")
     click_on "Read more"
-    expect(page).to have_content("Collapse")
+    expect(page).to have_text("Collapse")
     expect(page).to have_current_path(
       trip_path(trip), ignore_query: true
     )
@@ -59,8 +59,8 @@ RSpec.describe "Journal Entries Feed Wall" do
     end
     fill_in "Name", with: "New Title"
     click_on "Update Journal entry"
-    expect(page).to have_content("Entry updated")
-    expect(page).to have_content("New Title")
+    expect(page).to have_text("Entry updated")
+    expect(page).to have_text("New Title")
   end
 
   it "attributes agent-authored entries to the agent's display name" do
@@ -71,7 +71,7 @@ RSpec.describe "Journal Entries Feed Wall" do
     visit trip_path(trip)
 
     within "article", text: "Visited Mont Saint-Michel" do
-      expect(page).to have_content("Marée")
+      expect(page).to have_text("Marée")
     end
   end
 
@@ -83,7 +83,7 @@ RSpec.describe "Journal Entries Feed Wall" do
       click_on "Read more"
       accept_confirm { click_on "Delete" }
     end
-    expect(page).to have_content("Entry deleted")
-    expect(page).to have_no_content("Deletable")
+    expect(page).to have_text("Entry deleted")
+    expect(page).to have_no_text("Deletable")
   end
 end

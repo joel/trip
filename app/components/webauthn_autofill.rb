@@ -37,7 +37,7 @@ module Components
         input(
           type: "hidden",
           name: view_context.rodauth
-                .webauthn_auth_challenge_hmac_param,
+                            .webauthn_auth_challenge_hmac_param,
           value: view_context.rodauth.compute_hmac(cred.challenge)
         )
         input(

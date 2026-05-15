@@ -11,7 +11,7 @@ RSpec.describe "Notifications" do
 
   it "shows bell icon in sidebar" do
     visit root_path
-    expect(page).to have_content("Notifications")
+    expect(page).to have_text("Notifications")
   end
 
   it "shows unread badge in mobile navigation" do
@@ -46,7 +46,7 @@ RSpec.describe "Notifications" do
 
   it "shows empty notifications page" do
     visit notifications_path
-    expect(page).to have_content("No notifications yet")
+    expect(page).to have_text("No notifications yet")
   end
 
   it "shows notifications" do
@@ -58,7 +58,7 @@ RSpec.describe "Notifications" do
            event_type: :entry_created)
 
     visit notifications_path
-    expect(page).to have_content("created a new journal entry")
+    expect(page).to have_text("created a new journal entry")
   end
 
   it "marks a notification as read" do
@@ -71,7 +71,7 @@ RSpec.describe "Notifications" do
 
     visit notifications_path
     click_on "Mark read"
-    expect(page).to have_content("Notification marked as read")
+    expect(page).to have_text("Notification marked as read")
   end
 
   it "marks all notifications as read" do
@@ -84,7 +84,7 @@ RSpec.describe "Notifications" do
 
     visit notifications_path
     click_on "Mark all as read"
-    expect(page).to have_content("All notifications marked as read")
+    expect(page).to have_text("All notifications marked as read")
   end
 
   it "shows mute toggle on trip feed" do
