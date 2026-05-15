@@ -16,4 +16,11 @@ Rails.application.config.after_initialize do
   Rails.event.subscribe(NotificationSubscriber.new) do |e|
     e[:name].in?(%w[journal_entry.created comment.created])
   end
+  Rails.event.subscribe(AuditLogSubscriber.new) do |e|
+    e[:name].start_with?(
+      "trip.", "trip_membership.", "journal_entry.", "comment.",
+      "reaction.", "checklist", "export.", "access_request.",
+      "invitation."
+    )
+  end
 end
