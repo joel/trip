@@ -13,6 +13,10 @@ class McpController < ActionController::API
     agent = Agent.by_slug(agent_slug)
     return render_agent_error(:unknown, agent_slug) if agent.nil?
 
+    Current.actor = agent.user
+    Current.source = :mcp
+    Current.request_id = request.request_id
+
     server = TripJournalServer.build(
       server_context: { request_id: request.uuid, agent: agent }
     )

@@ -16,6 +16,8 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  before_action :set_audit_context
+
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
@@ -33,6 +35,12 @@ class ApplicationController < ActionController::Base
   def unread_notification_count
     @unread_notification_count ||=
       current_user ? Notification.where(recipient: current_user).unread.count : 0
+  end
+
+  def set_audit_context
+    Current.actor = current_user
+    Current.request_id = request.request_id
+    Current.source = :web
   end
 
   def require_authenticated_user!
