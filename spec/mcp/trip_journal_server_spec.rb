@@ -52,5 +52,16 @@ RSpec.describe TripJournalServer do
       expect(described_class.instructions_for(nil))
         .to include("You are an AI travel assistant")
     end
+
+    it "describes the Phase 20 capabilities and human-only carve-out" do
+      text = described_class.instructions_for(nil).gsub(/\s+/, " ")
+
+      expect(text).to include("create, edit, and delete journal entries")
+      expect(text).to include("delete comments")
+      expect(text).to include("delete checklists")
+      expect(text)
+        .to include("Trip creation and member administration are " \
+                    "handled by humans")
+    end
   end
 end
