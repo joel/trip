@@ -15,7 +15,8 @@ class TripJournalServer
     Tools::AddJournalImages,
     Tools::UploadJournalImages,
     Tools::GetJournalEntry,
-    Tools::ListTrips
+    Tools::ListTrips,
+    Tools::ListComments
   ].freeze
 
   def self.build(server_context: {})
