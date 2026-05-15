@@ -75,3 +75,25 @@ Per the user's call, fixed on a dedicated branch first:
 | 2 | `91fcdda` | `list_trips` | All states incl. archived; counts batched via grouped queries (Bullet-clean); uses raw `start_date`/`end_date` not effective (avoids per-row N+1) |
 | 3 | `4e46f18` | `list_comments` | Both `author_email` + `author_name`; `includes(:user)` |
 | 4 | `eaa019b` | `list_reactions` | Unpaginated (bounded); refactored server-spec registry assertion to `match_array` against a `let` (old `include` list tripped `RSpec/ExampleLength` as tools grew) |
+| – | `bb0d40b` | _(Steps audit update — env-fix detour + reads 1-4; `[skip ci]`)_ |
+| 5 | `3437746` | `delete_journal_entry` | `require_writable!`; friendly RecordNotFound |
+| 6 | `eb6bc1e` | `update_comment` | Trip via `comment.journal_entry.trip`; body-only; blank body → validation Failure |
+| 7 | `824a34f` | `delete_comment` | `require_writable!` via entry's trip |
+| 8 | `817bb1b` | `create_checklist` | `require_writable!`; optional `position`; resolves started trip |
+| 9 | `d6a2fca` | `update_checklist` | `require_writable!`; empty-update rejected |
+| 10 | `e5a34fa` | `delete_checklist` | cascades sections/items via model `dependent: :destroy` |
+| 11 | `53d06e1` | `create_checklist_item` | `require_writable!` via `section.checklist.trip`; blank content → Failure |
+| 12 | `5a88100` | _server instructions_ | `instructions_for` advertises new verbs + human-only carve-out; new whitespace-normalised spec |
+
+### Deviations / notes for self-eval
+
+- **`[skip ci]` on `ee4cc81` and `bb0d40b`.** AGENTS.md §4 forbids
+  `[skip ci]` markers (CI uses `paths-ignore`; `prompts/**` is already
+  exempt). These two commits touched only `prompts/**` so there was no
+  functional impact, but the marker was unnecessary and against the
+  rule. Stopped using it from the docs commit onward. Recorded for the
+  skill self-eval.
+- **Tool-registry spec refactor bundled into commit 4.** Not its own
+  commit, but necessary to keep the suite green as tools were added
+  (the growing `include(...)` list tripped `RSpec/ExampleLength`).
+  `match_array` against a `let` is a stronger, self-maintaining check.

@@ -353,6 +353,139 @@ curl -s https://catalyst.workeverywhere.app/mcp \
   }'
 ```
 
+### Get Journal Entry
+
+```bash
+curl -s https://catalyst.workeverywhere.app/mcp \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $MCP_API_KEY" \
+  -H "X-Agent-Identifier: jack" \
+  -d '{"jsonrpc":"2.0","id":"13","method":"tools/call",
+       "params":{"name":"get_journal_entry",
+       "arguments":{"journal_entry_id":"<uuid>"}}}'
+```
+
+### Delete Journal Entry
+
+```bash
+curl -s https://catalyst.workeverywhere.app/mcp \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $MCP_API_KEY" \
+  -H "X-Agent-Identifier: jack" \
+  -d '{"jsonrpc":"2.0","id":"14","method":"tools/call",
+       "params":{"name":"delete_journal_entry",
+       "arguments":{"journal_entry_id":"<uuid>"}}}'
+```
+
+### List Trips
+
+```bash
+curl -s https://catalyst.workeverywhere.app/mcp \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $MCP_API_KEY" \
+  -H "X-Agent-Identifier: jack" \
+  -d '{"jsonrpc":"2.0","id":"15","method":"tools/call",
+       "params":{"name":"list_trips",
+       "arguments":{"limit":10,"offset":0}}}'
+```
+
+### List Comments
+
+```bash
+curl -s https://catalyst.workeverywhere.app/mcp \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $MCP_API_KEY" \
+  -H "X-Agent-Identifier: jack" \
+  -d '{"jsonrpc":"2.0","id":"16","method":"tools/call",
+       "params":{"name":"list_comments",
+       "arguments":{"journal_entry_id":"<uuid>"}}}'
+```
+
+### List Reactions
+
+```bash
+curl -s https://catalyst.workeverywhere.app/mcp \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $MCP_API_KEY" \
+  -H "X-Agent-Identifier: jack" \
+  -d '{"jsonrpc":"2.0","id":"17","method":"tools/call",
+       "params":{"name":"list_reactions",
+       "arguments":{"journal_entry_id":"<uuid>"}}}'
+```
+
+### Update Comment
+
+```bash
+curl -s https://catalyst.workeverywhere.app/mcp \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $MCP_API_KEY" \
+  -H "X-Agent-Identifier: jack" \
+  -d '{"jsonrpc":"2.0","id":"18","method":"tools/call",
+       "params":{"name":"update_comment",
+       "arguments":{"comment_id":"<uuid>","body":"Edited text"}}}'
+```
+
+### Delete Comment
+
+```bash
+curl -s https://catalyst.workeverywhere.app/mcp \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $MCP_API_KEY" \
+  -H "X-Agent-Identifier: jack" \
+  -d '{"jsonrpc":"2.0","id":"19","method":"tools/call",
+       "params":{"name":"delete_comment",
+       "arguments":{"comment_id":"<uuid>"}}}'
+```
+
+### Create Checklist
+
+```bash
+curl -s https://catalyst.workeverywhere.app/mcp \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $MCP_API_KEY" \
+  -H "X-Agent-Identifier: jack" \
+  -d '{"jsonrpc":"2.0","id":"20","method":"tools/call",
+       "params":{"name":"create_checklist",
+       "arguments":{"name":"Packing List"}}}'
+```
+
+### Update Checklist
+
+```bash
+curl -s https://catalyst.workeverywhere.app/mcp \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $MCP_API_KEY" \
+  -H "X-Agent-Identifier: jack" \
+  -d '{"jsonrpc":"2.0","id":"21","method":"tools/call",
+       "params":{"name":"update_checklist",
+       "arguments":{"checklist_id":"<uuid>","name":"Renamed"}}}'
+```
+
+### Delete Checklist
+
+```bash
+curl -s https://catalyst.workeverywhere.app/mcp \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $MCP_API_KEY" \
+  -H "X-Agent-Identifier: jack" \
+  -d '{"jsonrpc":"2.0","id":"22","method":"tools/call",
+       "params":{"name":"delete_checklist",
+       "arguments":{"checklist_id":"<uuid>"}}}'
+```
+
+### Create Checklist Item
+
+```bash
+curl -s https://catalyst.workeverywhere.app/mcp \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $MCP_API_KEY" \
+  -H "X-Agent-Identifier: jack" \
+  -d '{"jsonrpc":"2.0","id":"23","method":"tools/call",
+       "params":{"name":"create_checklist_item",
+       "arguments":{"checklist_section_id":"<uuid>",
+       "content":"Passport"}}}'
+```
+
 ---
 
 ## Trip Resolution
@@ -363,8 +496,12 @@ When `trip_id` is omitted, the server auto-resolves to the single trip in `start
 
 | Guard | Allowed states | Tools |
 |-------|---------------|-------|
-| writable | planning, started | create/update entry, add/upload images, update trip, toggle checklist |
+| writable | planning, started | create/update/delete entry, add/upload images, update trip, toggle checklist, update/delete comment, create/update/delete checklist, create checklist item |
 | commentable | planning, started, finished | create comment, add reaction |
+
+Read-only tools (`get_journal_entry`, `list_*`) have no state guard.
+Trip creation, member administration, invitations, and exports are
+deliberately **not** exposed via MCP — they remain human-only.
 
 ## Quick Test
 
