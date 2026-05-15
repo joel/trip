@@ -97,3 +97,44 @@ Per the user's call, fixed on a dedicated branch first:
   commit, but necessary to keep the suite green as tools were added
   (the growing `include(...)` list tripped `RSpec/ExampleLength`).
   `match_array` against a `let` is a stronger, self-maintaining check.
+
+### Post-tool fixes
+
+| – | `667598e` | _docs_ | README/cheatsheet/AGENTS/SUMMARY/SKILL + Steps |
+| – | `742051a` | _spec fix_ | `spec/requests/mcp_spec.rb` hard-coded the 12 original tool names (missed in plan §5 "no new request specs"); rewired to `match_array(TOOLS.map(&:name_value))` — self-maintaining |
+
+## 5. Validation
+
+- `bundle exec rubocop --parallel` → 458 files, 0 offenses (CI parity).
+- `bundle exec rake project:tests` → 681 examples, 0 failures, 2
+  pending (pre-existing helper stubs).
+- `bundle exec rake project:system-tests` → 79 examples, 0 failures.
+
+## 6. Runtime verification
+
+- `bin/cli app rebuild` + `restart` → `GET /up` 200. Mailcatcher
+  already running (11h uptime; `mail start` name-conflict is benign).
+- Live `tools/list` (`X-Agent-Identifier: jack`) → **23 tools**, all
+  11 new ones present.
+- `get_journal_entry` → returns HTML body (`<` present), comment/image
+  counts, image URLs.
+- `list_trips` → total 5, states `archived/cancelled/finished/
+  planning/started` (archived included, confirms Q5).
+- `create_checklist` (+ `position`) then `create_checklist_item` →
+  both succeed.
+- `update_comment` → body changed; `delete_comment` → `deleted:true`.
+- **State guard:** `delete_journal_entry` on an archived-trip entry →
+  `isError`, "Trip 'Patagonia Trek' is not writable (state:
+  archived)".
+- **Auth intact:** `X-Agent-Identifier: ghost` → JSON-RPC `-32001`.
+- **No stray email:** pre-flight audit proved the 6 new events have
+  no email subscriber (`NotificationSubscriber` filters to
+  `*.created` only); no mailer activity in app logs during the
+  write smoke tests. Mailcatcher HTTP API path differs in this build
+  (`/messages` 404) — relied on the audit + log inspection instead.
+- Smoke-test data (`Smoke CL` checklist, throwaway comment) cleaned up.
+
+## 7. Follow-up owed
+
+- Dedicated issue for the deferred `Rails/StrongParametersExpect`
+  migration across 14 controllers (from the #140 env fix).
