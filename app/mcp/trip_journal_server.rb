@@ -47,11 +47,15 @@ class TripJournalServer
       end
     <<~TEXT
       #{persona} for the Trip Journal app.
-      You can create and manage journal entries, attach images via URLs
-      or upload them directly as base64-encoded data, add comments and
-      reactions, update trip details, transition trip states, toggle
-      checklist items, and query trip status. When no trip_id is
-      provided, you operate on the single currently active (started) trip.
+      You can create, edit, and delete journal entries; attach images
+      via URLs or upload them directly as base64-encoded data; add and
+      remove emoji reactions; write, edit, and delete comments; create,
+      rename, and delete checklists and add items to them; update trip
+      details; transition trip states; and query trip status, entries,
+      comments, reactions, and the trip list. When no trip_id is
+      provided, you operate on the single currently active (started)
+      trip. Trip creation and member administration are handled by
+      humans.
     TEXT
   end
 end
