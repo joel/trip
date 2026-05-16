@@ -78,12 +78,14 @@
 | `builder.rb:71` — `comment.deleted` loses trip context (find_by nil after destroy!) | P1 | Valid — high-signal destructive event became an invisible app-wide row | Fixed `08316f1`: resolve trip via surviving `journal_entry_id`; regression spec | ✅ thread resolved |
 | `builder.rb:77` — `reaction.removed` loses trip context (find_by nil after destroy!) | P2 | Valid — same root cause; low-signal row became app-wide | Fixed `08316f1`: `reaction_trip_id` from payload reactable; 3 regression specs | ✅ thread resolved |
 
-Root cause: builder loaded the primary record that delete actions emit *after* `destroy!`. Fix resolves trip context from surviving related records in the payload, unconditionally (one path). Audit suite 66 examples / 0 failures, lint clean. Replies posted, both threads resolved (0 unresolved).
+Root cause: builder loaded the primary record that delete actions emit *after* `destroy!`. Fix resolves trip context from surviving related records in the payload, unconditionally (one path). Audit suite 66 examples / 0 failures, lint clean. Replies posted, both threads resolved (0 unresolved). CI green on fix `08316f1`.
+
+PRP updated (`b435f8c`) to fold the review outcome into the plan as-built: a new §8 Edge Cases row ("Delete events emitted post-`destroy!`") and a §12.2 builder corollary (resolve `trip_id` from payload sibling IDs, never from the destroyed primary record; cover a deleted event per entity in specs). `PRPs/**` is paths-ignored, so no CI run.
 
 ## 8. Final summary
 
 | Issue | PR | Branch | Commits | Status |
 |-------|----|--------|---------|--------|
-| #143 | #144 | `feature/audit-journal` | 13 (12 atomic feature/docs + Steps) | In review — CI running |
+| #143 | #144 | `feature/audit-journal` | 17 (12 feature + Steps/docs + review fix `08316f1` + PRP note `b435f8c`) | In review — CI green, review round 1 resolved |
 
 Phase 21 delivered: foundation (`AuditLog`, `Current`, `Builder`, `Subscriber`, `Job`), trip-scoped live feed (policy, controller, route, Phlex view+card, channel, Stimulus), `trip.deleted` gap closed, full spec pyramid, docs + Stitch prompt. Phase 22 deferrals unchanged (superadmin General console, search, filters, auth-event emit points).
