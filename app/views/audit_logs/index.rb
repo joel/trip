@@ -71,11 +71,8 @@ module Views
         @audit_logs.group_by { |l| l.occurred_at.to_date }
                    .each do |date, logs|
           section do
-            h3(class: "font-headline text-sm font-semibold " \
-                      "text-[var(--ha-on-surface-variant)] mb-4 px-2") do
-              plain date_label(date)
-            end
-            div(class: "flex flex-col gap-3") do
+            p(class: "ha-overline mb-4 px-2") { plain date_label(date) }
+            div(class: "space-y-6") do
               logs.each do |log|
                 render Components::AuditLogCard.new(audit_log: log)
               end
@@ -107,9 +104,19 @@ module Views
                    "bg-[var(--ha-card)]/40 backdrop-blur-md " \
                    "border border-white/20 dark:border-white/10"
           ) do
-            render Components::Icons::Clock.new(
-              css: "h-12 w-12 text-[var(--ha-primary)]/40"
-            )
+            div(class: "relative w-24 h-24 flex items-center " \
+                       "justify-center") do
+              div(class: "absolute inset-0 " \
+                         "bg-[var(--ha-primary-container)]/20 " \
+                         "rounded-full blur-xl")
+              div(class: "relative w-16 h-16 rounded-full " \
+                         "bg-[var(--ha-surface-high)] flex " \
+                         "items-center justify-center") do
+                render Components::Icons::Clock.new(
+                  css: "h-8 w-8 text-[var(--ha-primary)]/40"
+                )
+              end
+            end
             h3(class: "font-headline text-lg font-semibold " \
                       "text-[var(--ha-on-surface)]") do
               plain "No activity yet"
