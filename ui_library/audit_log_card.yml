@@ -1,21 +1,29 @@
 component: Components::AuditLogCard
 file: app/components/audit_log_card.rb
 library_source: application_ui/lists/feeds
-library_variant: null  # custom — adapted from the Google Stitch "Trip Activity Feed" reference
-description: One activity-feed row styled to the Google Stitch Trip Activity Feed. A circular gradient avatar acts as the timeline node with a connector that falls through to the next row's node; alongside it a bold-actor summary line, an optional inset diff block (changed field old -> new), optional state-change chips (from_state -> to_state), and a meta line (uppercase relative time + source badge for Agent/Telegram/System). Low-signal rows render at opacity-60. Renders only from denormalised AuditLog columns (no association loads).
+library_variant: null  # custom, adapted from the Google Stitch Trip Activity Feed reference
+description: >
+  One activity-feed row styled to the Google Stitch Trip Activity Feed.
+  A circular gradient avatar acts as the timeline node with a connector
+  that falls through to the next row's node; alongside it a bold-actor
+  summary line, an optional inset diff block (changed field old to new),
+  optional state-change chips (from_state to to_state), and a meta line
+  (uppercase relative time + source badge for Agent/Telegram/System).
+  Low-signal rows render at opacity-60. Renders only from denormalised
+  AuditLog columns (no association loads).
 design_tokens:
-  - ha-gradient-aura (avatar/node fill)
-  - "--ha-border" (timeline connector)
-  - "--ha-text" / "--ha-on-surface-variant" / "--ha-muted" (text hierarchy)
-  - "--ha-surface-low" (diff block inset)
-  - "--ha-surface-container" (muted state chip)
-  - "--ha-primary" (new value, active state chip, source badge)
-  - "--ha-danger" (struck old value)
+  - "ha-gradient-aura: avatar/node fill"
+  - "--ha-border: timeline connector"
+  - "--ha-text / --ha-on-surface-variant / --ha-muted: text hierarchy"
+  - "--ha-surface-low: diff block inset"
+  - "--ha-surface-container: muted state chip"
+  - "--ha-primary: new value, active state chip, source badge"
+  - "--ha-danger: struck old value"
 tailwind_classes:
   - relative, flex, gap-4, group
   - flex-col, items-center, flex-shrink-0, flex-1, min-w-0
   - w-10, h-10, w-1, rounded-full, gap-2, pb-2
-  - text-sm, text-xs, "text-[11px]", "text-[10px]"
+  - "text-sm, text-xs, text-[11px], text-[10px]"
   - font-bold, font-semibold, font-medium, leading-snug
   - uppercase, tracking-wider, line-through
   - mt-2, space-y-1, p-4, rounded-2xl, px-2, py-0.5
@@ -23,7 +31,7 @@ tailwind_classes:
   - opacity-60, hover:opacity-100
   - motion-safe:transition-opacity, motion-safe:duration-200
 notes: >
-  No new Tailwind utilities introduced — every class is already compiled
+  No new Tailwind utilities introduced; every class is already compiled
   elsewhere in the codebase (JIT constraint honoured, no Docker rebuild
   needed). The avatar doubles as the timeline node; the connector is a
   per-row w-1 flex-1 rail segment so the rhythm survives variable row

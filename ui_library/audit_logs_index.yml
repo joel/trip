@@ -1,20 +1,28 @@
 component: Views::AuditLogs::Index
 file: app/views/audit_logs/index.rb
 library_source: application_ui/lists/feeds
-library_variant: null  # custom — adapted from the Google Stitch "Trip Activity Feed" reference
-description: Trip Activity feed page. PageHeader (trip name overline + "Activity" title) with a Show/Hide low-signal toggle and a Back to trip button; a live-stream target div (audit-log-feed Stimulus controller) into which new rows are prepended without reload; day-grouped sections with an ha-overline divider (Today / Yesterday / date) stacking AuditLogCard rows whose per-row connectors form the timeline rail; a keyset "Load older" button; and a glass empty state with a haloed clock icon mirroring the Notifications empty-state pattern.
+library_variant: null  # custom, adapted from the Google Stitch Trip Activity Feed reference
+description: >
+  Trip Activity feed page. PageHeader (trip name overline + "Activity"
+  title) with a Show/Hide low-signal toggle and a Back to trip button;
+  a live-stream target div (audit-log-feed Stimulus controller) into
+  which new rows are prepended without reload; day-grouped sections
+  with an ha-overline divider (Today / Yesterday / date) stacking
+  AuditLogCard rows whose per-row connectors form the timeline rail;
+  a keyset "Load older" button; and a glass empty state with a haloed
+  clock icon mirroring the Notifications empty-state pattern.
 design_tokens:
-  - ha-overline (day dividers)
-  - ha-button / ha-button-secondary (toggle + back + load older)
-  - "--ha-card" (glass empty-state surface)
-  - "--ha-surface-high" (empty-state icon badge)
-  - "--ha-primary-container" (empty-state halo)
-  - "--ha-on-surface" / "--ha-on-surface-variant"
+  - "ha-overline: day dividers"
+  - "ha-button / ha-button-secondary: toggle + back + load older"
+  - "--ha-card: glass empty-state surface"
+  - "--ha-surface-high: empty-state icon badge"
+  - "--ha-primary-container: empty-state halo"
+  - "--ha-on-surface / --ha-on-surface-variant"
 tailwind_classes:
   - space-y-8, space-y-6
   - flex, flex-col, items-center, justify-center
-  - "bg-[var(--ha-card)]/40", backdrop-blur-md
-  - "border-white/20", "dark:border-white/10"
+  - "bg-[var(--ha-card)]/40, backdrop-blur-md"
+  - "border-white/20, dark:border-white/10"
   - relative, absolute, inset-0, rounded-full, blur-xl
   - w-24, h-24, w-16, h-16, h-8, w-8, max-w-sm
   - py-16, px-8, mb-4, px-2
@@ -22,10 +30,10 @@ tailwind_classes:
 behaviour_preserved:
   - "#audit_log_stream stream target + audit_log_feed_target=list"
   - "data-controller=audit-log-feed + trip-id / show-low-signal values"
-  - keyset Load older (?before=&low_signal=) and the low-signal toggle
-  - AuditLogPolicy 404 gating untouched (controller unchanged)
+  - "keyset Load older (?before=&low_signal=) and the low-signal toggle"
+  - "AuditLogPolicy 404 gating untouched (controller unchanged)"
 notes: >
-  Sidebar/app shell intentionally NOT restyled — only the feed body
+  Sidebar/app shell intentionally NOT restyled; only the feed body
   matches the Stitch reference. No new Tailwind utilities (every class
   is already compiled, e.g. the empty-state halo reuses the
   Notifications::Index pattern verbatim).
