@@ -1,83 +1,105 @@
-# Google Stitch Prompt — Trip Activity (Audit Journal)
+# Google Stitch Prompt — Trip Activity Feed (Audit Journal)
 
-## App Context
-Catalyst is a collaborative trip-planning web app (desktop-first, fully responsive,
-Material 3 expressive language). It already has a "Feed Wall" of journal-entry cards
-and a Notification Center. This screen is the **Trip Activity** journal: an append-only,
-chronological audit feed of every action taken on a single trip, visible only to trip
-contributors and superadmins. Reuse the existing Catalyst M3 design system and the
-Feed Wall's visual language exactly — do NOT invent a new palette.
+> **Scope note.** The Catalyst design system is already established in Stitch.
+> **Do not invent colours, typography, spacing, or component styling** — apply
+> the existing design system and match the look of the current app screens
+> (the Notifications feed and the trip "Feed Wall" are the closest siblings).
+> This brief defines only **structure, placement, content, states, and
+> interactions** — the *what* and *where*, not the *how it looks*.
 
-## Colour System (use the existing `--ha-*` CSS custom properties)
-### Light mode
-- Background: `--ha-bg` (app canvas)
-- Card: `--ha-surface-low` rounded-2xl, soft shadow
-- Surface variant / row hover: `--ha-surface-container`
-- Primary / links / active: `--ha-primary`
-- Primary container (accent wash): `--ha-primary-container` at 10% opacity
-- Text: `--ha-text`; Muted/metadata: `--ha-on-surface-variant`, `--ha-muted`
-- Danger (removed values, delete actions): `--ha-danger`
-### Dark mode
-- Mirror via the `.dark` token block already defined in
-  `app/assets/tailwind/application.css` (glass sidebar, blurred surfaces). Dark variant required.
+## Objective
 
-## Typography
-- Headline font = the existing Catalyst headline utility (`font-headline`)
-- Page title "Activity": text-4xl md:text-5xl, bold, tight tracking
-- Section overline (trip name): `ha-overline`
-- Day divider label ("Today", "Yesterday", "15 May 2026"): text-sm, semibold,
-  `--ha-on-surface-variant`
-- Summary line: text-sm, regular, `--ha-text`
-- Timestamp + source badge: text-[11px], `--ha-muted`
+Design one new internal page: the **Trip Activity Feed** — a read-only,
+chronological log of every action taken on a single trip.
 
-## Component Patterns
-- Audit row card: rounded-2xl, p-4, flex, gap-4; hover lifts to
-  `--ha-surface-container`; fade-in on insert (motion-safe)
-- Actor avatar: 40px rounded-2xl, `ha-gradient-aura` initials (same as Sidebar avatar)
-- Source badge chip: tiny pill — "Agent" / "Telegram" / "System" (none for web),
-  `--ha-primary` on `--ha-primary`/10
-- Diff block: field label (semibold), old value struck-through in `--ha-danger`,
-  an arrow, new value in `--ha-primary`; rich-text shows a neutral "body changed" chip
-- State-change pill pair: "Planning" → "Started" rounded chips with an arrow
-- Low-signal rows: dimmed (opacity-60, full opacity on hover)
-- Low-signal toggle + "Back to trip" as `ha-button ha-button-secondary` in the header
-- "Load older" ghost button centred at the foot of the list
-- Empty state: clock icon + "No activity yet" (mirror Notifications empty state)
+## Placement & navigation
 
-## Design Request: Trip Activity (4 screens)
-### Screen 1 — Trip Activity, Desktop, Light
-Two-column app shell (existing glass Sidebar + main). Main: PageHeader with the
-trip name as overline and "Activity" as title; "Show low-signal" + "Back to trip"
-buttons on the right. Below, day groups: divider label, then a column of rows.
-Sample rows (realistic data):
-- "Marée (agent) created journal entry 'Visited Mont Saint-Michel'" — Agent badge — 2 min ago
-- "Joel updated trip — Name: 'Iceland' → 'Norway'" with the diff block — 1 h ago
-- "Joel changed the state of trip 'Norway' — Planning → Started" (pill pair) — 3 h ago
-- "Alex removed Sam from the trip" — `--ha-danger` accent — Yesterday
-- dimmed low-signal: "Marée reacted" (hidden until the toggle is on)
-### Screen 2 — Trip Activity, Desktop, Dark (same content, dark tokens)
-### Screen 3 — Trip Activity, Mobile (single column, Sidebar → bottom nav;
-  cards full-width, day divider sticky on scroll)
-### Screen 4 — States: (a) empty state ("No activity yet"); (b) a row with a
-  multi-field diff block expanded; (c) the low-signal toggle ON revealing the
-  dimmed reaction rows in place.
+- Lives inside the **existing authenticated app shell** (the standard sidebar +
+  main content area used by every other page). Do **not** redesign the shell.
+- It is a **per-trip** page. Entry point: a new **"Activity"** action on the
+  trip page's existing action bar, alongside `Edit · Members · Checklists ·
+  Exports · Delete · Back to trips`. Use the same button treatment as those.
+- Route: `/trips/:id/activity`. Internal-only; assume the viewer is authorised
+  (no permission/teaser state needed — unauthorised users never reach it).
 
-## Interaction Patterns to Visualise
-1. A new row fades/slides in at the top of "Today" in real time (no reload).
-2. Toggling "Show low-signal" reveals dimmed low-signal rows in place.
-3. "Load older" appends an older day group below.
+## Page structure
 
-## Explicitly NOT in this design
-- Do NOT design search or actor/date filter UI (Phase 22).
-- Do NOT design the superadmin app-wide/General console (Phase 22).
-- Do NOT design any edit/delete affordance — the log is append-only & read-only.
-- Do NOT design auth/login event rows (Phase 22).
+1. **Page header**
+   - Overline: the trip name (e.g. `ICELAND ROAD TRIP`).
+   - Title: `Activity`.
+   - Header actions (right side): a **"Show low-signal"** toggle and a
+     **"Back to trip"** button.
 
-## Design Constraints
-- Desktop ≥ 1280px two-column; mobile ≤ 640px single column + bottom nav
-- Rounded corners: cards rounded-2xl, chips rounded-full
-- Spacing: gap-3 between rows, gap-8 between day groups
-- Animations: motion-safe fade/slide on insert only; respect prefers-reduced-motion
-- Both modes required; light primary
-- Accessibility: WCAG AA contrast, ≥44px touch targets, time as `<time datetime>`,
-  source badge has visible text (not colour-only)
+2. **Feed body** — a vertical, newest-first list, **grouped by day**:
+   - Each group starts with a **day divider** label: `Today`, `Yesterday`,
+     or an absolute date (`15 May 2026`).
+   - Under each divider, the activity **rows** for that day.
+   - New rows can arrive **live at the top of "Today"** without a reload —
+     show where an incoming row inserts.
+
+3. **Activity row** (the core component) carries:
+   - **Actor avatar** — initials.
+   - **Summary line** — one sentence, e.g.
+     `Joel Azemar updated trip "Iceland Road Trip"`.
+   - **Diff block (optional)** — only for edits: one line per changed field,
+     `Field: old value → new value` (old value visually struck/retired, new
+     value emphasised). Show 1–3 fields.
+   - **State-change variant (optional)** — a `From → To` pair of small chips
+     (e.g. `Planning → Started`).
+   - **Relative timestamp** — e.g. `less than a minute ago`.
+   - **Source badge (optional)** — `Agent`, `Telegram`, or `System`; **no
+     badge** for ordinary user (web) actions.
+   - **Low-signal rows** (reactions, checklist ticks) are visually
+     **de-emphasised** and **hidden by default** — revealed only when the
+     "Show low-signal" toggle is on, in place among the other rows.
+   - Rows are **read-only**: no edit/delete/menu affordances.
+
+4. **"Load older"** — a control at the foot of the list that appends the next
+   older batch (older day groups appear below).
+
+5. **Empty state** — when the trip has no activity: an icon, a short title
+   (`No activity yet`), and one line of helper text.
+
+## Screens / states to produce
+
+1. **Populated feed** — at least two day groups; include a normal action row,
+   an **edit row with a diff block**, a **state-change row**, and one row with
+   a **source badge** (`Agent`).
+2. **Empty state**.
+3. **Low-signal toggle ON** — the dimmed reaction/checklist rows now visible
+   inline among normal rows.
+4. **Live insert** — a new row appearing at the top of the "Today" group
+   (illustrate the transition/entry point).
+5. **Mobile** — the same structure in the app's single-column mobile layout
+   (use the existing responsive shell; do not restyle).
+
+## Interactions to convey
+
+- Toggling **"Show low-signal"** reveals/hides the de-emphasised rows in place.
+- **"Load older"** appends older content below without leaving the page.
+- New rows **stream in at the top** in real time (no reload).
+
+## Realistic sample content
+
+- `Joel Azemar created trip "Iceland Road Trip"` — Today
+- `Joel Azemar updated trip "Iceland Road Trip"` — diff: `Description: "Ring
+  road adventure…" → "Updated route via the south coast"` — Today
+- `Joel Azemar changed the state of trip "Iceland Road Trip"` — `Planning →
+  Started` — Today
+- `Marée (agent) created journal entry "Visited Mont Saint-Michel"` — `Agent`
+  badge — Yesterday
+- `Alex Doe removed Sam Lee from the trip` — Yesterday
+- *(low-signal, hidden by default)* `Marée reacted to a journal entry`
+
+## Explicitly out of scope
+
+- **No visual design system work** — colours, fonts, spacing, shadows,
+  elevation, dark mode: all inherited from the established Stitch design
+  system. Don't define or alter them.
+- No **search** or **filter** UI (future phase).
+- No **app-wide / admin** activity console (future phase) — this is the
+  single-trip feed only.
+- No **edit/delete** affordances on rows — the log is append-only.
+- No **auth/login** event rows (future phase).
+- Do **not** redesign the sidebar, top bar, or trip page — only add the
+  "Activity" entry point and the new page.
