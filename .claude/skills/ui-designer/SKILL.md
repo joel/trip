@@ -43,6 +43,16 @@ tailwind_classes:
 2. Create a `ui_library/<component_name>.yml` entry
 3. Set `library_source` to the library path if adapted, or `null` if custom
 4. List the design tokens and Tailwind classes used
+5. Validate every entry parses:
+   `ruby -ryaml -e 'Dir["ui_library/*.yml"].each { |f| YAML.load_file(f) }'`
+   (a quoted token followed by trailing text, or a list item starting with
+   `--`, is invalid YAML — quote the whole item instead:
+   `- "--ha-token: what it does"`)
+6. **Regenerate the browsable index:** `ruby ui_library/generate_index.rb`.
+   The YAML on its own is not enough — `ui_library/index.html` is a
+   generated file and the new component will not appear when browsing
+   until you re-run the generator. Commit the regenerated `index.html`
+   alongside the YAML.
 
 ## Project Design System
 
@@ -145,7 +155,10 @@ end
 2. **Search the library** for matching components
 3. **Read existing project components** to match conventions
 4. **Build the Phlex component** adapting library HTML to project patterns
-5. **Update `ui_library/`** with the new component entry
+5. **Update `ui_library/`** — add the YAML entry, validate all entries
+   parse, then regenerate `index.html` (`ruby ui_library/generate_index.rb`).
+   The component is not browsable until the index is regenerated; commit
+   `index.html` with the YAML. (See "When adding a new component" above.)
 6. **Verify with agent-browser** that it renders correctly
 7. **Check for Bullet N+1 alerts** on the page (see product-review skill)
 
