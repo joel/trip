@@ -81,14 +81,22 @@ tailwind_classes:
 
 The Docker container compiles Tailwind in JIT mode -- **only classes already used in the codebase exist in the stylesheet.** If you use a class for the first time (e.g., `p-5`, `leading-relaxed`), it will have **zero effect** until `bin/cli app rebuild` recompiles the CSS.
 
-**Safe values already in use:**
-- Padding: `p-4` (16px), `p-6` (24px)
-- Gaps: `gap-2`, `gap-3`, `gap-4`
-- Margins: `mt-1`, `mt-2`, `mt-3`, `mt-4`
-- Spacing: `space-y-3`, `space-y-4`, `space-y-6`, `space-y-8`
-- Text: `text-xs`, `text-sm`, `text-base`, `text-lg`, `text-xl`
+**Verify each class is already compiled before you use it.** Do not trust a
+static "safe list" — the compiled set changes every time a component is
+added or removed. Probe the candidate classes you intend to use against the
+actual source (`app/components` + `app/views`):
 
-If a new Tailwind class is needed, note: **"Requires `bin/cli app rebuild`"**.
+```bash
+# Returns USED(n) if the class already appears in a view/component
+# (hence compiled), or —ABSENT— if using it requires a rebuild.
+probe() { c="$1"; n=$(grep -rEl "(^|[\" ])$c([\" ]|$)" app/components app/views 2>/dev/null | wc -l); printf "%-20s %s\n" "$c" "$([ "$n" -gt 0 ] && echo "USED($n)" || echo "—ABSENT—")"; }
+for c in p-5 w-2 h-3 ring-2 border-l "top-1/2" leading-relaxed; do probe "$c"; done
+```
+
+Treat `—ABSENT—` classes as unavailable: either pick a compiled
+equivalent, or, if a genuinely new class is unavoidable, use it and note
+**"Requires `bin/cli app rebuild`"** in your report so the rebuild +
+visual re-verification happens before the change is considered done.
 
 ### Component Conventions
 
