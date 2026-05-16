@@ -71,7 +71,14 @@
 - Branch `feature/audit-journal` pushed; **PR [#144](https://github.com/joel/trip/pull/144)** — "Phase 21: Audit Journal — append-only, role-gated activity feed", `Closes #143`.
 - CI triggered on push (lint + brakeman + bundle-audit + 760 unit + 84 system, rack_test).
 - **Kanban:** board moves (Backlog→…→In Review) blocked throughout — `gh` token lacks `read:project`/`project` scope (`gh auth refresh -s project` was requested but not granted). Issue #143 + PR #144 are the tracking artifacts; board can be moved once the scope is added.
-- Review response: pending reviewer comments (none yet).
+### Review round 1 — Codex bot (commit `40c6b20`)
+
+| Comment | Severity | Assessment | Action | Resolved |
+|---------|----------|------------|--------|----------|
+| `builder.rb:71` — `comment.deleted` loses trip context (find_by nil after destroy!) | P1 | Valid — high-signal destructive event became an invisible app-wide row | Fixed `08316f1`: resolve trip via surviving `journal_entry_id`; regression spec | ✅ thread resolved |
+| `builder.rb:77` — `reaction.removed` loses trip context (find_by nil after destroy!) | P2 | Valid — same root cause; low-signal row became app-wide | Fixed `08316f1`: `reaction_trip_id` from payload reactable; 3 regression specs | ✅ thread resolved |
+
+Root cause: builder loaded the primary record that delete actions emit *after* `destroy!`. Fix resolves trip context from surviving related records in the payload, unconditionally (one path). Audit suite 66 examples / 0 failures, lint clean. Replies posted, both threads resolved (0 unresolved).
 
 ## 8. Final summary
 
