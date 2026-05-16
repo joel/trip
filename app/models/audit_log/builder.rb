@@ -65,18 +65,36 @@ class AuditLog
            target: entry ? %(journal entry "#{entry.name}") : "a journal entry")
     end
 
+    # Resolve trip via the (surviving) journal entry, not the comment:
+    # comment.deleted is emitted after destroy!, so the comment row is
+    # gone and only journal_entry_id is in the payload.
     def comment_subject
       comment = Comment.find_by(id: @payload[:comment_id])
-      trip_id = comment&.journal_entry&.trip_id
-      base(@payload[:comment_id], trip_id: trip_id, record: comment,
+      entry = JournalEntry.find_by(id: @payload[:journal_entry_id])
+      base(@payload[:comment_id], trip_id: entry&.trip_id, record: comment,
                                   owner: comment&.user, target: "a comment")
     end
 
+    # Resolve trip from the reactable in the payload, not the reaction:
+    # reaction.removed is emitted after destroy!, so the reaction row is
+    # gone. Mirrors Reaction#trip.
     def reaction_subject
       reaction = Reaction.find_by(id: @payload[:reaction_id])
-      base(@payload[:reaction_id], trip_id: reaction&.trip&.id,
+      base(@payload[:reaction_id], trip_id: reaction_trip_id,
                                    record: reaction, owner: reaction&.user,
                                    target: "a reaction")
+    end
+
+    def reaction_trip_id
+      case @payload[:reactable_type]
+      when "Trip"
+        @payload[:reactable_id]
+      when "JournalEntry"
+        JournalEntry.find_by(id: @payload[:reactable_id])&.trip_id
+      when "Comment"
+        Comment.find_by(id: @payload[:reactable_id])
+               &.journal_entry&.trip_id
+      end
     end
 
     def checklist_subject
