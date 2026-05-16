@@ -91,6 +91,23 @@ RSpec.describe AuditLog::Builder do
       expect(row[:trip_id]).to eq(trip.id)
       expect(row[:summary]).to eq("Joel created a comment")
     end
+
+    # Regression (PR #144): comment.deleted is emitted after destroy!,
+    # so the comment row is gone — trip scoping must come from the
+    # surviving journal entry, not the deleted comment.
+    it "comment.deleted keeps trip scoping after the comment is gone" do
+      entry = create(:journal_entry, trip: trip)
+      comment = create(:comment, journal_entry: entry)
+      comment_id = comment.id
+      comment.destroy!
+      Current.actor = actor
+
+      row = row_for("comment.deleted",
+                    comment_id: comment_id, journal_entry_id: entry.id)
+
+      expect(row[:trip_id]).to eq(trip.id)
+      expect(row[:summary]).to eq("Joel deleted a comment")
+    end
   end
 
   describe "reaction events (low signal)" do
@@ -103,6 +120,44 @@ RSpec.describe AuditLog::Builder do
                     reactable_type: "JournalEntry", reactable_id: entry.id)
       expect(row[:trip_id]).to eq(trip.id)
       expect(row[:action]).to eq("reaction.created")
+    end
+
+    # Regression (PR #144): reaction.removed is emitted after destroy!,
+    # so the reaction row is gone — trip scoping must come from the
+    # reactable in the payload.
+    it "reaction.removed keeps trip scoping after the reaction is gone" do
+      entry = create(:journal_entry, trip: trip)
+      reaction = create(:reaction, reactable: entry, user: actor)
+      reaction_id = reaction.id
+      reaction.destroy!
+      Current.actor = actor
+
+      row = row_for("reaction.removed",
+                    reaction_id: reaction_id,
+                    reactable_type: "JournalEntry", reactable_id: entry.id)
+
+      expect(row[:trip_id]).to eq(trip.id)
+      expect(row[:action]).to eq("reaction.removed")
+    end
+
+    it "reaction.removed on a comment resolves trip via the comment" do
+      entry = create(:journal_entry, trip: trip)
+      comment = create(:comment, journal_entry: entry)
+      Current.actor = actor
+
+      row = row_for("reaction.removed",
+                    reaction_id: SecureRandom.uuid,
+                    reactable_type: "Comment", reactable_id: comment.id)
+
+      expect(row[:trip_id]).to eq(trip.id)
+    end
+
+    it "reaction.removed on a trip resolves trip from reactable_id" do
+      Current.actor = actor
+      row = row_for("reaction.removed",
+                    reaction_id: SecureRandom.uuid,
+                    reactable_type: "Trip", reactable_id: trip.id)
+      expect(row[:trip_id]).to eq(trip.id)
     end
   end
 
