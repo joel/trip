@@ -617,6 +617,18 @@ Mandatory live verification (`AGENTS.md` §5 / `/product-review` skill). Build r
 
 > Save as `prompts/Phase 21 - Audit Log - Google Stitch Prompt.md`. Format mirrors `prompts/Phase 15 - Feed Wall Design Prompt.md`.
 
+> **As-built note.** The canonical prompt was reworked into a structure-and-scope brief (no style specs — the Stitch design system is already established); see `prompts/Phase 21 - Audit Log - Google Stitch Prompt.md`. The style-heavy block below is superseded by that file. Screens were generated in Stitch project **`3314239195447065678`** ("Catalyst"); two off-brief screens were regenerated via the Stitch MCP. Final reference screens:
+>
+> | State | Screen ID |
+> |---|---|
+> | Activity Feed — Desktop | `32d30c7bd52b42e78c013b0f8076578d` |
+> | Activity Feed — Mobile | `d0d944b384554b64a72201d69b52592f` |
+> | Low-Signal ON | `7147d9171d0e4ef5ad2b20b99c2adb1e` |
+> | Empty State (regenerated — search/filter removed) | `6ea5ba46e65145939dbab7a0af6fa576` |
+> | Live Audit Log (regenerated — was a social feed) | `c974c93080304df28841a862627c08c2` |
+>
+> Superseded (still in project, manual delete in Stitch UI): `6b790ad118e14375ac766202cdd9d7cc` (old Empty State), `f3017fef3728453dbf700205db7bf803` (old Live Insert).
+
 ```
 # Google Stitch Prompt — Trip Activity (Audit Journal)
 

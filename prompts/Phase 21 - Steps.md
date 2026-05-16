@@ -89,3 +89,19 @@ PRP updated (`b435f8c`) to fold the review outcome into the plan as-built: a new
 | #143 | #144 | `feature/audit-journal` | 17 (12 feature + Steps/docs + review fix `08316f1` + PRP note `b435f8c`) | In review — CI green, review round 1 resolved |
 
 Phase 21 delivered: foundation (`AuditLog`, `Current`, `Builder`, `Subscriber`, `Job`), trip-scoped live feed (policy, controller, route, Phlex view+card, channel, Stimulus), `trip.deleted` gap closed, full spec pyramid, docs + Stitch prompt. Phase 22 deferrals unchanged (superadmin General console, search, filters, auth-event emit points).
+
+## 9. Stitch design verification
+
+- Stitch prompt reworked into a structure-and-scope brief (no style specs; the Stitch design system is already established) — `prompts/Phase 21 - Audit Log - Google Stitch Prompt.md`. PRP §17 annotated with an as-built note pointing to it (commit recording this in §10 below).
+- Reviewed the generated screens via the Stitch MCP (project `3314239195447065678`, "Catalyst"). Three were on-brief as generated; two were off-brief and regenerated via `edit_screens` (note: `edit_screens` creates a *new* screen, leaving the original in the project for manual deletion in the Stitch UI).
+
+| State | Screen ID | Outcome |
+|---|---|---|
+| Activity Feed — Desktop | `32d30c7bd52b42e78c013b0f8076578d` | ✅ on-brief |
+| Activity Feed — Mobile | `d0d944b384554b64a72201d69b52592f` | ✅ on-brief |
+| Low-Signal ON | `7147d9171d0e4ef5ad2b20b99c2adb1e` | ✅ on-brief |
+| Empty State (regenerated) | `6ea5ba46e65145939dbab7a0af6fa576` | ✅ search/filter removed, title/overline fixed |
+| Live Audit Log (regenerated) | `c974c93080304df28841a862627c08c2` | ✅ was a social/photo feed → now an audit log with the live-insert "JUST NOW" row |
+
+- Superseded screens still present in the project (no MCP delete; manual cleanup in Stitch UI): `6b790ad118e14375ac766202cdd9d7cc` (old Empty State), `f3017fef3728453dbf700205db7bf803` (old Live Insert).
+- Observation: regenerated screens render on a newer "Catalyst Glass" design-system asset and a darker shell — Stitch reinterprets the app chrome; the **page body** is the design reference, not the navigation (the production shell is already built).
