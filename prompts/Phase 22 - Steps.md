@@ -121,3 +121,18 @@ Validated locally green under **both** drivers: `spec/system` 88/0 on
 Selenium and on `TEST_BROWSER=rack_test`; non-system 768/0; rubocop 490/0.
 PR #146 P1 comment replied (`3b9cdba`) and thread resolved. Kanban: #145
 added to board and moved to **In review**.
+
+## Step 11 (cont.) — CI green
+
+Second CI failure was libvips again: `url_for(variant)` is lazy, so the
+view-level rescue never fires; the headless browser requests the
+representation URL and Rails processes the variant server-side (libvips
+absent on the runner) — Capybara surfaced the server error. Fixed by
+installing the system library in the test job (`26d39c3` —
+`apt-get install -y libvips`; the app legitimately uses
+image_processing/ruby-vips and prod needs it too). The view rescues
+stay as defensive depth.
+
+Run [25991419259](https://github.com/joel/trip/actions/runs/25991419259)
+**success** — `test` pass (1m20s). All PR #146 review threads resolved;
+no outstanding comments. Phase 22 ready to merge.
