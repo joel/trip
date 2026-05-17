@@ -1,0 +1,36 @@
+component: Views::Trips::Gallery
+file: app/views/trips/gallery.rb
+library_source: application_ui/media/image_galleries
+library_variant: null  # custom, adapted from the Catalyst Glass design system
+description: >
+  Trip photo Gallery page. PageHeader (trip name overline + "Gallery"
+  title) with a Back to trip button; one flat, newest-first
+  Components::Lightbox grid of every photo across the trip's journal
+  entries — each thumbnail opens the shared full-screen viewer over the
+  whole set, the fullscreen caption naming the owning entry + date so
+  context survives without sectioning the page. Glass empty state with
+  a haloed map icon mirroring the Notifications / Activity empty-state
+  pattern when the trip has no photos.
+design_tokens:
+  - "ha-button / ha-button-secondary: back to trip"
+  - "--ha-card: glass empty-state surface"
+  - "--ha-surface-high: empty-state icon badge"
+  - "--ha-primary-container: empty-state halo"
+  - "--ha-on-surface / --ha-on-surface-variant"
+tailwind_classes:
+  - space-y-8
+  - flex, flex-col, items-center, justify-center
+  - "bg-[var(--ha-card)]/40, backdrop-blur-md"
+  - "border-white/20, dark:border-white/10"
+  - relative, absolute, inset-0, rounded-full, blur-xl, rounded-2xl
+  - w-24, h-24, w-16, h-16, h-8, w-8, max-w-sm
+  - py-16, px-8, space-y-6
+  - font-headline, text-lg, text-sm, font-semibold
+behaviour_preserved:
+  - "TripPolicy#gallery? (== show?) gating; non-members get 403"
+  - "controller eager-loads images_attachments:blob (no N+1)"
+  - "lightbox navigation spans the whole flat trip set"
+notes: >
+  Sidebar/app shell intentionally NOT restyled. Empty-state halo reuses
+  the compiled Notifications/Activity pattern verbatim; the only new
+  Tailwind utilities are in LightboxOverlay (Docker rebuild required).

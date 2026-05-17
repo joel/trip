@@ -1,0 +1,30 @@
+component: Components::Lightbox
+file: app/components/lightbox.rb
+library_source: application_ui/media/image_galleries
+library_variant: null  # custom, adapted from the Catalyst Glass design system
+description: >
+  Self-contained image group: a flat responsive thumbnail grid whose
+  square tiles open a full-screen viewer navigating the whole set. One
+  instance == one group (used by the trip Gallery). Wraps a
+  data-controller="lightbox" element exposing the ordered full-size
+  URLs and per-image captions as Stimulus Array values, renders the
+  trigger buttons (data-lightbox-target=trigger, index param + open
+  action) and a single LightboxOverlay. Returns nothing for an empty
+  image set.
+design_tokens:
+  - "--ha-surface-high: thumbnail placeholder background"
+  - "--ha-primary: focus-visible ring"
+tailwind_classes:
+  - contents
+  - grid, grid-cols-2, sm:grid-cols-3, lg:grid-cols-3, lg:grid-cols-4, lg:grid-cols-5
+  - gap-3, aspect-square, rounded-xl, overflow-hidden, cursor-zoom-in
+  - "object-cover, transition-transform, duration-500, group-hover/photo:scale-110"
+  - "focus-visible:ring-2, focus-visible:ring-[var(--ha-primary)]"
+behaviour_preserved:
+  - "lightbox_urls_value / lightbox_captions_value JSON arrays"
+  - "data-lightbox-index-param + click->lightbox#open per tile"
+notes: >
+  Grid column classes are emitted as literal strings (a fixed map) so
+  the Tailwind JIT can see them — never interpolated. Thumbnails are
+  Active Storage variants supplied by the caller; the overlay loads the
+  original. Docker rebuild required for the new overlay utilities.

@@ -1,0 +1,32 @@
+component: Components::LightboxOverlay
+file: app/components/lightbox_overlay.rb
+library_source: application_ui/overlays/modal_dialogs
+library_variant: null  # custom, image-viewer chrome
+description: >
+  Full-screen image viewer chrome. Rendered once inside any element
+  carrying data-controller="lightbox" (a JournalEntryCard article or
+  the Gallery wrapper). A fixed dark scrim (role=dialog, aria-modal,
+  hidden by default) holds a contain-fit image, edge-anchored prev/next
+  buttons (data-lightbox-target=nav, hidden for single-image sets), a
+  top-right close button, an aria-live counter, and a glass caption.
+  All behaviour lives in lightbox_controller.js; this component is pure
+  markup + Stimulus targets.
+design_tokens:
+  - "--ha-primary: focus-visible ring on triggers"
+  - "white/10 + backdrop-blur: glass controls + caption"
+tailwind_classes:
+  - fixed, inset-0, z-50, flex, items-center, justify-center
+  - "bg-black/90, backdrop-blur-sm"
+  - absolute, top-4, right-4, left-2, sm:left-4, right-2, sm:right-4
+  - h-11, w-11, h-12, w-12, rounded-full
+  - "bg-white/10, hover:bg-white/20, text-white"
+  - "max-h-[90vh], max-w-[90vw], object-contain, select-none"
+  - "focus-visible:ring-2, focus-visible:ring-white"
+  - top-5, "left-1/2", "-translate-x-1/2", bottom-6, "max-w-[85vw]"
+behaviour_preserved:
+  - "data-lightbox-target=overlay/image/counter/caption/nav"
+  - "click->lightbox#backdrop + touchstart/touchend swipe hooks"
+  - "data-lightbox-close + lightbox#close/#prev/#next actions"
+notes: >
+  New Tailwind utilities (z-50, bg-black/90, max-h-[90vh] etc.) — a
+  Docker rebuild is required for the JIT to compile them.
