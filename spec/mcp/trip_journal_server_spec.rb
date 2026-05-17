@@ -17,6 +17,8 @@ RSpec.describe TripJournalServer do
       Tools::GetTripStatus,
       Tools::AddJournalImages,
       Tools::UploadJournalImages,
+      Tools::AddJournalVideos,
+      Tools::UploadJournalVideos,
       Tools::GetJournalEntry,
       Tools::ListTrips,
       Tools::ListComments,
