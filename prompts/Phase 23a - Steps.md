@@ -36,3 +36,18 @@ Append-only. Why and in what order, readable top-to-bottom.
 
 **Pre-existing, NOT Track 23a (documented, like Phase 22's audit specs):**
 `spec/system/welcome_spec.rb` fails 4/7 **under selenium only when compiled Tailwind CSS is present** — it races the app-wide `ha-fade-in` entry animation in `application_layout.rb` (untouched by 23a). Proven by bisection: **identical 4/7 failure on a clean `main` worktree with CSS built**; "passes" only with no compiled CSS (no animation). CI runs these under **rack_test** (no CSS engine) → green (90/0 above). Not gating; tracked in #149, out of 23a scope (modifying it would mask a pre-existing app-wide concern).
+
+## Step 8 — Live runtime verification (agent-browser) — caught 2 real bugs
+
+Rebuilt/restarted; SeaweedFS up; signed in as joel@acme.org; created a contributor trip; uploaded an image through the journal-entry form (direct upload). Two genuine runtime gaps found and fixed (commit `ca19dff`):
+
+1. **CORS** — the cross-origin browser PUT (app host → storage host) was blocked (no bucket CORS). `StorageService#ensure_cors` now applies a `PutBucketCors` policy for the app origin on `bin/cli storage start`. Verified: preflight returns `access-control-allow-origin`.
+2. **App→storage reachability** — the app container could not reach `storage.workeverywhere.docker:443` (Connection refused; that host → Traefik only on the host). Presigned URLs bind the host, so server-side blob ops must use the same host. Added `--add-host=storage.workeverywhere.docker:host-gateway` (dev) so the container routes to the host Traefik. Prod resolves it for real (#44).
+
+**End-to-end verified:** browser direct-uploads bytes to SeaweedFS → form submits `signed_id` → entry attaches → `blob.service_name=seaweedfs` → server downloads it back OK → image renders via Active Storage representation on the trip page.
+
+## Step 9 — Validation (authoritative gate)
+
+- `project:lint` 493/0; non-system 768/0 (2 pre-existing pending).
+- `system rack_test` (CI parity) 90/0 on a clean run; one later run flaked on `trip_gallery_spec.rb:21` (a **Phase 22 `:js` selenium test**, passes 2/2 in isolation) — same pre-existing selenium-under-load fragility family as #149, not a Track 23a regression (final commits were `bin/cli`-only, not loaded by specs). CI gate (rack_test, non-`:js`) unaffected.
+- `direct_upload_spec` 2/2 (selenium).
