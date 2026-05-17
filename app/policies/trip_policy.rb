@@ -9,6 +9,11 @@ class TripPolicy < ApplicationPolicy
     superadmin? || member?
   end
 
+  # Trip photo gallery — visible to anyone who can see the trip.
+  def gallery?
+    show?
+  end
+
   def create?
     superadmin?
   end

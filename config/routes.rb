@@ -51,6 +51,7 @@ Rails.application.routes.draw do
     resources :audit_logs, only: [:index], path: "activity"
     member do
       patch :transition
+      get :gallery
     end
   end
   # Google One Tap sign-in

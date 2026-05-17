@@ -2,7 +2,8 @@
 
 class TripsController < ApplicationController
   before_action :require_authenticated_user!
-  before_action :set_trip, only: %i[show edit update destroy transition]
+  before_action :set_trip,
+                only: %i[show edit update destroy transition gallery]
   before_action :authorize_trip!
 
   def index
@@ -28,6 +29,15 @@ class TripsController < ApplicationController
                               comments: :user
                             )
     render Views::Trips::Show.new(
+      trip: @trip, journal_entries: @journal_entries
+    )
+  end
+
+  def gallery
+    @journal_entries = @trip.journal_entries
+                            .reverse_chronological
+                            .includes({ images_attachments: :blob })
+    render Views::Trips::Gallery.new(
       trip: @trip, journal_entries: @journal_entries
     )
   end
