@@ -43,6 +43,9 @@ jobs:
         with:
           fetch-depth: '1'
       -
+        name: Install libvips
+        run: sudo apt-get update && sudo apt-get install -y libvips
+      -
         name: Install ruby 4.0.1
         uses: ruby/setup-ruby@v1
         with:
