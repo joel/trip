@@ -34,3 +34,6 @@ seaweedfs:
   bucket: <%= ENV.fetch("SEAWEEDFS_BUCKET", "catalyst") %>
   region: us-east-1
   force_path_style: true
+  # Dev/test SeaweedFS sits behind the local self-signed Traefik cert;
+  # only production verifies the peer (real endpoint/cert).
+  ssl_verify_peer: <%= Rails.env.production? %>
