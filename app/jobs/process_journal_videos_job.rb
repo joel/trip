@@ -85,12 +85,16 @@ class ProcessJournalVideosJob < ApplicationJob
 
   def attach_outputs(video, web, poster)
     video.web.attach(
-      io: File.open(web), filename: "web.mp4",
-      content_type: "video/mp4"
+      ActiveStorageBlobBuilder.upload(
+        io: File.open(web), filename: "web.mp4",
+        content_type: "video/mp4"
+      )
     )
     video.poster.attach(
-      io: File.open(poster), filename: "poster.jpg",
-      content_type: "image/jpeg"
+      ActiveStorageBlobBuilder.upload(
+        io: File.open(poster), filename: "poster.jpg",
+        content_type: "image/jpeg"
+      )
     )
   end
 

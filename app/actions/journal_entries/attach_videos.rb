@@ -114,11 +114,12 @@ module JournalEntries
             duration: s[:duration], width: s[:width],
             height: s[:height]
           )
-          video.source.attach(
+          blob = ActiveStorageBlobBuilder.upload(
             io: File.open(s[:tempfile].path),
             filename: s[:filename],
             content_type: s[:content_type]
           )
+          video.source.attach(blob)
         end
       end
       Success()
