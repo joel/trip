@@ -8,8 +8,10 @@ FactoryBot.define do
 
     after(:build) do |video|
       video.source.attach(
-        io: Rails.root.join("spec/fixtures/files/tiny.mp4").open,
-        filename: "tiny.mp4", content_type: "video/mp4"
+        ActiveStorageBlobBuilder.upload(
+          io: Rails.root.join("spec/fixtures/files/tiny.mp4").open,
+          filename: "tiny.mp4", content_type: "video/mp4"
+        )
       )
     end
 
@@ -21,12 +23,16 @@ FactoryBot.define do
 
       after(:build) do |video|
         video.web.attach(
-          io: Rails.root.join("spec/fixtures/files/tiny.mp4").open,
-          filename: "tiny-web.mp4", content_type: "video/mp4"
+          ActiveStorageBlobBuilder.upload(
+            io: Rails.root.join("spec/fixtures/files/tiny.mp4").open,
+            filename: "tiny-web.mp4", content_type: "video/mp4"
+          )
         )
         video.poster.attach(
-          io: Rails.root.join("spec/fixtures/files/pixel.png").open,
-          filename: "poster.png", content_type: "image/png"
+          ActiveStorageBlobBuilder.upload(
+            io: Rails.root.join("spec/fixtures/files/pixel.png").open,
+            filename: "poster.png", content_type: "image/png"
+          )
         )
       end
     end
