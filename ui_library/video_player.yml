@@ -1,0 +1,29 @@
+component: Components::VideoPlayer
+file: app/components/video_player.rb
+library_source: application_ui/media/video
+library_variant: null  # custom, adapted from the Catalyst Glass design system
+description: >
+  Inline player for one JournalEntryVideo, rendered by status. ready:
+  a poster-first <video> (playsinline, controls, muted, preload
+  metadata, web rendition <source>) driven by the video-player
+  Stimulus controller (IntersectionObserver play-in-view / pause-out,
+  muted autoplay only where permitted, respects prefers-reduced-motion
+  and Save-Data / slow connections). pending|processing: an
+  "Optimizing video…" placeholder so the card still renders with no
+  broken <video>. failed: a small non-blocking "Video unavailable".
+  Aspect ratio is set from the stored width/height (no CLS).
+design_tokens:
+  - "--ha-surface-high: player/placeholder surface"
+  - "--ha-on-surface-variant: placeholder text"
+tailwind_classes:
+  - relative, overflow-hidden, rounded-xl
+  - h-full, w-full, object-contain
+  - flex, items-center, justify-center, text-sm
+behaviour_preserved:
+  - "data-controller=video-player on the <video>"
+  - "status gating: ready vs pending/processing vs failed"
+  - "aspect-ratio inline style from width/height"
+notes: >
+  Plays the web rendition produced by ProcessJournalVideosJob; the
+  unified lightbox (Components::Lightbox / LightboxOverlay) is the
+  full-screen surface, this is the in-entry inline player.
