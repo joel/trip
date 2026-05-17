@@ -48,3 +48,46 @@ Append-only. Why and in what order, readable top-to-bottom.
   Stimulus targets).
 - `app/components/lightbox.rb` — self-contained flat-grid group for the Gallery.
   Fixed `grid_class` to literal Tailwind classes (JIT cannot see interpolation).
+
+### Tasks 4–7 — wiring, gallery, ui_library, specs
+
+- `4675d57` wire JournalEntryCard cover+grid into the lightbox; extracted
+  `ImageLightbox` mixin to stay within `Metrics/ClassLength`.
+- `328e4fa` gallery route/controller/policy (`TripPolicy#gallery? == show?`,
+  eager-load to avoid N+1).
+- `88c764c` `Views::Trips::Gallery` flat grid + action-bar link; extracted
+  `render_insight_links` to stay within `Metrics/CyclomaticComplexity`.
+- `aab30eb` ui_library entries (lightbox, overlay, gallery) + regen index.
+- `9a84d2c` request specs (gallery 200 member/viewer, 403 non-member, empty
+  state) + system specs (`:js` lightbox open/nav/Esc + cover trigger).
+
+### Step 6 — Full validation
+
+- `rake project:lint` 490/0; `project:tests` 768/0 (2 pre-existing pending);
+  `project:system-tests` 88/0.
+- `bdca…` (test): two **pre-existing** audit-log system defects were unmasked
+  by the mandatory asset rebuild (no audit code in this branch): `:30`
+  asserted `"Agent"` vs an intentionally `uppercase` badge (Selenium reads the
+  CSS-transformed `"AGENT"`; only passed on `main` because the committed CSS
+  was stale); `:49` used `page.status_code`, unsupported by the JS driver
+  (fails on `main` too). Both fixed test-only with rationale.
+
+### Step 8 — Live runtime verification (agent-browser)
+
+- `bin/cli app rebuild` + `restart` + mail; passwordless sign-in via
+  MailCatcher; trip `Japan Spring Tour` (8 photos).
+- Verified: "Gallery" action-bar link; cover image opens lightbox
+  (counter `1 / 1`, ESC closes); Gallery flat 8-thumb grid + "Back to trip";
+  thumbnail opens lightbox with caption `Last Day in Osaka · 29 Apr 2026`,
+  counter `1 / 8` → `2 / 8`; dark mode; no console/network errors.
+- **Bug found + fixed live:** overlay sized `944×572` not full viewport — a
+  transformed app-shell ancestor was the containing block for the fixed
+  overlay. Fixed by portalling the overlay to `<body>` on connect and wiring
+  controls via explicit listeners (commit on branch). Re-verified:
+  `parent: BODY`, `position: fixed`, `1280×720`, full-cover; visually correct
+  (scrim, centered contained image, counter, close, chevrons, caption).
+
+### Step 2–3 — Kanban (still blocked)
+
+- `gh project` scopes still ungranted; board move deferred (documented above).
+  Issue #145 remains the source of truth; PR `Closes #145`.
