@@ -1,5 +1,10 @@
 # Google Stitch Prompt — Image-Centric Experience (Lightbox + Trip Gallery)
 
+```
+Resume this session with:
+claude --resume 9565d157-c689-42e9-8408-7ed752fb1873
+```
+
 > **Scope note.** The Catalyst design system is already established in Stitch.
 > **Do not invent colours, typography, spacing, or component styling** — apply
 > the existing design system and match the look of the current app screens
