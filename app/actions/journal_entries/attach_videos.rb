@@ -87,22 +87,35 @@ module JournalEntries
     end
 
     def download_all(urls)
-      staged = urls.each_with_index.map do |url, idx|
-        tempfile, content_type = safe_download(url, idx)
-        probe = ProbeVideo.call(tempfile.path)
-        validate_probe!(probe, url)
-        {
-          tempfile: tempfile,
-          filename: derive_filename(url, idx),
-          content_type: content_type,
-          duration: probe[:duration],
-          width: probe[:width],
-          height: probe[:height]
-        }
+      staged = []
+      urls.each_with_index do |url, idx|
+        staged << stage_one(url, idx)
       end
       Success(staged)
     rescue DownloadError => e
+      # Close every tempfile already created this batch — `call`'s
+      # ensure only sees `staged` once it is yielded as Success.
+      staged.each { |s| s[:tempfile]&.close! }
       Failure(e.message)
+    end
+
+    def stage_one(url, idx)
+      tempfile, content_type = safe_download(url, idx)
+      begin
+        probe = ProbeVideo.call(tempfile.path)
+        validate_probe!(probe, url)
+      rescue StandardError
+        tempfile.close!
+        raise
+      end
+      {
+        tempfile: tempfile,
+        filename: derive_filename(url, idx),
+        content_type: content_type,
+        duration: probe[:duration],
+        width: probe[:width],
+        height: probe[:height]
+      }
     end
 
     def attach_all(journal_entry, staged)
