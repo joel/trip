@@ -13,7 +13,7 @@ module Components
         hidden: true,
         role: "dialog",
         aria_modal: "true",
-        aria_label: "Image viewer",
+        aria_label: "Media viewer",
         class: "fixed inset-0 z-50 flex items-center justify-center " \
                "bg-black/90 backdrop-blur-sm",
         data: { lightbox_overlay: "" }
@@ -21,6 +21,7 @@ module Components
         render_close
         render_prev
         render_image
+        render_video
         render_next
         render_counter
         render_caption
@@ -79,6 +80,17 @@ module Components
         alt: "",
         class: "max-h-[90vh] max-w-[90vw] select-none object-contain",
         data: { lightbox_image: "" }
+      )
+    end
+
+    def render_video
+      video(
+        hidden: true,
+        controls: true,
+        playsinline: true,
+        preload: "metadata",
+        class: "max-h-[90vh] max-w-[90vw] select-none object-contain",
+        data: { lightbox_video: "" }
       )
     end
 

@@ -36,7 +36,13 @@ class TripsController < ApplicationController
   def gallery
     @journal_entries = @trip.journal_entries
                             .reverse_chronological
-                            .includes({ images_attachments: :blob })
+                            .includes(
+                              { images_attachments: :blob },
+                              { videos: [
+                                { web_attachment: :blob },
+                                { poster_attachment: :blob }
+                              ] }
+                            )
     render Views::Trips::Gallery.new(
       trip: @trip, journal_entries: @journal_entries
     )
