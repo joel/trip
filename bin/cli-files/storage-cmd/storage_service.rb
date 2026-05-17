@@ -32,6 +32,7 @@ module AppCLI
         status = runner.container_status(STORAGE_CONTAINER)
         if status == "running"
           shell.say("Storage service already running.")
+          wait_for_s3_ready
           ensure_bucket
           ensure_cors
           return
@@ -43,6 +44,7 @@ module AppCLI
         end
 
         runner.run(storage_run_command)
+        wait_for_s3_ready
         ensure_bucket
         ensure_cors
       end
@@ -67,15 +69,21 @@ module AppCLI
 
       # SeaweedFS does not auto-create S3 buckets. CreateBucket is a
       # plain `PUT /<bucket>` on the S3 endpoint (anonymous is allowed
-      # — no -s3.config), and is idempotent (200 whether or not it
-      # already exists). Done over the published host port so it needs
-      # no extra tooling in the container.
+      # — no -s3.config), idempotent (2xx whether or not it already
+      # exists). Provisioning failures are fatal — a "started" service
+      # with no bucket/CORS silently breaks every direct upload.
       def ensure_bucket
-        runner.run(
-          "curl -s -o /dev/null -X PUT " \
-          "http://localhost:#{STORAGE_PORT}/#{STORAGE_BUCKET}",
-          allow_failure: true
+        code = curl_status(
+          "-X PUT http://localhost:#{STORAGE_PORT}/#{STORAGE_BUCKET}"
         )
+        # 409 = BucketAlreadyOwnedByYou — already provisioned, which
+        # is success for an idempotent ensure.
+        return if success_code?(code) || code == "409"
+
+        raise Thor::Error,
+              "SeaweedFS bucket provisioning failed " \
+              "(HTTP #{code || "no response"}). Direct uploads " \
+              "would be broken; not reporting success."
       end
 
       # Active Storage Direct Upload PUTs from the app origin to the
@@ -88,15 +96,59 @@ module AppCLI
         Tempfile.create(["cors", ".xml"]) do |f|
           f.write(cors_config)
           f.flush
-          runner.run(
-            "curl -s -o /dev/null -X PUT --data-binary @#{f.path} " \
-            "'http://localhost:#{STORAGE_PORT}/#{STORAGE_BUCKET}?cors'",
-            allow_failure: true
+          code = curl_status(
+            "-X PUT --data-binary @#{f.path} " \
+            "'http://localhost:#{STORAGE_PORT}/" \
+            "#{STORAGE_BUCKET}?cors'"
           )
+          next if success_code?(code)
+
+          raise Thor::Error,
+                "SeaweedFS CORS provisioning failed " \
+                "(HTTP #{code || "no response"}). Direct uploads " \
+                "would be blocked; not reporting success."
         end
       end
 
       private
+
+      # Poll the S3 endpoint until it answers (the container is up but
+      # the S3 gateway needs a moment). Fail fast if it never does, so
+      # `storage start` does not falsely report success.
+      def wait_for_s3_ready(attempts: 30, interval: 1)
+        i = 0
+        while i < attempts
+          ready = success_code?(
+            curl_status("http://localhost:#{STORAGE_PORT}/")
+          )
+          break if ready
+
+          shell.say("Waiting for SeaweedFS S3…") if (i % 5).zero?
+          sleep(interval)
+          i += 1
+        end
+        return if i < attempts
+
+        raise Thor::Error,
+              "SeaweedFS S3 endpoint did not become ready on " \
+              "localhost:#{STORAGE_PORT} after #{attempts}s."
+      end
+
+      # Returns the HTTP status string (e.g. "200") or nil if curl
+      # could not connect. The "%{http_code}" is curl's own format
+      # syntax, not a Ruby format string.
+      # rubocop:disable Style/FormatStringToken
+      def curl_status(args)
+        runner.capture(
+          %(curl -s -o /dev/null -w "%{http_code}" #{args}),
+          quiet: true
+        )&.strip
+      end
+      # rubocop:enable Style/FormatStringToken
+
+      def success_code?(code)
+        code.to_s.match?(/\A2\d\d\z/)
+      end
 
       def cors_config
         <<~XML
