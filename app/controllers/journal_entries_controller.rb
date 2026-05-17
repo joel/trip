@@ -87,15 +87,34 @@ class JournalEntriesController < ApplicationController
 
   # video_uploads are direct-upload signed blob ids — not a model
   # attribute, so they are handled separately from journal_entry_params
-  # (which is assigned straight onto the record).
+  # (which is assigned straight onto the record). The entry itself is
+  # already saved; a video-attach failure must not be silently dropped
+  # — surface it as a flash alert (the success notice still applies to
+  # the entry).
   def attach_uploaded_videos(entry)
     signed_ids = params.dig(:journal_entry, :video_uploads)
     return if signed_ids.blank?
 
-    JournalEntries::AttachUploadedVideos.new.call(
-      journal_entry: entry,
-      signed_ids: Array(signed_ids)
+    result = JournalEntries::AttachUploadedVideos.new.call(
+      journal_entry: entry, signed_ids: Array(signed_ids)
     )
+    return if result.success?
+
+    # Persist across the redirect (create/update redirect on success);
+    # flash.now would be lost. The cop can't see the redirect.
+    # rubocop:disable Rails/ActionControllerFlashBeforeRender
+    flash[:alert] =
+      "Some videos couldn't be attached: " \
+      "#{format_errors(result.failure)}"
+    # rubocop:enable Rails/ActionControllerFlashBeforeRender
+  end
+
+  def format_errors(errors)
+    if errors.respond_to?(:full_messages)
+      errors.full_messages.join(", ")
+    else
+      errors.to_s
+    end
   end
 
   def merge_errors(record, errors)
