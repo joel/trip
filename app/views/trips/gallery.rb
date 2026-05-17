@@ -17,8 +17,8 @@ module Views
       def view_template
         div(class: "space-y-8") do
           render_header
-          if gallery_images.any?
-            render Components::Lightbox.new(images: gallery_images)
+          if gallery_media.any?
+            render Components::Lightbox.new(media: gallery_media)
           else
             render_empty_state
           end
@@ -36,18 +36,34 @@ module Views
         end
       end
 
-      def gallery_images
-        @gallery_images ||= @journal_entries.flat_map do |entry|
+      def gallery_media
+        @gallery_media ||= @journal_entries.flat_map do |entry|
           caption = "#{entry.name} · " \
                     "#{entry.entry_date.strftime("%-d %b %Y")}"
-          entry.images.map do |image|
-            {
-              thumb_url: variant_url(image, [600, 600]),
-              full_url: full_url(image),
-              alt: entry.name,
-              caption: caption
-            }
-          end
+          images_media(entry, caption) + videos_media(entry, caption)
+        end
+      end
+
+      def images_media(entry, caption)
+        entry.images.map do |image|
+          {
+            kind: "image",
+            thumb_url: variant_url(image, [600, 600]),
+            full_url: full_url(image),
+            alt: entry.name, caption: caption
+          }
+        end
+      end
+
+      def videos_media(entry, caption)
+        entry.videos.select(&:ready?).map do |video|
+          {
+            kind: "video",
+            thumb_url: full_url(video.poster),
+            poster_url: full_url(video.poster),
+            src: full_url(video.web),
+            alt: entry.name, caption: caption
+          }
         end
       end
 

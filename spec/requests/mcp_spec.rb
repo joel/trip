@@ -141,7 +141,8 @@ RSpec.describe "MCP Endpoint" do
           "update_comment", "delete_comment", "list_comments",
           "list_reactions", "list_trips", "create_checklist",
           "update_checklist", "delete_checklist",
-          "create_checklist_item"
+          "create_checklist_item",
+          "add_journal_videos", "upload_journal_videos"
         )
       end
 

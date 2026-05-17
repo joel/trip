@@ -22,7 +22,10 @@ import { Controller } from "@hotwired/stimulus"
 //             [data-lightbox-nav], [data-lightbox-prev|next|close])
 export default class extends Controller {
   static targets = ["trigger"]
-  static values = { urls: Array, index: Number, captions: Array }
+  static values = {
+    urls: Array, index: Number, captions: Array,
+    kinds: Array, posters: Array
+  }
 
   connect() {
     this.indexValue = 0
@@ -42,6 +45,7 @@ export default class extends Controller {
     // Portal out of any transformed/filtered ancestor.
     document.body.appendChild(this.overlay)
     this.imageEl = this.overlay.querySelector("[data-lightbox-image]")
+    this.videoEl = this.overlay.querySelector("[data-lightbox-video]")
     this.counterEl = this.overlay.querySelector("[data-lightbox-counter]")
     this.captionEl = this.overlay.querySelector("[data-lightbox-caption]")
     this.navEls = this.overlay.querySelectorAll("[data-lightbox-nav]")
@@ -85,10 +89,15 @@ export default class extends Controller {
   }
 
   close() {
+    this.pauseVideo()
     this.overlay.hidden = true
     this.unlock()
     document.removeEventListener("keydown", this._onKey)
     this._lastFocus?.focus()
+  }
+
+  pauseVideo() {
+    if (this.videoEl && !this.videoEl.paused) this.videoEl.pause()
   }
 
   onOverlayClick(event) {
@@ -110,6 +119,7 @@ export default class extends Controller {
   go(delta) {
     const n = this.urlsValue.length
     if (n === 0) return
+    this.pauseVideo()
     this.indexValue = (this.indexValue + delta + n) % n // wrap both ends
     this.render()
   }
@@ -118,7 +128,19 @@ export default class extends Controller {
     const i = this.indexValue
     const url = this.urlsValue[i]
     if (!url) return
-    this.imageEl.src = url
+    const isVideo = (this.kindsValue[i] || "image") === "video"
+    if (isVideo && this.videoEl) {
+      this.imageEl.hidden = true
+      this.videoEl.hidden = false
+      this.videoEl.poster = this.postersValue[i] || ""
+      this.videoEl.src = url
+      this.videoEl.load()
+    } else {
+      this.pauseVideo()
+      if (this.videoEl) this.videoEl.hidden = true
+      this.imageEl.hidden = false
+      this.imageEl.src = url
+    }
     if (this.counterEl) {
       this.counterEl.textContent = `${i + 1} / ${this.urlsValue.length}`
     }

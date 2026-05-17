@@ -125,6 +125,7 @@ module Components
         render_full_description if @entry.description.present?
         render_body if @entry.body.present?
         render_images if @entry.images.attached?
+        render_videos if @entry.videos.any?
         render_reactions
         render_comments
         render_expanded_actions
@@ -137,6 +138,14 @@ module Components
 
     def render_body
       div(class: "prose prose-lg dark:prose-invert max-w-none mb-6") { raw(safe(@entry.body.to_s)) }
+    end
+
+    def render_videos
+      div(class: "space-y-4 mb-6") do
+        @entry.videos.each do |video|
+          render Components::VideoPlayer.new(video: video)
+        end
+      end
     end
 
     def render_reactions
