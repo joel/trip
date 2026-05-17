@@ -53,6 +53,7 @@ module Components
           form.label :images,
                      class: "text-sm font-medium text-[var(--ha-on-surface-variant)]"
           form.file_field :images, multiple: true, accept: "image/*",
+                                   direct_upload: true,
                                    class: "ha-input mt-2"
         end
 
