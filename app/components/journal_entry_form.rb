@@ -13,7 +13,8 @@ module Components
 
     def view_template
       form_with(
-        model: [@trip, @entry], class: "space-y-6"
+        model: [@trip, @entry], class: "space-y-6",
+        data: { controller: "direct-upload" }
       ) do |form|
         render_errors if @entry.errors.any?
 

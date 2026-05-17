@@ -4,9 +4,6 @@ import "controllers"
 
 import "trix"
 import "@rails/actiontext"
-
-// Active Storage Direct Upload: auto-binds to file inputs that carry
-// data-direct-upload-url (form.file_field ..., direct_upload: true),
-// PUTting bytes straight to SeaweedFS and submitting the signed_id.
-import * as ActiveStorage from "@rails/activestorage"
-ActiveStorage.start()
+// Active Storage Direct Upload is started by the direct-upload
+// Stimulus controller (scoped to the journal-entry form), not
+// globally, so it stays off every other page's JS-boot path.
