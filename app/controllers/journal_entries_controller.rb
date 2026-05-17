@@ -29,6 +29,7 @@ class JournalEntriesController < ApplicationController
     )
     case result
     in Dry::Monads::Success(entry)
+      attach_uploaded_videos(entry)
       redirect_to trip_path(@trip, anchor: dom_id(entry)),
                   notice: "Entry created."
     in Dry::Monads::Failure(errors)
@@ -46,6 +47,7 @@ class JournalEntriesController < ApplicationController
     )
     case result
     in Dry::Monads::Success(entry)
+      attach_uploaded_videos(entry)
       redirect_to trip_path(@trip, anchor: dom_id(entry)),
                   notice: "Entry updated."
     in Dry::Monads::Failure(errors)
@@ -81,6 +83,19 @@ class JournalEntriesController < ApplicationController
                     :location_name, :latitude, :longitude,
                     :body, { images: [] }
                   ])
+  end
+
+  # video_uploads are direct-upload signed blob ids — not a model
+  # attribute, so they are handled separately from journal_entry_params
+  # (which is assigned straight onto the record).
+  def attach_uploaded_videos(entry)
+    signed_ids = params.dig(:journal_entry, :video_uploads)
+    return if signed_ids.blank?
+
+    JournalEntries::AttachUploadedVideos.new.call(
+      journal_entry: entry,
+      signed_ids: Array(signed_ids)
+    )
   end
 
   def merge_errors(record, errors)
