@@ -57,8 +57,9 @@ Rails.application.configure do
   # Change to :null_store to avoid any caching.
   config.cache_store = :memory_store
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  # Store uploaded files in SeaweedFS S3 (see config/storage.yml).
+  # Start the store with: bin/cli storage start
+  config.active_storage.service = :seaweedfs
 
   # Don't care if the mailer can't send.
   # config.action_mailer.raise_delivery_errors = false
