@@ -3,6 +3,8 @@ file: app/views/trips/gallery.rb
 library_source: application_ui/media/image_galleries
 library_variant: null  # custom, adapted from the Catalyst Glass design system
 description: >
+  (Phase 23b: now unified media — images and videos. Video tiles show
+  the poster with a ▶ badge; the overlay plays a <video>.)
   Trip photo Gallery page. PageHeader (trip name overline + "Gallery"
   title) with a Back to trip button; one flat, newest-first
   Components::Lightbox grid of every photo across the trip's journal

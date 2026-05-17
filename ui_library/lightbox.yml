@@ -3,6 +3,8 @@ file: app/components/lightbox.rb
 library_source: application_ui/media/image_galleries
 library_variant: null  # custom, adapted from the Catalyst Glass design system
 description: >
+  (Phase 23b: now unified media — images and videos. Video tiles show
+  the poster with a ▶ badge; the overlay plays a <video>.)
   Self-contained image group: a flat responsive thumbnail grid whose
   square tiles open a full-screen viewer navigating the whole set. One
   instance == one group (used by the trip Gallery). Wraps a
