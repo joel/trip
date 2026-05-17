@@ -91,3 +91,16 @@ Append-only. Why and in what order, readable top-to-bottom.
 
 - `gh project` scopes still ungranted; board move deferred (documented above).
   Issue #145 remains the source of truth; PR `Closes #145`.
+
+## Step 9–10 — PR
+
+- Pushed `feature/phase-22-image-experience`; opened PR
+  [#146](https://github.com/joel/trip/pull/146), `Closes #145`.
+- Kanban "In Review" move still blocked (gh project scopes). Needs manual
+  board move or `gh auth refresh -s read:project,project`.
+
+## Final summary
+
+| Item | Commits | Status |
+|------|---------|--------|
+| #145 Image-centric experience | `6a618fd` docs · `19a7fa3` controller · `112b268` components · `4675d57` card wiring · `328e4fa` gallery route · `88c764c` gallery view · `aab30eb` ui_library · `9a84d2c` specs · audit test fix · portal fix · steps | PR #146 open, all gates green; awaiting review + manual Kanban move |
