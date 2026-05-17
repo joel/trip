@@ -60,7 +60,13 @@ class ProcessJournalVideosJob < ApplicationJob
     out = File.join(dir, "web.mp4")
     run!(
       "ffmpeg", "-y", "-i", src,
-      "-vf", "scale='min(#{MAX_DIMENSION},iw)':-2",
+      # Cap the *longest* edge at MAX (portrait clips too) without
+      # ever upscaling; `-2`/`min` keep aspect and even dimensions
+      # for yuv420p/libx264.
+      "-vf",
+      "scale=" \
+      "'if(gt(iw,ih),min(#{MAX_DIMENSION},iw),-2)':" \
+      "'if(gt(iw,ih),-2,min(#{MAX_DIMENSION},ih))'",
       "-c:v", "libx264", "-profile:v", "main",
       "-preset", "veryfast", "-crf", "23", "-pix_fmt", "yuv420p",
       "-c:a", "aac", "-b:a", "128k",
