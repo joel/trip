@@ -60,3 +60,19 @@ Rebuilt/restarted; SeaweedFS up; signed in as joel@acme.org; created a contribut
 | `ensure_bucket`/`ensure_cors` swallow failures → `storage start` falsely reports success | P2 | Fixed | `3613902` wait-for-ready + HTTP-status-checked provisioning, raises `Thor::Error` on real failure; 409 = idempotent success |
 
 Both replied with fix commit + rationale; both threads resolved. Re-validated: rubocop clean; `bin/cli storage start` happy path exits 0.
+
+## Step 11 (cont.) — Migration decision (owner, 2026-05-17)
+
+Surfaced that flipping dev to `:seaweedfs` orphans pre-existing on-disk
+dev blobs (~37/45; `storage/` has 209 files) and that **no disk→S3
+migration tooling exists**. Owner decision:
+
+- **Dev:** accepted as-is — orphaned old dev images are fine (dev only),
+  no migration. New uploads work via SeaweedFS/Direct Upload.
+- **Production:** stays `:local` (unchanged from the P1 fix) — safe.
+- **Migration:** deferred entirely to **#44**, which already scopes
+  "Migrate existing blobs from local disk to SeaweedFS (one-time)" and
+  must build that tooling before flipping prod to `:seaweedfs`.
+
+Track 23a scope is therefore final: SeaweedFS dev service + Active
+Storage Direct Upload mechanism only. No migration in this PR.
