@@ -79,6 +79,7 @@ The project uses `overcommit`. Commits will fail if the following hooks are not 
 6. Pre-commit validation must include **both** `bundle exec rake project:tests` **and** `bundle exec rake project:system-tests`.
 7. When all tests pass and browser verification succeeds, push the branch, create the PR with a description, and move the issue to **In Review**.
 8. After the PR receives review comments, you **must** respond to every comment, then resolve each conversation.
+9. **After the PR is rebase-and-merged to `main`**, tag `main` and publish a GitHub release (see **Release Rules**), then move the issue to **Done**.
 
 ### PR Review Response Rules
 
@@ -92,6 +93,24 @@ When a PR receives code review comments:
 6. **Reply to every comment** using `gh api repos/joel/trip/pulls/<PR>/comments/<ID>/replies -X POST -f body='...'`. The `<PR>` number is required — omitting it (`gh api repos/joel/trip/pulls/comments/<ID>/replies`) returns `HTTP 404: Not Found`.
 7. **Resolve every conversation** after replying using the GraphQL `resolveReviewThread` mutation.
 8. Never leave review comments unanswered or unresolved.
+
+### Release Rules
+
+Runs **only after the PR has been rebase-and-merged to `main`** by a human — the agent never merges. Once `main` contains the merge commit:
+
+1. **Sync and verify.** `git checkout main && git pull origin main`. Confirm the merge commit is present and the `main` CI/Deploy run for it is green before releasing.
+2. **Tag convention: `phase-N`.** Derive `N` from the phase plan (`prompts/Phase N ...`). One release per phase. Standalone work that is **not** a numbered phase gets **no** tag/release — skip this section entirely.
+3. **Idempotent.** If the `phase-N` tag or release already exists, stop — never recreate or overwrite a published release.
+4. **Tag + publish in one step** (auto-generated notes from merged PRs/commits since the previous tag):
+   ```bash
+   unset GITHUB_TOKEN && gh release create phase-N \
+     --repo joel/trip --target main \
+     --title "Phase N — <short title>" \
+     --generate-notes
+   ```
+   `gh release create` creates the annotated tag on `main` and publishes the release at <https://github.com/joel/trip/releases> together.
+5. **No deploy interaction.** `deploy.yml` triggers on the merge commit (branch push), **not** on tags — creating the tag/release does not re-deploy and needs no `[skip deploy]`.
+6. **Audit trail.** Record the tag name and release URL in `prompts/Phase N - Steps.md`, then move the issue to **Done**.
 
 ### Workflow Rules
 

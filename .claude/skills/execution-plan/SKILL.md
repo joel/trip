@@ -55,7 +55,8 @@ Every phase keeps a running Steps document next to its plan. The file lives at `
 | 7 (commit) | `<sha>` + one-line rationale; note any `SKIP=<hook>` with reason |
 | 8 (runtime test) | pages verified, anything that broke and the fix commit |
 | 11 (PR review round) | per-comment action + fix commit + resolution, as a table |
-| 12 (done) | final summary table: issue → commit → status |
+| 13 (release) | `phase-N` tag + release URL |
+| 12/14 (done) | final summary table: issue → commit → release → status |
 
 **Tone.** Factual, short. The audience is future-you (or a reviewer) reconstructing what decisions were made, not re-arguing them. Match `prompts/Phase 16 - Steps.md` for style.
 
@@ -315,6 +316,27 @@ unset GITHUB_TOKEN && gh project item-edit \
   --single-select-option-id 98236657
 ```
 
+### Step 13: Tag `main` & Publish Release (after merge)
+
+Runs **only after the PR is rebase-and-merged to `main`** (a human merges; the agent never does). Order: do this **immediately after merge**, then Step 12 (Done). See **Release Rules** in `AGENTS.md` for the policy.
+
+Applies only to **numbered phases**. Standalone (non-phase) work gets no tag/release — skip.
+
+```bash
+git checkout main && git pull origin main
+# Confirm the merge commit is present and its main CI/Deploy run is green.
+
+# Idempotent: stop if the tag/release already exists.
+unset GITHUB_TOKEN && gh release view phase-<N> --repo joel/trip >/dev/null 2>&1 \
+  && echo "phase-<N> already released — skip" \
+  || unset GITHUB_TOKEN && gh release create phase-<N> \
+       --repo joel/trip --target main \
+       --title "Phase <N> — <short title>" \
+       --generate-notes
+```
+
+`gh release create` creates the `phase-<N>` tag on `main` and publishes the release with auto-generated notes (merged PRs/commits since the previous tag) at <https://github.com/joel/trip/releases>. It does **not** re-trigger `deploy.yml` (that fires on the merge commit, not tags). Record the tag + release URL in `prompts/Phase <N> - Steps.md` (the Step 12 final summary).
+
 ## Quick Reference: Complete Flow
 
 ```
@@ -329,5 +351,7 @@ unset GITHUB_TOKEN && gh project item-edit \
 9.  git push + gh pr create                            → Push and open PR (Closes #N)
 10. gh project item-edit                               → Move to In Review
 11. gh api .../comments (+ log replies in Steps.md)    → Reply + resolve threads
-12. gh project item-edit + final summary in Steps.md   → Move to Done (after merge)
+12. <human rebase-and-merges the PR to main>           → Merge
+13. gh release create phase-<N> --generate-notes       → Tag main + publish release
+14. gh project item-edit + final summary in Steps.md   → Move to Done
 ```
