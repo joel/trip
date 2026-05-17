@@ -2,9 +2,11 @@
 
 module Components
   # The full-screen viewer chrome. Rendered once inside any element that
-  # carries `data-controller="lightbox"` (the JournalEntryCard article or
-  # the Gallery wrapper). Behaviour lives in lightbox_controller.js; this
-  # component is pure markup + Stimulus targets.
+  # carries `data-controller="lightbox"`; the controller portals this
+  # element to <body> on connect (so `position: fixed` is viewport-
+  # relative despite transformed ancestors in the app shell) and wires
+  # the controls via explicit listeners — hence plain `data-lightbox-*`
+  # hooks here rather than Stimulus targets/actions.
   class LightboxOverlay < Components::Base
     def view_template
       div(
@@ -14,12 +16,7 @@ module Components
         aria_label: "Image viewer",
         class: "fixed inset-0 z-50 flex items-center justify-center " \
                "bg-black/90 backdrop-blur-sm",
-        data: {
-          lightbox_target: "overlay",
-          action: "click->lightbox#backdrop " \
-                  "touchstart->lightbox#touchStart " \
-                  "touchend->lightbox#touchEnd"
-        }
+        data: { lightbox_overlay: "" }
       ) do
         render_close
         render_prev
@@ -40,7 +37,7 @@ module Components
                "justify-center rounded-full bg-white/10 text-white " \
                "transition hover:bg-white/20 focus:outline-none " \
                "focus-visible:ring-2 focus-visible:ring-white",
-        data: { lightbox_close: "", action: "lightbox#close" }
+        data: { lightbox_close: "" }
       ) do
         render Components::Icons::Close.new(css: "h-6 w-6")
       end
@@ -54,7 +51,7 @@ module Components
                "justify-center rounded-full bg-white/10 text-white " \
                "transition hover:bg-white/20 focus:outline-none " \
                "focus-visible:ring-2 focus-visible:ring-white",
-        data: { lightbox_target: "nav", action: "lightbox#prev" }
+        data: { lightbox_nav: "", lightbox_prev: "" }
       ) do
         render Components::Icons::ChevronLeft.new(css: "h-7 w-7")
       end
@@ -68,7 +65,7 @@ module Components
                "justify-center rounded-full bg-white/10 text-white " \
                "transition hover:bg-white/20 focus:outline-none " \
                "focus-visible:ring-2 focus-visible:ring-white",
-        data: { lightbox_target: "nav", action: "lightbox#next" }
+        data: { lightbox_nav: "", lightbox_next: "" }
       ) do
         render Components::Icons::ChevronLeft.new(
           css: "h-7 w-7 rotate-180"
@@ -81,7 +78,7 @@ module Components
         src: "",
         alt: "",
         class: "max-h-[90vh] max-w-[90vw] select-none object-contain",
-        data: { lightbox_target: "image" }
+        data: { lightbox_image: "" }
       )
     end
 
@@ -91,7 +88,7 @@ module Components
         class: "absolute top-5 left-1/2 -translate-x-1/2 " \
                "rounded-full bg-white/10 px-3 py-1 text-xs " \
                "font-medium text-white",
-        data: { lightbox_target: "counter" }
+        data: { lightbox_counter: "" }
       )
     end
 
@@ -101,7 +98,7 @@ module Components
         class: "absolute bottom-6 left-1/2 max-w-[85vw] " \
                "-translate-x-1/2 rounded-full bg-white/10 px-4 " \
                "py-2 text-center text-sm text-white backdrop-blur-sm",
-        data: { lightbox_target: "caption" }
+        data: { lightbox_caption: "" }
       )
     end
   end

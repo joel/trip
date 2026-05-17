@@ -30,11 +30,11 @@ RSpec.describe "Trip Gallery and Lightbox" do
     page.first("button[data-lightbox-target='trigger']").click
 
     expect(page).to have_css("[role='dialog']", visible: :visible)
-    expect(page).to have_css("[data-lightbox-target='counter']",
+    expect(page).to have_css("[data-lightbox-counter]",
                              text: "1 / 2")
 
     find("button[aria-label='Next image']").click
-    expect(page).to have_css("[data-lightbox-target='counter']",
+    expect(page).to have_css("[data-lightbox-counter]",
                              text: "2 / 2")
 
     find("body").send_keys(:escape)
@@ -49,7 +49,7 @@ RSpec.describe "Trip Gallery and Lightbox" do
     find("button[aria-label='View photos for Cover Entry']").click
 
     expect(page).to have_css("[role='dialog']", visible: :visible)
-    expect(page).to have_css("[data-lightbox-target='counter']",
+    expect(page).to have_css("[data-lightbox-counter]",
                              text: "1 / 1")
   end
 end

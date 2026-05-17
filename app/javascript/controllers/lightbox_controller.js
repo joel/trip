@@ -3,34 +3,53 @@ import { Controller } from "@hotwired/stimulus"
 // Full-screen image viewer scoped to one image group (one journal entry,
 // or the whole trip on the Gallery page). Pure Stimulus, no dependencies.
 //
-// Markup contract (rendered by Components::Lightbox):
+// The overlay is portalled to <body> on connect so its `position: fixed`
+// is viewport-relative even when an ancestor of the controller element
+// creates a containing block (the app shell uses transformed/filtered
+// wrappers). Because the portalled overlay leaves the controller's DOM
+// subtree, its controls are wired with explicit listeners rather than
+// Stimulus `data-action` (which only binds within the controller).
+//
+// Markup contract (rendered by Components::Lightbox / LightboxOverlay):
 //   root      data-controller="lightbox"
 //             data-lightbox-urls-value='["/full/1.jpg", ...]'
-//             data-lightbox-captions-value='["Entry · 14 May", ...]'  (optional)
+//             data-lightbox-captions-value='["Entry · 14 May", ...]'
 //   trigger   data-lightbox-target="trigger"
 //             data-action="click->lightbox#open"
 //             data-lightbox-index-param="<n>"
-//   overlay   data-lightbox-target="overlay" hidden
-//   image     data-lightbox-target="image"
-//   counter   data-lightbox-target="counter"   (optional)
-//   caption   data-lightbox-target="caption"   (optional)
-//   close btn data-lightbox-close              + data-action="lightbox#close"
-//   prev/next data-action="lightbox#prev" / "lightbox#next"
+//   overlay   [data-lightbox-overlay] hidden  (+ [data-lightbox-image],
+//             [data-lightbox-counter], [data-lightbox-caption],
+//             [data-lightbox-nav], [data-lightbox-prev|next|close])
 export default class extends Controller {
-  static targets = ["overlay", "image", "counter", "caption", "trigger", "nav"]
+  static targets = ["trigger"]
   static values = { urls: Array, index: Number, captions: Array }
 
   connect() {
     this.indexValue = 0
-    this.overlayTarget.hidden = true
+    this.overlay = this.element.querySelector("[data-lightbox-overlay]")
+    if (!this.overlay) return
+
+    // Portal out of any transformed/filtered ancestor.
+    document.body.appendChild(this.overlay)
+    this.imageEl = this.overlay.querySelector("[data-lightbox-image]")
+    this.counterEl = this.overlay.querySelector("[data-lightbox-counter]")
+    this.captionEl = this.overlay.querySelector("[data-lightbox-caption]")
+    this.navEls = this.overlay.querySelectorAll("[data-lightbox-nav]")
+    this.overlay.hidden = true
+
     this._onKey = this.onKey.bind(this)
-    this._touchX = null
+    this._onClick = this.onOverlayClick.bind(this)
+    this._onTouchStart = (e) => { this._touchX = e.changedTouches[0].clientX }
+    this._onTouchEnd = this.onTouchEnd.bind(this)
+    this.overlay.addEventListener("click", this._onClick)
+    this.overlay.addEventListener("touchstart", this._onTouchStart)
+    this.overlay.addEventListener("touchend", this._onTouchEnd)
   }
 
   disconnect() {
-    // Safety net for Turbo navigation away while the overlay is open.
     this.unlock()
     document.removeEventListener("keydown", this._onKey)
+    if (this.overlay) this.overlay.remove()
   }
 
   // ── Open / close ──────────────────────────────────────────────
@@ -39,7 +58,7 @@ export default class extends Controller {
     event.preventDefault()
     this.indexValue = Number(event.params.index ?? 0)
     this.render()
-    this.overlayTarget.hidden = false
+    this.overlay.hidden = false
     this.lock()
     document.addEventListener("keydown", this._onKey)
     this._lastFocus = document.activeElement
@@ -47,15 +66,21 @@ export default class extends Controller {
   }
 
   close() {
-    this.overlayTarget.hidden = true
+    this.overlay.hidden = true
     this.unlock()
     document.removeEventListener("keydown", this._onKey)
     this._lastFocus?.focus()
   }
 
-  // Close only when the scrim itself (not its children) is clicked.
-  backdrop(event) {
-    if (event.target === this.overlayTarget) this.close()
+  onOverlayClick(event) {
+    const action = event.target.closest(
+      "[data-lightbox-prev],[data-lightbox-next],[data-lightbox-close]"
+    )
+    if (action?.hasAttribute("data-lightbox-prev")) return this.prev()
+    if (action?.hasAttribute("data-lightbox-next")) return this.next()
+    if (action?.hasAttribute("data-lightbox-close")) return this.close()
+    // Bare scrim click (not a child) closes.
+    if (event.target === this.overlay) this.close()
   }
 
   // ── Navigation ────────────────────────────────────────────────
@@ -74,18 +99,17 @@ export default class extends Controller {
     const i = this.indexValue
     const url = this.urlsValue[i]
     if (!url) return
-    this.imageTarget.src = url
-    if (this.hasCounterTarget) {
-      this.counterTarget.textContent = `${i + 1} / ${this.urlsValue.length}`
+    this.imageEl.src = url
+    if (this.counterEl) {
+      this.counterEl.textContent = `${i + 1} / ${this.urlsValue.length}`
     }
-    if (this.hasCaptionTarget) {
+    if (this.captionEl) {
       const caption = this.captionsValue[i]
-      this.captionTarget.textContent = caption ?? ""
-      this.captionTarget.hidden = !caption
+      this.captionEl.textContent = caption ?? ""
+      this.captionEl.hidden = !caption
     }
-    // Prev/Next make no sense for a single image.
     const single = this.urlsValue.length <= 1
-    this.navTargets.forEach((el) => { el.hidden = single })
+    this.navEls.forEach((el) => { el.hidden = single })
   }
 
   // ── Keyboard ──────────────────────────────────────────────────
@@ -123,12 +147,8 @@ export default class extends Controller {
 
   // ── Touch swipe ───────────────────────────────────────────────
 
-  touchStart(event) {
-    this._touchX = event.changedTouches[0].clientX
-  }
-
-  touchEnd(event) {
-    if (this._touchX === null) return
+  onTouchEnd(event) {
+    if (this._touchX == null) return
     const dx = event.changedTouches[0].clientX - this._touchX
     this._touchX = null
     if (Math.abs(dx) > 50) (dx < 0 ? this.next() : this.prev())
@@ -137,19 +157,18 @@ export default class extends Controller {
   // ── Helpers ───────────────────────────────────────────────────
 
   get closeButton() {
-    return this.overlayTarget.querySelector("[data-lightbox-close]")
+    return this.overlay.querySelector("[data-lightbox-close]")
   }
 
   get focusables() {
     return Array.from(
-      this.overlayTarget.querySelectorAll(
+      this.overlay.querySelectorAll(
         "button:not([disabled]), [href], [tabindex]:not([tabindex='-1'])"
       )
     ).filter((el) => !el.hidden && el.offsetParent !== null)
   }
 
   lock() {
-    this._scrollY = window.scrollY
     document.body.style.overflow = "hidden"
   }
 
