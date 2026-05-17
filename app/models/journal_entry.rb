@@ -6,6 +6,9 @@ class JournalEntry < ApplicationRecord
 
   has_rich_text :body
   has_many_attached :images
+  has_many :videos, -> { order(:position) },
+           class_name: "JournalEntryVideo",
+           inverse_of: :journal_entry, dependent: :destroy
   has_many :comments, dependent: :destroy
   has_many :reactions, as: :reactable, dependent: :destroy
   has_many :journal_entry_subscriptions, dependent: :destroy

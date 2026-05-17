@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_15_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_17_200000) do
   create_table "access_requests", id: uuid, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -195,6 +195,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_15_100000) do
     t.index ["user_id"], name: "index_journal_entry_subscriptions_on_user_id"
   end
 
+  create_table "journal_entry_videos", id: uuid, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.float "duration"
+    t.text "error_message"
+    t.integer "height"
+    t.string "journal_entry_id", limit: 36, null: false
+    t.integer "position", default: 0, null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.integer "width"
+    t.index ["journal_entry_id", "position"], name: "idx_journal_entry_videos_ordering"
+    t.index ["journal_entry_id"], name: "index_journal_entry_videos_on_journal_entry_id"
+  end
+
   create_table "notifications", id: uuid, force: :cascade do |t|
     t.string "actor_id", limit: 36, null: false
     t.datetime "created_at", null: false
@@ -313,6 +327,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_15_100000) do
   add_foreign_key "journal_entries", "users", column: "author_id"
   add_foreign_key "journal_entry_subscriptions", "journal_entries"
   add_foreign_key "journal_entry_subscriptions", "users"
+  add_foreign_key "journal_entry_videos", "journal_entries"
   add_foreign_key "notifications", "users", column: "actor_id"
   add_foreign_key "notifications", "users", column: "recipient_id"
   add_foreign_key "reactions", "users"
