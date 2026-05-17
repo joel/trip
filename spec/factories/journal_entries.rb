@@ -38,5 +38,11 @@ FactoryBot.define do
         entry.images.attach(blob)
       end
     end
+
+    trait :with_video do
+      after(:create) do |entry|
+        create(:journal_entry_video, :ready, journal_entry: entry)
+      end
+    end
   end
 end
