@@ -21,9 +21,11 @@ Rails.application.configure do
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
 
-  # Store uploaded files in SeaweedFS S3 for durable persistence (#44).
-  # Requires SEAWEEDFS_* env in production (see config/storage.yml).
-  config.active_storage.service = :seaweedfs
+  # Stays :local until #44 ships the prod cutover: a deployed SeaweedFS
+  # service, SEAWEEDFS_* env in config/deploy.yml, and the one-time
+  # blob migration. Flipping this before that infra exists would route
+  # prod uploads to the default localhost:8333 and break them.
+  config.active_storage.service = :local
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   # config.assume_ssl = true
