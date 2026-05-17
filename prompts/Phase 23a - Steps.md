@@ -51,3 +51,12 @@ Rebuilt/restarted; SeaweedFS up; signed in as joel@acme.org; created a contribut
 - `project:lint` 493/0; non-system 768/0 (2 pre-existing pending).
 - `system rack_test` (CI parity) 90/0 on a clean run; one later run flaked on `trip_gallery_spec.rb:21` (a **Phase 22 `:js` selenium test**, passes 2/2 in isolation) — same pre-existing selenium-under-load fragility family as #149, not a Track 23a regression (final commits were `bin/cli`-only, not loaded by specs). CI gate (rack_test, non-`:js`) unaffected.
 - `direct_upload_spec` 2/2 (selenium).
+
+## Step 11 — PR #150 review round (Codex)
+
+| Comment | Severity | Action | Fix |
+|---------|----------|--------|-----|
+| `production.rb` flipped to `:seaweedfs` with no prod SeaweedFS/env → prod uploads break on deploy | P1 | Fixed | `2ba379e` revert prod to `:local`; prod cutover stays #44 (out of 23a scope) |
+| `ensure_bucket`/`ensure_cors` swallow failures → `storage start` falsely reports success | P2 | Fixed | `3613902` wait-for-ready + HTTP-status-checked provisioning, raises `Thor::Error` on real failure; 409 = idempotent success |
+
+Both replied with fix commit + rationale; both threads resolved. Re-validated: rubocop clean; `bin/cli storage start` happy path exits 0.
