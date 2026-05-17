@@ -29,6 +29,16 @@ export default class extends Controller {
     this.overlay = this.element.querySelector("[data-lightbox-overlay]")
     if (!this.overlay) return
 
+    // Return the overlay into the controller element before Turbo
+    // snapshots the page, so the cached DOM is clean and a restoration
+    // visit reconnects with the overlay where connect() expects it.
+    this._beforeCache = () => {
+      if (this.overlay && this.element.isConnected) {
+        this.element.appendChild(this.overlay)
+      }
+    }
+    document.addEventListener("turbo:before-cache", this._beforeCache)
+
     // Portal out of any transformed/filtered ancestor.
     document.body.appendChild(this.overlay)
     this.imageEl = this.overlay.querySelector("[data-lightbox-image]")
@@ -49,13 +59,22 @@ export default class extends Controller {
   disconnect() {
     this.unlock()
     document.removeEventListener("keydown", this._onKey)
-    if (this.overlay) this.overlay.remove()
+    document.removeEventListener("turbo:before-cache", this._beforeCache)
+    if (!this.overlay) return
+    // Return it home if the element still lives (cache restore), else
+    // drop the orphaned portal node.
+    if (this.element.isConnected) {
+      this.element.appendChild(this.overlay)
+    } else {
+      this.overlay.remove()
+    }
   }
 
   // ── Open / close ──────────────────────────────────────────────
 
   open(event) {
     event.preventDefault()
+    if (!this.overlay) return
     this.indexValue = Number(event.params.index ?? 0)
     this.render()
     this.overlay.hidden = false
