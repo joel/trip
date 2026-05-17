@@ -76,3 +76,21 @@ migration tooling exists**. Owner decision:
 
 Track 23a scope is therefore final: SeaweedFS dev service + Active
 Storage Direct Upload mechanism only. No migration in this PR.
+
+## Steps 12–14 — Merge, release, done
+
+- PR **#150** rebase-and-merged to `main` (owner-authorized; feature branch deleted). Issue **#148** auto-closed via "Closes #148".
+- Release **[phase-23a](https://github.com/joel/trip/releases/tag/phase-23a)** published (`gh release create … --generate-notes`). Note: release is **not** automatic on merge — it's the manual post-merge step the agent runs (Release Rules / Step 13). The tag does not re-trigger `deploy.yml`.
+- `deploy.yml` runs on the merge commit (push to `main`) — **safe**: production stays `:local` (no SeaweedFS dependency in prod; that cutover is #44).
+- Kanban: #148 → **Done**.
+
+### Final summary
+
+| Item | Outcome |
+|------|---------|
+| #148 Phase 23a | Merged (PR #150), released `phase-23a`, Done |
+| #44 | Carries the prod cutover + one-time disk→SeaweedFS migration (tooling still to build) |
+| #147 | Deferred video ladder/HLS (Phase 23b follow-up) |
+| #149 | Pre-existing selenium/ha-fade-in test fragility (not 23a) |
+
+Track **23b** (video pipeline) may now begin — it builds on the SeaweedFS + Direct Upload foundation shipped here.
