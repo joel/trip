@@ -42,9 +42,12 @@ RSpec.describe "Trip Activity feed" do
     expect(page).to have_text("Name:")
     expect(page).to have_text("Old Name")
     expect(page).to have_text("New Name")
-    # The source badge is rendered with a Tailwind `uppercase` class;
-    # the Selenium driver reports the CSS-transformed visible text.
-    expect(page).to have_text("AGENT")
+    # The source badge text is "Agent"; the Tailwind `uppercase` class
+    # makes Selenium report "AGENT" while rack_test reports the raw DOM
+    # "Agent" (glued to the previous node, so no word boundary). The
+    # match is case-sensitive, so the lowercase "(agent)" already in
+    # the summary line is not matched.
+    expect(page).to have_text(/AGENT|Agent/)
     expect(page).to have_text('Marée (agent) updated trip "Iceland"')
   end
 
@@ -55,13 +58,16 @@ RSpec.describe "Trip Activity feed" do
     expect(page).to have_text(trip.name)
     expect(page).to have_no_link("Activity")
 
-    # The controller does `head :not_found` for viewers. `page.status_code`
-    # is unsupported by the Selenium driver, so assert the feed chrome is
-    # absent (the page did not render) in a driver-agnostic way.
+    # The controller does `head :not_found` for viewers. rack_test
+    # (CI) supports status_code but renders no <html> for an empty 404
+    # (so have_no_text raises); Selenium has a document but no
+    # status_code. Branch on the driver capability.
     visit trip_audit_logs_path(trip)
-    expect(page).to have_current_path(trip_audit_logs_path(trip))
-    expect(page).to have_no_text("Show low-signal")
-    expect(page).to have_no_text("Back to trip")
+    if page.driver.is_a?(Capybara::RackTest::Driver)
+      expect(page.status_code).to eq(404)
+    else
+      expect(page).to have_no_text("Show low-signal")
+    end
   end
 
   it "groups low-signal rows behind a toggle" do
