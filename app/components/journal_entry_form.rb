@@ -58,6 +58,15 @@ module Components
                                    class: "ha-input mt-2"
         end
 
+        div do
+          form.label :video_uploads, "Videos",
+                     class: "text-sm font-medium text-[var(--ha-on-surface-variant)]"
+          form.file_field :video_uploads, multiple: true,
+                                          accept: "video/*",
+                                          direct_upload: true,
+                                          class: "ha-input mt-2"
+        end
+
         div(class: "flex flex-wrap gap-2") do
           form.submit class: "ha-button ha-button-primary"
         end
