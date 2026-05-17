@@ -201,7 +201,15 @@ module AppCLI
           "--env RAILS_SERVE_STATIC_FILES=true",
           "--env RAILS_ALLOW_ALL_HOSTS=true",
           "--env NOTIF_MAIL_USERNAME=dummy@example.com",
-          "--env NOTIF_MAIL_PASSWORD=XXXX-REPLACE-THIS-XXXX"
+          "--env NOTIF_MAIL_PASSWORD=XXXX-REPLACE-THIS-XXXX",
+          # SeaweedFS S3 endpoint (bin/cli storage). The Traefik host
+          # is reachable by both the app container and the browser, so
+          # the same endpoint signs direct-upload URLs the browser can
+          # PUT to.
+          "--env SEAWEEDFS_ENDPOINT=https://storage.workeverywhere.docker",
+          "--env SEAWEEDFS_ACCESS_KEY_ID=any",
+          "--env SEAWEEDFS_SECRET_ACCESS_KEY=any",
+          "--env SEAWEEDFS_BUCKET=catalyst"
         ]
 
         flags << "--env BUNDLE_WITHOUT=production" if env_config.short == "dev"
