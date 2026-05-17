@@ -57,3 +57,7 @@ Once all five tasks complete, read the five reports and give me a consolidated s
 # QA Remediation
 
 Once the DEEP QA findings are reviewed and we've agreed which to address, invoke `/qa-remediation` to turn them into tracked GitHub issues + atomic fix commits.
+
+# Release
+
+Make sure to tag a publish the release
