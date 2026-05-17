@@ -17,6 +17,8 @@ module AppCLI
       STORAGE_ROUTER = "catalyst-seaweedfs".freeze
       STORAGE_VOLUME = "catalyst-seaweedfs-data".freeze
       STORAGE_BUCKET = "catalyst".freeze
+      # App origin allowed to direct-upload (dev). Prod origin is #44.
+      APP_ORIGIN_HOST = "catalyst.workeverywhere.docker".freeze
 
       def initialize(shell:)
         @runner = CommandRunner.new(shell: shell)
@@ -31,6 +33,7 @@ module AppCLI
         if status == "running"
           shell.say("Storage service already running.")
           ensure_bucket
+          ensure_cors
           return
         end
 
@@ -41,6 +44,7 @@ module AppCLI
 
         runner.run(storage_run_command)
         ensure_bucket
+        ensure_cors
       end
 
       def stop
@@ -74,7 +78,41 @@ module AppCLI
         )
       end
 
+      # Active Storage Direct Upload PUTs from the app origin to the
+      # storage origin (cross-origin) — the browser preflights it, so
+      # the bucket needs a CORS policy or every direct upload is
+      # blocked. Idempotent (PutBucketCors overwrites). The prod origin
+      # / cutover is part of #44.
+      def ensure_cors
+        require "tempfile"
+        Tempfile.create(["cors", ".xml"]) do |f|
+          f.write(cors_config)
+          f.flush
+          runner.run(
+            "curl -s -o /dev/null -X PUT --data-binary @#{f.path} " \
+            "'http://localhost:#{STORAGE_PORT}/#{STORAGE_BUCKET}?cors'",
+            allow_failure: true
+          )
+        end
+      end
+
       private
+
+      def cors_config
+        <<~XML
+          <CORSConfiguration>
+           <CORSRule>
+            <AllowedOrigin>https://#{APP_ORIGIN_HOST}</AllowedOrigin>
+            <AllowedMethod>PUT</AllowedMethod>
+            <AllowedMethod>GET</AllowedMethod>
+            <AllowedMethod>HEAD</AllowedMethod>
+            <AllowedHeader>*</AllowedHeader>
+            <ExposeHeader>ETag</ExposeHeader>
+            <MaxAgeSeconds>3000</MaxAgeSeconds>
+           </CORSRule>
+          </CORSConfiguration>
+        XML
+      end
 
       attr_reader :runner, :shell
 
