@@ -79,8 +79,12 @@ MCP_API_KEY=your-secret-key
 |------|-------------|-----------------|
 | `add_journal_images` | Attach images via HTTPS URLs (max 5/call, 10MB each) | `journal_entry_id`, `urls` |
 | `upload_journal_images` | Upload images via base64-encoded data (max 5/call, 10MB each) | `journal_entry_id`, `images` |
+| `add_journal_videos` | Attach videos via HTTPS URLs (max 3/call, 200MB & 3min each) | `journal_entry_id`, `urls` |
+| `upload_journal_videos` | Upload short videos via base64 (max 2/call, 50MB & 3min each) | `journal_entry_id`, `videos` |
 
-Allowed types: jpeg, png, webp, gif. Max 20 images per entry. `add_journal_images` downloads from HTTPS URLs with pinned DNS and SSRF protection; all-or-nothing if any URL fails. `upload_journal_images` accepts base64-encoded data inline with optional filenames; content type is detected from bytes via Marcel (caller-declared type is ignored). Both emit the same `journal_entry.images_added` event.
+Allowed image types: jpeg, png, webp, gif. Max 20 images per entry. `add_journal_images` downloads from HTTPS URLs with pinned DNS and SSRF protection; all-or-nothing if any URL fails. `upload_journal_images` accepts base64-encoded data inline with optional filenames; content type is detected from bytes via Marcel (caller-declared type is ignored). Both emit the same `journal_entry.images_added` event.
+
+Video: types mp4, quicktime (.mov), webm; max 5 videos per entry; format/size/duration validated on upload (ffprobe). `add_journal_videos` reuses the same pinned-DNS/SSRF download, streamed to disk; `upload_journal_videos` is base64 for short clips only (URL is primary). Both emit `journal_entry.videos_added`, which triggers async transcoding (`ProcessJournalVideosJob`) to a ≤720p web rendition + poster — the video is `pending` until then.
 
 ### Social
 
