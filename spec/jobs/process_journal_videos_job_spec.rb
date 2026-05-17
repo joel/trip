@@ -37,8 +37,10 @@ RSpec.describe ProcessJournalVideosJob do
     video = create(:journal_entry_video, journal_entry: entry,
                                          status: :pending)
     video.source.attach(
-      io: StringIO.new("not a video"),
-      filename: "broken.mp4", content_type: "video/mp4"
+      ActiveStorageBlobBuilder.upload(
+        io: StringIO.new("not a video"),
+        filename: "broken.mp4", content_type: "video/mp4"
+      )
     )
 
     expect do
