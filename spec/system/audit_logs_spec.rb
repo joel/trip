@@ -42,7 +42,9 @@ RSpec.describe "Trip Activity feed" do
     expect(page).to have_text("Name:")
     expect(page).to have_text("Old Name")
     expect(page).to have_text("New Name")
-    expect(page).to have_text("Agent")
+    # The source badge is rendered with a Tailwind `uppercase` class;
+    # the Selenium driver reports the CSS-transformed visible text.
+    expect(page).to have_text("AGENT")
     expect(page).to have_text('Marée (agent) updated trip "Iceland"')
   end
 
@@ -53,8 +55,13 @@ RSpec.describe "Trip Activity feed" do
     expect(page).to have_text(trip.name)
     expect(page).to have_no_link("Activity")
 
+    # The controller does `head :not_found` for viewers. `page.status_code`
+    # is unsupported by the Selenium driver, so assert the feed chrome is
+    # absent (the page did not render) in a driver-agnostic way.
     visit trip_audit_logs_path(trip)
-    expect(page.status_code).to eq(404)
+    expect(page).to have_current_path(trip_audit_logs_path(trip))
+    expect(page).to have_no_text("Show low-signal")
+    expect(page).to have_no_text("Back to trip")
   end
 
   it "groups low-signal rows behind a toggle" do
