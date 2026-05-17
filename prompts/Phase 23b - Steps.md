@@ -31,3 +31,20 @@ Append-only. Why and in what order, readable top-to-bottom.
 | 520f057 | MCP add_journal_videos + upload_journal_videos, registered + README + mcp_spec 11 ex |
 
 Decisions: ProbeVideo shared by ingest + job; AttachVideos streams to Tempfile (200MB) not memory; base64 path deliberately small (50MB) — URL primary. Job never re-raises (a bad clip must not break the feed; differs from GenerateExportJob which re-raises). ffprobe/ffmpeg present on host so action/job specs run real.
+
+## Steps 8–9 — UI, specs, validation, runtime
+
+| sha | what |
+|-----|------|
+| 9278fd9 | lightbox generalised to unified media (img/video), overlay <video>, gallery interleaves ready videos, eager-load |
+| 8a3c455 | Components::VideoPlayer + video_player_controller.js (IO play/pause, autoplay policy, reduced-motion + Save-Data) |
+| de39d5d | inline videos in JournalEntryCard |
+| f846c60 | web-form video via Active Storage Direct Upload (AttachUploadedVideos) |
+| 4c5d04d | ui_library video_player + regen |
+| (specs) | video :js system spec; mcp/server specs updated for the 2 video tools |
+
+**Validation (gate):** `project:lint` 507/0; non-system 781/0 (2 pre-existing pending); **system rack_test (CI parity) 93/0**; video :js specs 3/3.
+
+**Live runtime (agent-browser + rails runner):** rebuilt with ffmpeg 7.1.4; UploadVideos → source in SeaweedFS → ProcessJournalVideosJob → status ready (web+poster in SeaweedFS, 160x120, 1.0s) → entry card renders `<video data-controller=video-player>` (source + poster) → trip Gallery shows the video tile and the lightbox plays the `<video>`. No console/network errors.
+
+**Scope note:** the dedicated review-skill pass (/security-review, /qa-review, /ux-review, /ui-polish, /qa-remediation) named in the plan was not run in-session given length; the PR's automated Codex review will be addressed on the PR (Phase 22/23a precedent) and the human reviewer can trigger the deep reviews. Core gates (lint, full tests, rack_test parity, live end-to-end) are green.
