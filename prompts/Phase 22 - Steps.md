@@ -104,3 +104,20 @@ Append-only. Why and in what order, readable top-to-bottom.
 | Item | Commits | Status |
 |------|---------|--------|
 | #145 Image-centric experience | `6a618fd` docs · `19a7fa3` controller · `112b268` components · `4675d57` card wiring · `328e4fa` gallery route · `88c764c` gallery view · `aab30eb` ui_library · `9a84d2c` specs · audit test fix · portal fix · steps | PR #146 open, all gates green; awaiting review + manual Kanban move |
+
+## Step 11 — CI fix + review response
+
+CI (`test`) failed on first run; root causes (CI runs non-`:js` system
+specs under `rack_test` + `assets:precompile`, no libvips):
+
+| Failure | Cause | Fix |
+|---------|-------|-----|
+| `trip_gallery:21,:44` | `variant()` raises `LoadError` (libvips absent on CI); `rescue StandardError` doesn't catch `LoadError` → gallery 500 | `73965f4` rescue `StandardError, LoadError` → original-image fallback (card + gallery) |
+| `audit_logs:30` | `have_text("AGENT")` is Selenium-only (CSS uppercase); rack_test DOM is raw "Agent" glued to prior node | `292922f` `have_text(/AGENT|Agent/)` cross-driver |
+| `audit_logs:51` | `head :not_found` → rack_test has no `<html>` (have_no_text raises); Selenium has no status_code | `292922f` branch on `Capybara::RackTest::Driver` |
+| PR P1 review | Turbo cached the body-portalled overlay; restore reconnect had no in-element overlay | `3b9cdba` return overlay home on `turbo:before-cache`/`disconnect`; guard `open()` |
+
+Validated locally green under **both** drivers: `spec/system` 88/0 on
+Selenium and on `TEST_BROWSER=rack_test`; non-system 768/0; rubocop 490/0.
+PR #146 P1 comment replied (`3b9cdba`) and thread resolved. Kanban: #145
+added to board and moved to **In review**.
