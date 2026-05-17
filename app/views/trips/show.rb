@@ -108,12 +108,7 @@ module Views
                     view_context.trip_exports_path(@trip),
                     class: "ha-button ha-button-secondary")
           end
-          if view_context.allowed_to?(:index?, @trip,
-                                      with: AuditLogPolicy)
-            link_to("Activity",
-                    view_context.trip_audit_logs_path(@trip),
-                    class: "ha-button ha-button-secondary")
-          end
+          render_insight_links
           if view_context.allowed_to?(:destroy?, @trip)
             button_to(
               "Delete", view_context.trip_path(@trip),
@@ -131,6 +126,21 @@ module Views
           link_to("Back to trips", view_context.trips_path,
                   class: "ha-button ha-button-secondary")
         end
+      end
+
+      def render_insight_links
+        if view_context.allowed_to?(:gallery?, @trip)
+          link_to("Gallery",
+                  view_context.gallery_trip_path(@trip),
+                  class: "ha-button ha-button-secondary")
+        end
+        return unless view_context.allowed_to?(
+          :index?, @trip, with: AuditLogPolicy
+        )
+
+        link_to("Activity",
+                view_context.trip_audit_logs_path(@trip),
+                class: "ha-button ha-button-secondary")
       end
 
       def render_trip_info
