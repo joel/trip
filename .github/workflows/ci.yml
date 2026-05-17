@@ -46,6 +46,9 @@ jobs:
         name: Install libvips
         run: sudo apt-get update && sudo apt-get install -y libvips
       -
+        name: Install ffmpeg
+        run: sudo apt-get install -y ffmpeg
+      -
         name: Install ruby 4.0.1
         uses: ruby/setup-ruby@v1
         with:
