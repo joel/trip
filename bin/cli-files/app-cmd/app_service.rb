@@ -243,7 +243,16 @@ module AppCLI
       end
 
       def network_flags
-        ["--network #{env_config.network_name}"]
+        flags = ["--network #{env_config.network_name}"]
+        # Active Storage signs presigned URLs for the public storage
+        # host; the browser reaches it via Traefik on the host. The app
+        # container must reach the *same* host (presign binds it) for
+        # server-side blob ops — route it to the Docker host where
+        # Traefik :443 lives. Dev only; prod resolves it for real (#44).
+        if env_config.short == "dev"
+          flags << "--add-host=storage.workeverywhere.docker:host-gateway"
+        end
+        flags
       end
 
       def traefik_flags
