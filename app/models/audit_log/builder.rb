@@ -10,6 +10,7 @@ class AuditLog
       "created" => "created", "updated" => "updated",
       "deleted" => "deleted", "state_changed" => "changed the state of",
       "removed" => "removed", "images_added" => "added images to",
+      "videos_added" => "added videos to",
       "toggled" => "toggled an item in", "submitted" => "submitted",
       "approved" => "approved", "rejected" => "rejected",
       "sent" => "sent", "accepted" => "accepted"
