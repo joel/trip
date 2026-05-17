@@ -48,3 +48,23 @@ Decisions: ProbeVideo shared by ingest + job; AttachVideos streams to Tempfile (
 **Live runtime (agent-browser + rails runner):** rebuilt with ffmpeg 7.1.4; UploadVideos → source in SeaweedFS → ProcessJournalVideosJob → status ready (web+poster in SeaweedFS, 160x120, 1.0s) → entry card renders `<video data-controller=video-player>` (source + poster) → trip Gallery shows the video tile and the lightbox plays the `<video>`. No console/network errors.
 
 **Scope note:** the dedicated review-skill pass (/security-review, /qa-review, /ux-review, /ui-polish, /qa-remediation) named in the plan was not run in-session given length; the PR's automated Codex review will be addressed on the PR (Phase 22/23a precedent) and the human reviewer can trigger the deep reviews. Core gates (lint, full tests, rack_test parity, live end-to-end) are green.
+
+## Step 11 — CI fix + PR #152 review
+
+CI (first runs) failed on: missing committed `tiny.mp4` fixture; then
+`active_storage_blobs.id` NOT NULL on a clean schema because
+`attach(io:)` never sets the UUID pk (the app's AS tables have no DB
+default). Fixed by committing the fixture and introducing
+`ActiveStorageBlobBuilder.upload` (explicit UUID id — mirrors the
+in-repo `:with_images` precedent) across actions/job/factory/spec.
+Validated on a fresh schema-loaded test DB (CI parity). **CI green.**
+
+Codex review (3):
+
+| Comment | Sev | Fix |
+|---------|-----|-----|
+| Web-form video attach failure silently dropped behind success | P1 | controller sets `flash[:alert]` from the AttachUploadedVideos result (entry still saved; warn not reject) |
+| Partial tempfiles leaked on a failed multi-URL batch | P2 | `download_all` closes all batch tempfiles on `DownloadError` |
+| Scale capped width only (portrait clips too large) | P2 | cap the longer edge via `min()/-2`, never upscaling |
+
+All replied with rationale + resolved. Re-validated green.
