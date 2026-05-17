@@ -51,9 +51,11 @@ module Views
         end
       end
 
+      # LoadError (not a StandardError) covers a missing libvips on the
+      # host; fall back to the original so the gallery never 500s.
       def variant_url(image, limit)
         view_context.url_for(image.variant(resize_to_limit: limit))
-      rescue StandardError
+      rescue StandardError, LoadError
         view_context.url_for(image)
       end
 
