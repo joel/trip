@@ -5,6 +5,7 @@ module Components
     include Phlex::Rails::Helpers::LinkTo
     include Phlex::Rails::Helpers::ButtonTo
     include Phlex::Rails::Helpers::DOMID
+    include ImageLightbox
 
     def initialize(trip:, journal_entry:)
       @trip = trip
@@ -15,10 +16,7 @@ module Components
       article(
         id: dom_id(@entry),
         class: "ha-card overflow-hidden ha-rise",
-        data: {
-          controller: "feed-entry",
-          feed_entry_expanded_value: "false"
-        }
+        data: article_data
       ) do
         render_cover_image if @entry.images.attached?
         div(class: "p-6") do
@@ -27,26 +25,11 @@ module Components
           render_expandable_body
           render_footer
         end
+        render Components::LightboxOverlay.new if @entry.images.attached?
       end
     end
 
     private
-
-    # ── Cover image (collapsed) ──
-
-    def render_cover_image
-      div(class: "group/img relative aspect-[16/9] " \
-                 "overflow-hidden") do
-        img(
-          src: view_context.url_for(@entry.images.first),
-          class: "h-full w-full object-cover " \
-                 "transition-transform duration-700 " \
-                 "group-hover/img:scale-105",
-          alt: @entry.name,
-          loading: "lazy"
-        )
-      end
-    end
 
     # ── Header: date · title · location · author + actions ──
 
@@ -154,26 +137,6 @@ module Components
 
     def render_body
       div(class: "prose prose-lg dark:prose-invert max-w-none mb-6") { raw(safe(@entry.body.to_s)) }
-    end
-
-    def render_images
-      div(class: "grid grid-cols-2 gap-3 mb-6 " \
-                 "md:grid-cols-3") do
-        @entry.images.each_with_index do |image, idx|
-          div(class: "group/photo overflow-hidden " \
-                     "rounded-xl") do
-            img(
-              src: view_context.url_for(image),
-              class: "h-full w-full object-cover " \
-                     "transition-transform duration-500 " \
-                     "group-hover/photo:scale-110",
-              style: "aspect-ratio: 4/3;",
-              alt: "#{@entry.name} — photo #{idx + 1}",
-              loading: "lazy"
-            )
-          end
-        end
-      end
     end
 
     def render_reactions
