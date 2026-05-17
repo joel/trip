@@ -131,6 +131,54 @@ RSpec.describe "/trips" do
     end
   end
 
+  describe "GET /trips/:id/gallery" do
+    let!(:gallery_trip) { create(:trip, created_by: admin) }
+
+    context "when logged in as a member" do
+      before { stub_current_user(admin) }
+
+      it "renders the gallery with the trip photos" do
+        create(:journal_entry, :with_images, trip: gallery_trip,
+                                             author: admin)
+        get gallery_trip_path(gallery_trip)
+        expect(response).to be_successful
+        expect(response.body).to include("Gallery")
+        expect(response.body).to include('data-controller="lightbox"')
+      end
+
+      it "shows the empty state when there are no photos" do
+        create(:journal_entry, trip: gallery_trip, author: admin)
+        get gallery_trip_path(gallery_trip)
+        expect(response).to be_successful
+        expect(response.body).to include("No photos yet")
+      end
+    end
+
+    context "when logged in as a viewer member" do
+      let!(:viewer_user) { create(:user) }
+
+      before do
+        create(:trip_membership, trip: gallery_trip,
+                                 user: viewer_user, role: :viewer)
+        stub_current_user(viewer_user)
+      end
+
+      it "is visible to viewers" do
+        get gallery_trip_path(gallery_trip)
+        expect(response).to be_successful
+      end
+    end
+
+    context "when logged in as a non-member" do
+      before { stub_current_user(create(:user)) }
+
+      it "is forbidden" do
+        get gallery_trip_path(gallery_trip)
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+  end
+
   describe "unauthenticated access" do
     before { stub_current_user(nil) }
 
