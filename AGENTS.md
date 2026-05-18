@@ -108,7 +108,7 @@ Runs **only after the PR has been rebase-and-merged to `main`** by a human — t
      --title "Phase N — <short title>" \
      --generate-notes
    ```
-   `gh release create` creates the annotated tag on `main` and publishes the release at <https://github.com/joel/trip/releases> together.
+   `gh release create` creates the annotated tag on `main` and publishes the release at <https://github.com/joel/trip/releases> together. `--generate-notes` honours `.github/release.yml`, which **excludes Dependabot / `dependencies`-labelled PRs** so dependency bumps are kept out of phase release notes — do not re-add them.
 5. **No deploy interaction.** `deploy.yml` triggers on the merge commit (branch push), **not** on tags — creating the tag/release does not re-deploy and needs no `[skip deploy]`.
 6. **Audit trail.** Record the tag name and release URL in `prompts/Phase N - Steps.md`, then move the issue to **Done**.
 
