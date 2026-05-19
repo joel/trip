@@ -68,3 +68,24 @@ Codex review (3):
 | Scale capped width only (portrait clips too large) | P2 | cap the longer edge via `min()/-2`, never upscaling |
 
 All replied with rationale + resolved. Re-validated green.
+
+## Step 13 — Merge, release, done
+
+- PR [#152](https://github.com/joel/trip/pull/152) rebase-and-merged
+  to `main` by maintainer. Merge tip `4aa0663`.
+- `main` CI run `26088079201` and Deploy run `26088079196` for
+  `4aa0663` both **green** (verified before releasing, per Release
+  Rules).
+- Release published: **`phase-23b`** —
+  <https://github.com/joel/trip/releases/tag/phase-23b>
+  (`gh release create phase-23b --target main --generate-notes`;
+  Dependabot auto-excluded via `.github/release.yml`; English phase
+  summary prepended).
+- Issue [#151](https://github.com/joel/trip/issues/151) moved to
+  **Done**.
+
+**Scope note:** the prod SeaweedFS Kamal staging + migration runbook
+that briefly lived on this branch (old `f93b2eb`, Step 12) was moved
+out to its own branch `feature/44-prod-seaweedfs` / PR
+[#155](https://github.com/joel/trip/pull/155) (issue #44) to keep
+this PR scoped to the video pipeline. It is not part of `phase-23b`.
