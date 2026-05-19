@@ -21,10 +21,13 @@ Rails.application.configure do
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
 
-  # Stays :local until #44 ships the prod cutover: a deployed SeaweedFS
-  # service, SEAWEEDFS_* env in config/deploy.yml, and the one-time
-  # blob migration. Flipping this before that infra exists would route
-  # prod uploads to the default localhost:8333 and break them.
+  # Stays :local until #44 ships the prod cutover. The SeaweedFS
+  # accessory and SEAWEEDFS_* env are now STAGED in config/deploy.yml
+  # (inert until this flips). The remaining gate is the one-time
+  # local→SeaweedFS blob migration — runbook in
+  # `prompts/Issue 44 - SeaweedFS Migration Plan.md`. Flip this to
+  # :seaweedfs ONLY as the final, post-migration step (step 6), or
+  # already-stored prod blobs 404.
   config.active_storage.service = :local
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.

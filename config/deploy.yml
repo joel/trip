@@ -48,6 +48,20 @@ env:
     NOTIF_MAIL_PORT: 587
     NOTIF_MAIL_FROM: catalyst@joelazemar.com
 
+    # SeaweedFS (Active Storage S3 backend) — STAGED for #44, INERT today.
+    # production.rb still pins config.active_storage.service = :local, so
+    # these are read only AFTER the one-time blob migration flips prod to
+    # :seaweedfs (see prompts/Issue 44 - SeaweedFS Migration Plan.md).
+    # Endpoint is the in-cluster accessory over the private `kamal`
+    # network (plain HTTP, never internet-exposed). S3 stays anonymous
+    # ("any"/"any") as in dev — not internet-reachable, so unauthenticated
+    # is acceptable; #44 may harden via SeaweedFS -s3.config if that ever
+    # changes. ssl_verify_peer in storage.yml is moot over http://.
+    SEAWEEDFS_ENDPOINT: http://seaweedfs:8333
+    SEAWEEDFS_BUCKET: catalyst
+    SEAWEEDFS_ACCESS_KEY_ID: any
+    SEAWEEDFS_SECRET_ACCESS_KEY: any
+
     # Set number of processes dedicated to Solid Queue (default: 1)
     # JOB_CONCURRENCY: 3
 
@@ -71,6 +85,38 @@ aliases:
 # as it hides migrations, seeds, and schema from the image on each deploy.
 volumes:
   - "catalyst_storage:/rails/storage"
+
+# SeaweedFS S3 object store backing Active Storage in production.
+# STAGED (Phase 23b / #44): booting this is harmless while the app
+# still uses :local — production.rb does NOT flip to :seaweedfs until
+# the one-time local→SeaweedFS blob migration runs (runbook in
+# prompts/Issue 44 - SeaweedFS Migration Plan.md, tracked in #44).
+#
+# Exposure — operator chose SSH-tunnel-only:
+#   • S3 API :8333 is NOT published. Only the app reaches it over the
+#     private `kamal` Docker network at http://seaweedfs:8333
+#     (Kamal registers the accessory on that network under its name).
+#   • Admin/filer UI is bound to 127.0.0.1 on the host (never the
+#     internet). Reach it from a workstation with:
+#       ssh -L 9333:127.0.0.1:9333 -L 8888:127.0.0.1:8888 deploy@workeverywhere.app
+#     then open http://localhost:9333 (master) / http://localhost:8888 (filer).
+#
+# Boot/maintenance:
+#   bin/kamal accessory boot seaweedfs
+#   bin/kamal accessory logs seaweedfs
+# The bucket + CORS are provisioned by the migration runbook step 2
+# (prod analogue of bin/cli storage ensure_bucket / ensure_cors).
+accessories:
+  seaweedfs:
+    image: chrislusf/seaweedfs:3.97
+    host: workeverywhere.app
+    cmd: server -s3 -dir=/data -ip.bind=0.0.0.0
+    volumes:
+      - "catalyst_seaweedfs:/data"
+    ports:
+      - "127.0.0.1:9333:9333"  # master UI  — SSH tunnel only
+      - "127.0.0.1:8888:8888"  # filer UI   — SSH tunnel only
+      # S3 :8333 deliberately NOT published — private `kamal` net only.
 
 # Bridge fingerprinted assets, like JS and CSS, between versions to avoid
 # hitting 404 on in-flight requests. Combines all files from new and old
