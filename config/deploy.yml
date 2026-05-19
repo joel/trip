@@ -94,8 +94,10 @@ volumes:
 #
 # Exposure — operator chose SSH-tunnel-only:
 #   • S3 API :8333 is NOT published. Only the app reaches it over the
-#     private `kamal` Docker network at http://seaweedfs:8333
-#     (Kamal registers the accessory on that network under its name).
+#     private `kamal` Docker network at http://seaweedfs:8333. The
+#     `service: seaweedfs` key pins the container/network name to
+#     exactly `seaweedfs` (without it Kamal would name it
+#     `catalyst-seaweedfs` and the endpoint above would not resolve).
 #   • Admin/filer UI is bound to 127.0.0.1 on the host (never the
 #     internet). Reach it from a workstation with:
 #       ssh -L 9333:127.0.0.1:9333 -L 8888:127.0.0.1:8888 deploy@workeverywhere.app
@@ -108,15 +110,24 @@ volumes:
 # (prod analogue of bin/cli storage ensure_bucket / ensure_cors).
 accessories:
   seaweedfs:
+    # Pin the container/network name to `seaweedfs` so the app's
+    # SEAWEEDFS_ENDPOINT (http://seaweedfs:8333) resolves on the
+    # `kamal` net. Default would be `<service>-<accessory>` =
+    # `catalyst-seaweedfs`.
+    service: seaweedfs
     image: chrislusf/seaweedfs:3.97
     host: workeverywhere.app
     cmd: server -s3 -dir=/data -ip.bind=0.0.0.0
     volumes:
       - "catalyst_seaweedfs:/data"
-    ports:
-      - "127.0.0.1:9333:9333"  # master UI  — SSH tunnel only
-      - "127.0.0.1:8888:8888"  # filer UI   — SSH tunnel only
-      # S3 :8333 deliberately NOT published — private `kamal` net only.
+    # Kamal accessories take a single `port:`; multiple published
+    # ports go through `options.publish` (→ docker run --publish).
+    # Both bound to 127.0.0.1 — admin UIs are SSH-tunnel-only; S3
+    # :8333 is deliberately NOT published (private `kamal` net only).
+    options:
+      publish:
+        - "127.0.0.1:9333:9333"  # master UI — SSH tunnel only
+        - "127.0.0.1:8888:8888"  # filer UI  — SSH tunnel only
 
 # Bridge fingerprinted assets, like JS and CSS, between versions to avoid
 # hitting 404 on in-flight requests. Combines all files from new and old

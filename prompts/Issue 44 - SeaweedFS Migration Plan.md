@@ -16,7 +16,12 @@ branch's runtime behaviour.
 
 - `accessories.seaweedfs`: `chrislusf/seaweedfs:3.97` (matches dev),
   `server -s3 -dir=/data -ip.bind=0.0.0.0`, named volume
-  `catalyst_seaweedfs:/data`, host `workeverywhere.app`.
+  `catalyst_seaweedfs:/data`, host `workeverywhere.app`. Pins
+  `service: seaweedfs` so the container/network name is exactly
+  `seaweedfs` (Kamal would otherwise name it `catalyst-seaweedfs`
+  and `SEAWEEDFS_ENDPOINT` would not resolve). Admin UI ports go
+  through `options.publish` (a Kamal accessory takes a single
+  `port:`; the list form is silently ignored).
 - `env.clear`: `SEAWEEDFS_ENDPOINT=http://seaweedfs:8333`,
   `SEAWEEDFS_BUCKET=catalyst`, anonymous `any/any` keys (S3 is not
   internet-reachable, so unauthenticated is acceptable; harden via
@@ -29,7 +34,7 @@ auth-proxy:
 
 - **S3 API `:8333`** is **not** published — only the app reaches it
   over the private `kamal` Docker network at `http://seaweedfs:8333`
-  (Kamal registers the accessory on that network under its name).
+  (the `service: seaweedfs` key makes that the container/DNS name).
 - **Master/filer admin UI** is published bound to `127.0.0.1` on the
   host only (never the internet). Reach it from a workstation with:
 
