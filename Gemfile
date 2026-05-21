@@ -46,7 +46,7 @@ gem "action_policy"
 gem "dry-monads", "~> 1.10"
 
 # MCP (Model Context Protocol) server
-gem "mcp", "~> 0.16"
+gem "mcp", "~> 0.17"
 
 # Export
 gem "gepub", "~> 2.0"
