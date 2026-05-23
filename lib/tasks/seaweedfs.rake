@@ -39,18 +39,11 @@ module SeaweedfsTasks
       puts "bucket exists: #{bucket}"
     end
 
-    s3.put_bucket_cors(bucket: bucket, cors_configuration: cors_configuration)
+    s3.put_bucket_cors(bucket: bucket, cors_configuration: { cors_rules: [{
+                         allowed_origins: [CORS_ALLOWED_ORIGIN], allowed_methods: %w[PUT GET HEAD],
+                         allowed_headers: ["*"], expose_headers: ["ETag"], max_age_seconds: 3000
+                       }] })
     puts "CORS set: #{CORS_ALLOWED_ORIGIN}"
-  end
-
-  def cors_configuration
-    { cors_rules: [{
-      allowed_origins: [CORS_ALLOWED_ORIGIN],
-      allowed_methods: %w[PUT GET HEAD],
-      allowed_headers: ["*"],
-      expose_headers: ["ETag"],
-      max_age_seconds: 3000
-    }] }
   end
 
   def backfill!
@@ -79,20 +72,21 @@ module SeaweedfsTasks
     Rails.logger.error("[seaweedfs:backfill] #{blob.key}: #{e.class}: #{e.message}")
   end
 
-  # No `checksum:` kwarg: aws-sdk-s3 1.223 pairs Content-MD5 with
-  # `aws-chunked` streaming encoding once the body crosses the inline
-  # threshold (~8 KB). SeaweedFS S3 v3.97 computes MD5 over the
-  # chunked-encoded bytes rather than the decoded body, so every
-  # non-inline upload comes back BadDigest → ActiveStorage::IntegrityError.
-  # Skipping Content-MD5 sidesteps the trap; integrity is still
-  # validated post-hoc by `seaweedfs:verify` (downloads + MD5 vs
-  # blob.checksum). TCP/TLS protect bytes in flight.
+  # aws-sdk-s3 1.223 picks `aws-chunked` encoding for Tempfile bodies
+  # and for large bodies when checksums are enabled; SeaweedFS S3
+  # v3.97 then computes MD5 over the chunked bytes -> false BadDigest.
+  # Two precautions: reopen the tempfile as a vanilla File (forces
+  # the SDK's single-PUT path), and omit `checksum:` (with the
+  # :when_required lock in storage.yml — no Content-MD5 sent).
+  # seaweedfs:verify is the post-hoc integrity gate.
   def copy_blob(blob)
     return :skipped if seaweedfs_service.exist?(blob.key)
 
-    local_service.open(blob.key) do |io|
-      seaweedfs_service.upload(blob.key, io,
-                               content_type: blob.content_type)
+    local_service.open(blob.key) do |tempfile|
+      File.open(tempfile.path, "rb") do |io|
+        seaweedfs_service.upload(blob.key, io,
+                                 content_type: blob.content_type)
+      end
     end
     :uploaded
   end
@@ -111,8 +105,7 @@ module SeaweedfsTasks
     puts "OK — bytes verified. Next: rake seaweedfs:promote_service_names"
   end
 
-  # Sample: every video + a random ~5% of the rest (min 5). Streams MD5
-  # to avoid loading whole blobs into memory.
+  # Sample: every video + a random ~5% of the rest. Streams MD5.
   def checksum_sample(total, missing)
     others_size = [(total / 20.0).ceil, 5].max
     videos = ActiveStorage::Blob.where("content_type LIKE 'video/%'").to_a
