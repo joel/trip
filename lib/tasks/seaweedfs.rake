@@ -72,21 +72,21 @@ module SeaweedfsTasks
     Rails.logger.error("[seaweedfs:backfill] #{blob.key}: #{e.class}: #{e.message}")
   end
 
-  # aws-sdk-s3 1.223 picks `aws-chunked` encoding for Tempfile bodies
-  # and for large bodies when checksums are enabled; SeaweedFS S3
-  # v3.97 then computes MD5 over the chunked bytes -> false BadDigest.
-  # Two precautions: reopen the tempfile as a vanilla File (forces
-  # the SDK's single-PUT path), and omit `checksum:` (with the
-  # :when_required lock in storage.yml — no Content-MD5 sent).
+  # Open the on-disk file directly rather than via local.open (which
+  # yields a Tempfile through ActiveStorage::Downloader). aws-sdk-s3
+  # 1.223 takes a chunked-body code path for Downloader-derived
+  # Tempfile IOs that SeaweedFS S3 v3.97 can't validate, producing
+  # false BadDigest -> IntegrityError on every non-tiny upload —
+  # even after reopening the tempfile's path as a File (which
+  # appeared to work in the initial probe but failed under load).
+  # Reading straight from the DiskService path stays on the SDK's
+  # single-PUT path; validated with 10/10 sequential probes.
   # seaweedfs:verify is the post-hoc integrity gate.
   def copy_blob(blob)
     return :skipped if seaweedfs_service.exist?(blob.key)
 
-    local_service.open(blob.key) do |tempfile|
-      File.open(tempfile.path, "rb") do |io|
-        seaweedfs_service.upload(blob.key, io,
-                                 content_type: blob.content_type)
-      end
+    File.open(local_service.send(:path_for, blob.key), "rb") do |io|
+      seaweedfs_service.upload(blob.key, io, content_type: blob.content_type)
     end
     :uploaded
   end
