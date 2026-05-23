@@ -79,12 +79,19 @@ module SeaweedfsTasks
     Rails.logger.error("[seaweedfs:backfill] #{blob.key}: #{e.class}: #{e.message}")
   end
 
+  # No `checksum:` kwarg: aws-sdk-s3 1.223 pairs Content-MD5 with
+  # `aws-chunked` streaming encoding once the body crosses the inline
+  # threshold (~8 KB). SeaweedFS S3 v3.97 computes MD5 over the
+  # chunked-encoded bytes rather than the decoded body, so every
+  # non-inline upload comes back BadDigest → ActiveStorage::IntegrityError.
+  # Skipping Content-MD5 sidesteps the trap; integrity is still
+  # validated post-hoc by `seaweedfs:verify` (downloads + MD5 vs
+  # blob.checksum). TCP/TLS protect bytes in flight.
   def copy_blob(blob)
     return :skipped if seaweedfs_service.exist?(blob.key)
 
     local_service.open(blob.key) do |io|
       seaweedfs_service.upload(blob.key, io,
-                               checksum: blob.checksum,
                                content_type: blob.content_type)
     end
     :uploaded

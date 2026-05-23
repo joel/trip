@@ -37,6 +37,18 @@ seaweedfs:
   # Dev/test SeaweedFS sits behind the local self-signed Traefik cert;
   # only production verifies the peer (real endpoint/cert).
   ssl_verify_peer: <%= Rails.env.production? %>
+  # aws-sdk-s3 1.180+ defaults `request_checksum_calculation` to
+  # `:when_supported`, which adds an `x-amz-trailer` flexible-checksum
+  # and switches to `aws-chunked` body encoding once the body crosses
+  # the inline threshold (~8 KB). SeaweedFS S3 v3.97 computes
+  # validation checksums over the chunked-encoded bytes (not the
+  # decoded body), so any large PUT comes back BadDigest. Forcing
+  # `:when_required` keeps the SDK on plain unchunked PUTs unless the
+  # caller explicitly requests a checksum — which Active Storage
+  # never does. Matches AWS S3 behaviour exactly (AWS still computes
+  # ETag = MD5 server-side); only the SDK-side trailer is skipped.
+  request_checksum_calculation: when_required
+  response_checksum_validation: when_required
 
 # Dual-write window for the #44 prod cutover. With production.rb set to
 # :mirror, new uploads write to BOTH :local (primary) and :seaweedfs;
