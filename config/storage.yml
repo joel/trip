@@ -37,3 +37,15 @@ seaweedfs:
   # Dev/test SeaweedFS sits behind the local self-signed Traefik cert;
   # only production verifies the peer (real endpoint/cert).
   ssl_verify_peer: <%= Rails.env.production? %>
+
+# Dual-write window for the #44 prod cutover. With production.rb set to
+# :mirror, new uploads write to BOTH :local (primary) and :seaweedfs;
+# reads come from :local — so the app keeps serving existing blobs
+# unchanged while new ones land on both stores. Combined with
+# `rake seaweedfs:backfill` for existing blobs, this is the zero-loss
+# path to the final :seaweedfs cutover.
+mirror:
+  service: Mirror
+  primary: local
+  mirrors:
+    - seaweedfs
