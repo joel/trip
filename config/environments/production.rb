@@ -21,14 +21,14 @@ Rails.application.configure do
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
 
-  # Stays :local until #44 ships the prod cutover. The SeaweedFS
-  # accessory and SEAWEEDFS_* env are now STAGED in config/deploy.yml
-  # (inert until this flips). The remaining gate is the one-time
-  # local→SeaweedFS blob migration — runbook in
-  # `prompts/Issue 44 - SeaweedFS Migration Plan.md`. Flip this to
-  # :seaweedfs ONLY as the final, post-migration step (step 6), or
-  # already-stored prod blobs 404.
-  config.active_storage.service = :local
+  # Dual-write window for the #44 cutover. :mirror writes every new
+  # upload to BOTH :local (primary) and :seaweedfs; reads still come
+  # from :local, so existing blobs render unchanged. After this is
+  # deployed, run `rake seaweedfs:backfill` to copy existing blobs,
+  # then `rake seaweedfs:verify` (hard gate), then flip this to
+  # :seaweedfs as the final cutover step.
+  # See `prompts/Issue 44 - SeaweedFS Migration Plan.md`.
+  config.active_storage.service = :mirror
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   # config.assume_ssl = true
