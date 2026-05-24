@@ -40,6 +40,12 @@ env:
     - MCP_API_KEY
     - GOOGLE_CLIENT_ID
     - GOOGLE_CLIENT_SECRET
+    # SeaweedFS S3 creds (Doppler catalyst/prd). Configured as an
+    # `s3.configure` identity on the seaweedfs accessory; matches the
+    # real production identity. Anonymous access on the bucket is
+    # denied — SeaweedFS rejects every request without valid SigV4.
+    - SEAWEEDFS_ACCESS_KEY_ID
+    - SEAWEEDFS_SECRET_ACCESS_KEY
   clear:
     # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
     # When you start using multiple servers, you should split out job processing to a dedicated machine.
@@ -48,19 +54,13 @@ env:
     NOTIF_MAIL_PORT: 587
     NOTIF_MAIL_FROM: catalyst@joelazemar.com
 
-    # SeaweedFS (Active Storage S3 backend) — STAGED for #44, INERT today.
-    # production.rb still pins config.active_storage.service = :local, so
-    # these are read only AFTER the one-time blob migration flips prod to
-    # :seaweedfs (see prompts/Issue 44 - SeaweedFS Migration Plan.md).
-    # Endpoint is the in-cluster accessory over the private `kamal`
-    # network (plain HTTP, never internet-exposed). S3 stays anonymous
-    # ("any"/"any") as in dev — not internet-reachable, so unauthenticated
-    # is acceptable; #44 may harden via SeaweedFS -s3.config if that ever
-    # changes. ssl_verify_peer in storage.yml is moot over http://.
-    SEAWEEDFS_ENDPOINT: http://seaweedfs:8333
+    # Public HTTPS endpoint to SeaweedFS S3, terminated by kamal-proxy
+    # (see the `proxy:` block on the seaweedfs accessory below).
+    # Browser-reachable so Active Storage Direct Upload + redirect
+    # URLs work end-to-end. ssl_verify_peer in storage.yml is true in
+    # production — the LE-issued cert validates.
+    SEAWEEDFS_ENDPOINT: https://storage.workeverywhere.app
     SEAWEEDFS_BUCKET: catalyst
-    SEAWEEDFS_ACCESS_KEY_ID: any
-    SEAWEEDFS_SECRET_ACCESS_KEY: any
 
     # Set number of processes dedicated to Solid Queue (default: 1)
     # JOB_CONCURRENCY: 3
@@ -87,37 +87,42 @@ volumes:
   - "catalyst_storage:/rails/storage"
 
 # SeaweedFS S3 object store backing Active Storage in production.
-# STAGED (Phase 23b / #44): booting this is harmless while the app
-# still uses :local — production.rb does NOT flip to :seaweedfs until
-# the one-time local→SeaweedFS blob migration runs (runbook in
-# prompts/Issue 44 - SeaweedFS Migration Plan.md, tracked in #44).
+# Phase 2 (#167): public HTTPS endpoint at storage.workeverywhere.app
+# via kamal-proxy + Let's Encrypt, so Active Storage Direct Upload +
+# read-redirect URLs work from the browser. Auth is enforced via an
+# `s3.configure` identity matching SEAWEEDFS_ACCESS_KEY_ID/SECRET
+# (Doppler-managed) — anonymous requests get 403.
 #
-# Exposure — operator chose SSH-tunnel-only:
-#   • S3 API :8333 is NOT published. Only the app reaches it over the
-#     private `kamal` Docker network at http://seaweedfs:8333. The
-#     `service: seaweedfs` key pins the container/network name to
-#     exactly `seaweedfs` (without it Kamal would name it
-#     `catalyst-seaweedfs` and the endpoint above would not resolve).
-#   • Admin/filer UI is bound to 127.0.0.1 on the host (never the
-#     internet). Reach it from a workstation with:
+# Exposure:
+#   • S3 API :8333 → kamal-proxy → https://storage.workeverywhere.app
+#     (proxy block below). Internal app access also continues via
+#     http://seaweedfs:8333 on the kamal Docker network if needed.
+#   • Admin/filer UI stays bound to 127.0.0.1 on the host. Reach via
 #       ssh -L 9333:127.0.0.1:9333 -L 8888:127.0.0.1:8888 deploy@workeverywhere.app
 #     then open http://localhost:9333 (master) / http://localhost:8888 (filer).
 #
 # Boot/maintenance:
 #   bin/kamal accessory boot seaweedfs
 #   bin/kamal accessory logs seaweedfs
-# The bucket + CORS are provisioned by the migration runbook step 2
-# (prod analogue of bin/cli storage ensure_bucket / ensure_cors).
+# Identities are configured via `weed shell -c 's3.configure ...'`
+# (stored in filer metadata; survives accessory restarts).
 accessories:
   seaweedfs:
     # Pin the container/network name to `seaweedfs` so the app's
-    # SEAWEEDFS_ENDPOINT (http://seaweedfs:8333) resolves on the
-    # `kamal` net. Default would be `<service>-<accessory>` =
+    # internal calls (http://seaweedfs:8333) resolve on the `kamal`
+    # net. Default would be `<service>-<accessory>` =
     # `catalyst-seaweedfs`.
     service: seaweedfs
     image: chrislusf/seaweedfs:3.97
     host: workeverywhere.app
     cmd: server -s3 -dir=/data -ip.bind=0.0.0.0
+    # Expose the S3 API publicly via kamal-proxy. Cloudflare proxies
+    # in front (SSL/TLS mode = Full); kamal-proxy obtains its own LE
+    # cert via the HTTP-01 challenge through Cloudflare.
+    proxy:
+      ssl: true
+      host: storage.workeverywhere.app
+      app_port: 8333
     volumes:
       - "catalyst_seaweedfs:/data"
     # Kamal accessories take a single `port:`; multiple published
