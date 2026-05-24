@@ -30,7 +30,7 @@ Rails.application.configure do
   # available as a rollback surface — every pre-cutover blob is
   # still on disk, untouched by the backfill (which was read-only
   # on the source). Rollback: rake seaweedfs:demote_service_names
-  # (instant) + revert this to :mirror or :local, redeploy.
+  # (instant) + revert this to :local, redeploy.
   config.active_storage.service = :seaweedfs
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.

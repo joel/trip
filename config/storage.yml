@@ -49,15 +49,3 @@ seaweedfs:
   # ETag = MD5 server-side); only the SDK-side trailer is skipped.
   request_checksum_calculation: when_required
   response_checksum_validation: when_required
-
-# Dual-write window for the #44 prod cutover. With production.rb set to
-# :mirror, new uploads write to BOTH :local (primary) and :seaweedfs;
-# reads come from :local — so the app keeps serving existing blobs
-# unchanged while new ones land on both stores. Combined with
-# `rake seaweedfs:backfill` for existing blobs, this is the zero-loss
-# path to the final :seaweedfs cutover.
-mirror:
-  service: Mirror
-  primary: local
-  mirrors:
-    - seaweedfs
