@@ -118,11 +118,19 @@ accessories:
     cmd: server -s3 -dir=/data -ip.bind=0.0.0.0
     # Expose the S3 API publicly via kamal-proxy. Cloudflare proxies
     # in front (SSL/TLS mode = Full); kamal-proxy obtains its own LE
-    # cert via the HTTP-01 challenge through Cloudflare.
+    # cert via the HTTP-01 challenge through Cloudflare. Healthcheck
+    # is on /healthz because SeaweedFS S3 returns 403 on the default
+    # /up (anonymous root listing is now denied — see s3.configure
+    # identities); kamal-proxy refuses to register a target it can't
+    # healthcheck, so without this the accessory reboot fails.
     proxy:
       ssl: true
       host: storage.workeverywhere.app
       app_port: 8333
+      healthcheck:
+        path: /healthz
+        interval: 3
+        timeout: 5
     volumes:
       - "catalyst_seaweedfs:/data"
     # Kamal accessories take a single `port:`; multiple published
