@@ -21,18 +21,17 @@ Rails.application.configure do
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
 
-  # ROLLBACK from the #44 cutover. The cutover broke the browser path:
-  # SeaweedFS S3 is exposed only on the private `kamal` Docker network
-  # (the SSH-tunnel-only design from PR #155), but Active Storage's
-  # Direct Upload and read-redirect URLs both point the BROWSER at
-  # http://seaweedfs:8333/... — unreachable from outside the cluster.
-  # The architectural fix is to expose SeaweedFS at a public HTTPS
-  # subdomain via kamal-proxy (storage.workeverywhere.app), then re-do
-  # the cutover. Until then we stay on :local — every pre-cutover blob
-  # still lives on the catalyst_storage volume, untouched.
-  # service_name has been demoted back to "local" via
-  # `rake seaweedfs:demote_service_names`.
-  config.active_storage.service = :local
+  # #44 cutover complete (Phase 2, via #167/#168). Reads and writes
+  # flow to SeaweedFS S3 at https://storage.workeverywhere.app —
+  # browser-reachable HTTPS endpoint, kamal-proxy + LE cert, S3
+  # SigV4 auth via Doppler-managed creds. Active Storage Direct
+  # Upload (browser PUT to presigned URL) + read-redirect both work.
+  # The :local service and the catalyst_storage volume remain
+  # available as a rollback surface — every pre-cutover blob is
+  # still on disk, untouched by the backfill (which was read-only
+  # on the source). Rollback: rake seaweedfs:demote_service_names
+  # (instant) + revert this to :mirror or :local, redeploy.
+  config.active_storage.service = :seaweedfs
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   # config.assume_ssl = true
