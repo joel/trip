@@ -21,14 +21,15 @@ Rails.application.configure do
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
 
-  # Dual-write window for the #44 cutover. :mirror writes every new
-  # upload to BOTH :local (primary) and :seaweedfs; reads still come
-  # from :local, so existing blobs render unchanged. After this is
-  # deployed, run `rake seaweedfs:backfill` to copy existing blobs,
-  # then `rake seaweedfs:verify` (hard gate), then flip this to
-  # :seaweedfs as the final cutover step.
-  # See `prompts/Issue 44 - SeaweedFS Migration Plan.md`.
-  config.active_storage.service = :mirror
+  # #44 cutover complete: every blob backfilled to SeaweedFS,
+  # verified, and service_name promoted to "seaweedfs". Reads and
+  # writes now go straight to the SeaweedFS S3 service. The :mirror
+  # service block in storage.yml is kept available for fast rollback
+  # (revert this to :mirror and redeploy — :local still holds every
+  # blob from before the cutover) and can be removed in a follow-up
+  # PR after a soak period. See `prompts/Issue 44 - SeaweedFS
+  # Migration Plan.md`.
+  config.active_storage.service = :seaweedfs
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   # config.assume_ssl = true
