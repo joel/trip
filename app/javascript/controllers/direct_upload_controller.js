@@ -9,18 +9,25 @@ import { Controller } from "@hotwired/stimulus"
 //   1. Lazy-loads @rails/activestorage on connect (Stimulus eager-
 //      loads controller modules; a top-level import would pull AS
 //      onto every page).
-//   2. On form submit, locks every input + button.
+//   2. On form submit, shows a modal overlay that visually blocks
+//      the form (fixed inset-0 z-50). We deliberately do NOT set
+//      disabled on the form fields — browsers exclude disabled
+//      fields from the submitted FormData, which would break the
+//      submit (only the file inputs would arrive). The overlay
+//      itself prevents the user clicking anything underneath.
 //   3. Listens to direct-upload:start/progress/end/error events that
 //      @rails/activestorage dispatches on the form, aggregates per-
 //      file progress (size-weighted), and updates the overlay.
 //   4. Switches the overlay label from "Uploading…" to "Saving
 //      entry…" once all PUTs finish and Rails takes over the submit.
-//   5. On error: unlocks the form and surfaces the message so the
-//      user can retry without a page reload.
+//   5. On error: keeps the overlay visible (the error message lives
+//      inside it), surfaces the message, and exposes a Dismiss
+//      button so the user can close the overlay and retry without a
+//      page reload.
 //
 // ActiveStorage.start() is idempotent — reconnects are safe.
 export default class extends Controller {
-  static targets = ["overlay", "label", "progress", "detail", "error"]
+  static targets = ["overlay", "label", "progress", "detail", "error", "dismiss"]
 
   connect() {
     this.uploads = new Map()
@@ -51,13 +58,25 @@ export default class extends Controller {
     this.element.removeEventListener("direct-upload:error", this._onError)
   }
 
+  // Stimulus action: data-action="click->direct-upload#dismiss" on the
+  // overlay's Dismiss button.
+  dismiss(event) {
+    event?.preventDefault()
+    this._showOverlay(false)
+    this._setError(null)
+    this._showDismiss(false)
+    this._submitting = false
+    this.uploads.clear()
+  }
+
   _onSubmit() {
     if (this._submitting) return
     this._submitting = true
-    this._lockForm()
     this._setError(null)
+    this._showDismiss(false)
     this._setLabel("Preparing upload…")
     this._setDetail("")
+    if (this.hasProgressTarget) this.progressTarget.style.width = "0%"
     this._showOverlay(true)
   }
 
@@ -89,12 +108,15 @@ export default class extends Controller {
   }
 
   _onError(event) {
+    // Cancel Active Storage's default window.alert; keep the overlay
+    // visible so the error text inside it is actually rendered.
     event.preventDefault()
     const msg = event.detail?.error || "Upload failed"
-    this._submitting = false
-    this._unlockForm()
-    this._showOverlay(false)
-    this._setError(`${msg}. Please retry.`)
+    this._setLabel("Upload failed")
+    this._setDetail("")
+    this._setError(`${msg}. Dismiss to retry.`)
+    this._showDismiss(true)
+    // overlay stays visible; user clicks Dismiss to close + retry.
   }
 
   // -- Helpers --
@@ -127,18 +149,6 @@ export default class extends Controller {
     }
   }
 
-  _lockForm() {
-    this.element
-      .querySelectorAll("input, textarea, button, select")
-      .forEach((el) => { el.disabled = true })
-  }
-
-  _unlockForm() {
-    this.element
-      .querySelectorAll("input, textarea, button, select")
-      .forEach((el) => { el.disabled = false })
-  }
-
   _showOverlay(on) {
     if (!this.hasOverlayTarget) return
     this.overlayTarget.classList.toggle("hidden", !on)
@@ -156,5 +166,10 @@ export default class extends Controller {
     if (!this.hasErrorTarget) return
     this.errorTarget.textContent = text || ""
     this.errorTarget.classList.toggle("hidden", !text)
+  }
+
+  _showDismiss(on) {
+    if (!this.hasDismissTarget) return
+    this.dismissTarget.classList.toggle("hidden", !on)
   }
 }
