@@ -111,4 +111,48 @@ RSpec.describe Tools::AddJournalImages do
         .to include("Timeout")
     end
   end
+
+  describe ".call signed_ids branch (Direct Upload, #172)" do
+    let(:blob) do
+      ActiveStorage::Blob.create_and_upload!(
+        io: StringIO.new(image_data),
+        filename: "test_image.jpg",
+        content_type: "image/jpeg"
+      )
+    end
+
+    it "attaches via signed_ids" do
+      result = described_class.call(
+        journal_entry_id: entry.id, signed_ids: [blob.signed_id]
+      )
+      expect(result.error?).to be false
+      data = JSON.parse(result.content.first[:text])
+      expect(data["attached"]).to eq(1)
+      expect(entry.reload.images.count).to eq(1)
+    end
+
+    it "rejects when both urls and signed_ids are provided" do
+      result = described_class.call(
+        journal_entry_id: entry.id,
+        urls: ["https://example.com/x.jpg"],
+        signed_ids: [blob.signed_id]
+      )
+      expect(result.error?).to be true
+      expect(result.content.first[:text]).to include("exactly one")
+    end
+
+    it "rejects when neither urls nor signed_ids are provided" do
+      result = described_class.call(journal_entry_id: entry.id)
+      expect(result.error?).to be true
+      expect(result.content.first[:text]).to include("either urls or signed_ids")
+    end
+
+    it "rejects invalid signed_ids" do
+      result = described_class.call(
+        journal_entry_id: entry.id, signed_ids: ["not-a-real-signed-id"]
+      )
+      expect(result.error?).to be true
+      expect(result.content.first[:text]).to include("could not be found")
+    end
+  end
 end
