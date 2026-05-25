@@ -67,5 +67,15 @@ RSpec.describe TripJournalServer do
         .to include("Trip creation and member administration are " \
                     "handled by humans")
     end
+
+    it "tells agents to default to Direct Upload for media (#172)" do
+      text = described_class.instructions_for(nil).gsub(/\s+/, " ")
+
+      expect(text).to include("ALWAYS use Direct Upload by default")
+      expect(text).to include("prepare_journal_image_upload")
+      expect(text).to include("prepare_journal_video_upload")
+      expect(text).to include("signed_ids")
+      expect(text).to include("fallbacks")
+    end
   end
 end
