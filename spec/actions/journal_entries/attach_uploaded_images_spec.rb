@@ -7,14 +7,18 @@ RSpec.describe JournalEntries::AttachUploadedImages do
   let(:bytes) { Rails.root.join("spec/fixtures/files/test_image.jpg").binread }
 
   def create_blob(content_type: "image/jpeg", byte_size: bytes.bytesize)
-    # identify: false so Active Storage doesn't sniff the bytes and
-    # overwrite our content_type with the detected image/jpeg.
-    ActiveStorage::Blob.create_and_upload!(
+    # Use ActiveStorageBlobBuilder so the explicit UUID id is set
+    # (active_storage_blobs.id has no DB default in this app).
+    ActiveStorageBlobBuilder.upload(
       io: StringIO.new(bytes),
       filename: "test.jpg",
-      content_type: content_type,
-      identify: false
-    ).tap { |b| b.update_columns(byte_size: byte_size) } # rubocop:disable Rails/SkipsModelValidations
+      content_type: content_type
+    ).tap do |b|
+      # update_columns lets us override content_type (the upload path
+      # may identify the bytes as image/jpeg) and byte_size for the
+      # boundary cases below.
+      b.update_columns(content_type: content_type, byte_size: byte_size) # rubocop:disable Rails/SkipsModelValidations
+    end
   end
 
   it "attaches resolved blobs and emits the images_added event" do

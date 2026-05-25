@@ -54,7 +54,11 @@ module Tools
       require_writable!(entry.trip)
       validate!(content_type, byte_size)
 
-      blob = ActiveStorage::Blob.create_before_direct_upload!(
+      # ActiveStorageBlobBuilder rather than
+      # ActiveStorage::Blob.create_before_direct_upload! because this
+      # app's active_storage_blobs.id has no DB default — the standard
+      # path fails with NOT NULL on id (see ActiveStorageBlobBuilder).
+      blob = ActiveStorageBlobBuilder.prepare_for_direct_upload(
         filename: filename, content_type: content_type,
         byte_size: byte_size, checksum: checksum
       )

@@ -114,7 +114,7 @@ RSpec.describe Tools::AddJournalImages do
 
   describe ".call signed_ids branch (Direct Upload, #172)" do
     let(:blob) do
-      ActiveStorage::Blob.create_and_upload!(
+      ActiveStorageBlobBuilder.upload(
         io: StringIO.new(image_data),
         filename: "test_image.jpg",
         content_type: "image/jpeg"
