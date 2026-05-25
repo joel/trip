@@ -13,7 +13,13 @@ module JournalEntries
       video/mp4 video/quicktime video/webm
     ].freeze
     MAX_VIDEOS_PER_ENTRY = 5
-    MAX_FILE_SIZE = 200.megabytes
+    # 1 GB cap covers both the web-form Direct Upload path and the
+    # MCP Direct Upload path (#172). The previous 200 MB ceiling was
+    # an artifact of when uploads went through the Rails server; with
+    # Direct Upload the bytes flow client → SeaweedFS, so the server
+    # never buffers. The web form imposes its own client-side cap
+    # separately if a lower UX limit is needed.
+    MAX_FILE_SIZE = 1.gigabyte
 
     def call(journal_entry:, signed_ids:)
       blobs = yield resolve_blobs(signed_ids)
