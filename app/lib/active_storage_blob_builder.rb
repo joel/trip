@@ -22,4 +22,23 @@ module ActiveStorageBlobBuilder
     blob.save!
     blob
   end
+
+  # Used by the MCP prepare_journal_*_upload tools (#172). Mirrors
+  # ActiveStorage::Blob.create_before_direct_upload! but sets an
+  # explicit UUID id because this app's active_storage_blobs.id has
+  # no DB default. The blob row is persisted without uploading bytes
+  # — the client will PUT them directly to the presigned URL.
+  def prepare_for_direct_upload(filename:, content_type:, byte_size:, checksum:)
+    blob = ActiveStorage::Blob.new(
+      id: SecureRandom.uuid,
+      key: SecureRandom.base36(28),
+      filename: filename,
+      content_type: content_type,
+      byte_size: byte_size,
+      checksum: checksum,
+      service_name: ActiveStorage::Blob.service.name
+    )
+    blob.save!
+    blob
+  end
 end

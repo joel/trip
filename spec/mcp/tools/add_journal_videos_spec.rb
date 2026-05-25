@@ -11,7 +11,7 @@ RSpec.describe Tools::AddJournalVideos do
   # AttachUploadedVideos whitelist.
   let(:video_bytes) { Rails.root.join("spec/fixtures/files/tiny.mp4").binread }
   let(:blob) do
-    ActiveStorage::Blob.create_and_upload!(
+    ActiveStorageBlobBuilder.upload(
       io: StringIO.new(video_bytes),
       filename: "tiny.mp4",
       content_type: "video/mp4"
