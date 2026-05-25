@@ -117,6 +117,17 @@ module Components
             data: { direct_upload_target: "error" },
             class: "mt-3 hidden text-sm text-[var(--ha-error)]"
           ) { "" }
+          # Hidden by default; the controller un-hides it on
+          # direct-upload:error so the user can dismiss the overlay
+          # and retry the submission.
+          button(
+            type: "button",
+            data: {
+              direct_upload_target: "dismiss",
+              action: "click->direct-upload#dismiss"
+            },
+            class: "mt-3 hidden ha-button ha-button-secondary"
+          ) { "Dismiss" }
         end
       end
     end
