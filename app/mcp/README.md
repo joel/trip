@@ -27,7 +27,7 @@ The Model Context Protocol (MCP) server exposes trip journaling capabilities to 
        | require_writable!, require_commentable!
        | success_response / error_response
        v
-  23 MCP Tools  -->  Actions (Dry::Monads)  -->  ActiveRecord
+  25 MCP Tools  -->  Actions (Dry::Monads)  -->  ActiveRecord
 ```
 
 ## Endpoint
@@ -73,18 +73,44 @@ MCP_API_KEY=your-secret-key
 | `list_journal_entries` | List entries with pagination (limit 1-100) | (none) |
 | `get_journal_entry` | Get one entry: HTML body, counts, image URLs | `journal_entry_id` |
 
-### Images
+### Images and Videos
+
+**Recommended flow: Direct Upload.** Bytes flow agent → SeaweedFS over the public HTTPS endpoint; Rails is only on the metadata path. No 50 MB base64 inflation, no server-side buffering, no SSRF download — and it's the only path that handles GB-scale videos.
 
 | Tool | Description | Required Params |
 |------|-------------|-----------------|
-| `add_journal_images` | Attach images via HTTPS URLs (max 5/call, 10MB each) | `journal_entry_id`, `urls` |
-| `upload_journal_images` | Upload images via base64-encoded data (max 5/call, 10MB each) | `journal_entry_id`, `images` |
-| `add_journal_videos` | Attach videos via HTTPS URLs (max 3/call, 200MB & 3min each) | `journal_entry_id`, `urls` |
-| `upload_journal_videos` | Upload short videos via base64 (max 2/call, 50MB & 3min each) | `journal_entry_id`, `videos` |
+| `prepare_journal_image_upload` | **Step 1 (images, recommended)** — returns `{signed_id, put_url, headers, expires_at}` for a presigned PUT to SeaweedFS. Max 50 MB; jpeg/png/webp/gif. | `journal_entry_id`, `filename`, `content_type`, `byte_size`, `checksum` |
+| `prepare_journal_video_upload` | **Step 1 (videos, recommended)** — same shape. Max 1 GB; mp4/quicktime/webm. | `journal_entry_id`, `filename`, `content_type`, `byte_size`, `checksum` |
+| `add_journal_images` | **Step 3 (images)** — attach via `signed_ids` (preferred) **or** HTTPS `urls` (SSRF-hardened fallback, 10 MB cap). Max 5/call; 20 per entry. | `journal_entry_id` + exactly one of `signed_ids` / `urls` |
+| `add_journal_videos` | **Step 3 (videos)** — attach via `signed_ids` (preferred) **or** HTTPS `urls` (200 MB cap fallback). Max 5/call; 5 per entry. | `journal_entry_id` + exactly one of `signed_ids` / `urls` |
+| `upload_journal_images` | Fallback: base64 inline (max 5/call, 10 MB each). Use only when HTTP PUT isn't available. | `journal_entry_id`, `images` |
+| `upload_journal_videos` | Fallback: base64 inline for short clips (max 2/call, 50 MB each). | `journal_entry_id`, `videos` |
 
-Allowed image types: jpeg, png, webp, gif. Max 20 images per entry. `add_journal_images` downloads from HTTPS URLs with pinned DNS and SSRF protection; all-or-nothing if any URL fails. `upload_journal_images` accepts base64-encoded data inline with optional filenames; content type is detected from bytes via Marcel (caller-declared type is ignored). Both emit the same `journal_entry.images_added` event.
+**Direct Upload flow** (preferred for AI agents):
 
-Video: types mp4, quicktime (.mov), webm; max 5 videos per entry; format/size/duration validated on upload (ffprobe). `add_journal_videos` reuses the same pinned-DNS/SSRF download, streamed to disk; `upload_journal_videos` is base64 for short clips only (URL is primary). Both emit `journal_entry.videos_added`, which triggers async transcoding (`ProcessJournalVideosJob`) to a ≤720p web rendition + poster — the video is `pending` until then.
+```bash
+# 1. Prepare: server creates the blob row + presigned PUT URL.
+POST /mcp  tools/call  prepare_journal_video_upload \
+    {journal_entry_id, filename, content_type, byte_size, checksum}
+# → { signed_id, put_url, headers: {...}, expires_at }
+
+# 2. PUT the bytes directly to SeaweedFS — no Rails on this hop.
+curl -X PUT "<put_url>" \
+     -H "Content-Type: video/mp4" \
+     -H "Content-MD5: <checksum>" \
+     --data-binary @clip.mp4
+
+# 3. Attach: server validates the blob's metadata + writability,
+#    then attaches and emits journal_entry.videos_added.
+POST /mcp  tools/call  add_journal_videos \
+    {journal_entry_id, signed_ids: ["<signed_id>"]}
+```
+
+`checksum` is the base64-encoded MD5 of the bytes; the SDK signs Content-MD5 into the PUT URL, so the bytes you PUT must match. `signed_id` and `put_url` are valid for 10 minutes; if the agent doesn't follow up with `add_journal_videos`, `OrphanBlobsCleanupJob` purges the unattached blob ~1 hour later.
+
+Allowed image types: jpeg, png, webp, gif. Max 20 images per entry. `add_journal_images` with `urls` downloads with pinned DNS and SSRF protection; all-or-nothing if any URL fails. `upload_journal_images` accepts base64 inline; content type is detected from bytes via Marcel. All paths emit the same `journal_entry.images_added` event.
+
+Video: types mp4, quicktime (.mov), webm; max 5 videos per entry; format/size/duration validated. The `urls` fallback reuses the pinned-DNS/SSRF download streamed to disk. All paths emit `journal_entry.videos_added`, which triggers async transcoding (`ProcessJournalVideosJob`) to a ≤720p web rendition + poster — the video is `pending` until then.
 
 ### Social
 
