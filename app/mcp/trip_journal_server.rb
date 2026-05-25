@@ -14,8 +14,10 @@ class TripJournalServer
     Tools::GetTripStatus,
     Tools::AddJournalImages,
     Tools::UploadJournalImages,
+    Tools::PrepareJournalImageUpload,
     Tools::AddJournalVideos,
     Tools::UploadJournalVideos,
+    Tools::PrepareJournalVideoUpload,
     Tools::GetJournalEntry,
     Tools::ListTrips,
     Tools::ListComments,
@@ -50,8 +52,12 @@ class TripJournalServer
     <<~TEXT
       #{persona} for the Trip Journal app.
       You can create, edit, and delete journal entries; attach images
-      and videos via URLs or upload them directly as base64-encoded
-      data (videos are transcoded asynchronously); add and
+      and videos to them (the recommended flow is the Direct Upload
+      pair: prepare_journal_image_upload / prepare_journal_video_upload
+      to get a presigned PUT URL, then add_journal_images /
+      add_journal_videos with the returned signed_ids — both tools
+      also accept urls or base64 as fallback paths, videos are
+      transcoded asynchronously); add and
       remove emoji reactions; write, edit, and delete comments; create,
       rename, and delete checklists and add items to them; update trip
       details; transition trip states; and query trip status, entries,
