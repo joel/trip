@@ -27,7 +27,7 @@ The Model Context Protocol (MCP) server exposes trip journaling capabilities to 
        | require_writable!, require_commentable!
        | success_response / error_response
        v
-  25 MCP Tools  -->  Actions (Dry::Monads)  -->  ActiveRecord
+  27 MCP Tools  -->  Actions (Dry::Monads)  -->  ActiveRecord
 ```
 
 ## Endpoint
