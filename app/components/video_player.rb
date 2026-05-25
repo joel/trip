@@ -15,10 +15,15 @@ module Components
     end
 
     def view_template
-      case @video.status.to_s
-      when "ready" then render_player
-      when "failed" then render_unavailable
-      else render_processing
+      # Stable wrapper id so the JournalEntryVideo after_update_commit
+      # broadcast (#177) can `replace` this element when transcoding
+      # finishes. id == "journal_entry_video_<uuid>".
+      div(id: ActionView::RecordIdentifier.dom_id(@video)) do
+        case @video.status.to_s
+        when "ready" then render_player
+        when "failed" then render_unavailable
+        else render_processing
+        end
       end
     end
 

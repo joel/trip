@@ -5,6 +5,7 @@ module Components
     include Phlex::Rails::Helpers::LinkTo
     include Phlex::Rails::Helpers::ButtonTo
     include Phlex::Rails::Helpers::DOMID
+    include Phlex::Rails::Helpers::TurboStreamFrom
     include ImageLightbox
 
     def initialize(trip:, journal_entry:)
@@ -142,6 +143,10 @@ module Components
 
     def render_videos
       div(class: "space-y-4 mb-6") do
+        # Live-update each VideoPlayer when transcoding flips its
+        # status (#177). The cable channel is per-entry so a card
+        # only receives updates for its own videos.
+        turbo_stream_from @entry, :videos if @entry.videos.any?
         @entry.videos.each do |video|
           render Components::VideoPlayer.new(video: video)
         end

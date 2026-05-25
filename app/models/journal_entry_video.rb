@@ -16,4 +16,29 @@ class JournalEntryVideo < ApplicationRecord
        default: :pending
 
   scope :ready, -> { where(status: :ready) }
+
+  # When the transcoding job flips status (pending → ready / failed),
+  # push a Turbo Stream that replaces the placeholder with the right
+  # VideoPlayer rendering on every open viewer of the journal entry —
+  # no manual refresh (#177). Subscribers are added by
+  # JournalEntryCard's `turbo_stream_from @entry, :videos`. The Phlex
+  # component is rendered via ApplicationController.render so url_for
+  # + routes work outside a request cycle.
+  after_update_commit :broadcast_status_change, if: :saved_change_to_status?
+
+  private
+
+  def broadcast_status_change
+    # layout: false — render just the component, not the full app
+    # layout (which expects a current_user context that doesn't
+    # exist in the after_update_commit callback chain).
+    html = ApplicationController.render(
+      Components::VideoPlayer.new(video: self), layout: false
+    )
+    Turbo::StreamsChannel.broadcast_replace_to(
+      journal_entry, :videos,
+      target: ActionView::RecordIdentifier.dom_id(self),
+      html: html
+    )
+  end
 end
