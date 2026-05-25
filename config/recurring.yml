@@ -16,3 +16,6 @@ production:
   expire_invitations:
     class: ExpireInvitationsJob
     schedule: every hour at minute 30
+  orphan_blobs_cleanup:
+    class: OrphanBlobsCleanupJob
+    schedule: every hour at minute 45
