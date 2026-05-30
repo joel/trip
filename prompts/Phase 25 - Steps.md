@@ -40,8 +40,41 @@ Append-only audit trail. Plan: `prompts/Phase 25 Improve Persistance.md`.
   `ON comments.discarded_at IS NULL AND ...`), so MCP listings/exports/counts all
   exclude discarded rows automatically.
 
-## Step 8 — Runtime verification
-- _pending_
+## Step 7 — Commits (continued)
+- T10 (`10cfdbf`) — restore endpoints + `restore?` policies (mirror `destroy?`)
+  + minimal trash UI (trips index `?discarded=1` with Restore buttons).
+  `with_discarded.discarded` used to list deleted rows (bare `.discarded`
+  self-contradicts the kept default scope).
+- T11 serializer fix — switched paper_trail to the **JSON serializer**: Psych 4
+  `safe_load` rejected `ActiveSupport::TimeWithZone` on `reify`
+  (`Psych::DisallowedClass`). JSON store in the text columns makes reverts
+  reliable. (Committed with `SKIP=RailsSchemaUpToDate` — only a comment in an
+  already-applied migration changed; schema intentionally unchanged.)
+- T11 tests — model/action/MCP/builder/paper_trail specs + `:discarded` factory
+  traits.
+
+## Step 8 — Validation + runtime verification
+- `rake project:lint` clean (527 files, no offenses); Packwerk no violations.
+- `rake project:tests`: 839 examples, 0 failures, 2 pending (pre-existing).
+- `rake project:system-tests`: **93 examples, 0 failures**.
+  - First run showed 69/93 failures — root cause was a **stale Tailwind build**
+    artifact (dev/JIT build from console smoke-tests stripped production
+    classes), making text non-visible to Capybara. `rails tailwindcss:build`
+    produced **no diff** to the committed CSS and the suite went green. Not a
+    code defect; the committed `app/assets/builds/tailwind.css` was always
+    correct.
+- Live browser walk (`agent-browser`, logged in as joel@acme.org via
+  MailCatcher magic link):
+  - Trips index renders with the new "Recently deleted" link + "New Trip".
+  - Deleted "Patagonia Trek" → "Trip deleted." flash, vanished from index
+    (5 → 4 trips).
+  - `?discarded=1` "Recently Deleted" view listed it with a Restore button.
+  - Restore → "Trip restored." flash, reappeared on the index (back to 5).
+  - DB checks: discard/undiscard preserved the trip's 3 memberships; editing an
+    entry title created a paper_trail version with correct whodunnit and
+    `reify` restored the prior title; discarding an entry cascade-discarded its
+    comment while both rows survived in `with_discarded`.
+  - Dark-mode toggle works.
 
 ## Step 9 — PR
-- _pending_
+- _pending push + PR_
