@@ -31,5 +31,14 @@ RSpec.describe Tools::ListJournalEntries do
       data = JSON.parse(result.content.first[:text])
       expect(data["total"]).to eq(3)
     end
+
+    it "excludes soft-deleted entries" do
+      create(:journal_entry, :discarded, trip: trip)
+
+      result = described_class.call(trip_id: trip.id, limit: 10, offset: 0)
+
+      data = JSON.parse(result.content.first[:text])
+      expect(data["total"]).to eq(3)
+    end
   end
 end

@@ -7,6 +7,10 @@ FactoryBot.define do
     name { "Day 1" }
     entry_date { Date.current }
 
+    trait :discarded do
+      after(:create, &:discard!)
+    end
+
     trait :with_location do
       location_name { "Paris, France" }
       latitude { 48.8566 }

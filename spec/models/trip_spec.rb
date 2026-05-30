@@ -170,4 +170,37 @@ RSpec.describe Trip do
       expect(trip.effective_start_date).to be_nil
     end
   end
+
+  describe "soft deletion (discard)" do
+    it "default scope hides discarded trips; with_discarded sees them" do
+      trip = create(:trip, :discarded)
+      expect(described_class.exists?(trip.id)).to be(false)
+      expect(described_class.with_discarded.exists?(trip.id)).to be(true)
+    end
+
+    it "cascades discard down to entries and their comments" do
+      trip = create(:trip)
+      entry = create(:journal_entry, trip: trip)
+      comment = create(:comment, journal_entry: entry)
+      trip.discard!
+      expect(entry.reload.discarded?).to be(true)
+      expect(comment.reload.discarded?).to be(true)
+    end
+
+    it "undiscard restores the trip only, leaving children discarded" do
+      trip = create(:trip)
+      entry = create(:journal_entry, trip: trip)
+      trip.discard!
+      trip.undiscard!
+      expect(described_class.exists?(trip.id)).to be(true)
+      expect(entry.reload.discarded?).to be(true)
+    end
+
+    it "leaves memberships intact when discarded (not destroyed)" do
+      trip = create(:trip)
+      member = create(:trip_membership, trip: trip)
+      trip.discard!
+      expect(TripMembership.exists?(member.id)).to be(true)
+    end
+  end
 end

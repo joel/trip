@@ -21,6 +21,10 @@ FactoryBot.define do
       state { :archived }
     end
 
+    trait :discarded do
+      after(:create, &:discard!)
+    end
+
     trait :with_dates do
       start_date { Date.current }
       end_date { 7.days.from_now.to_date }

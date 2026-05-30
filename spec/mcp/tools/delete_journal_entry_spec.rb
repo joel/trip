@@ -14,6 +14,8 @@ RSpec.describe Tools::DeleteJournalEntry do
       expect(data["deleted"]).to be(true)
       expect(data["id"]).to eq(entry.id)
       expect(JournalEntry.exists?(entry.id)).to be(false)
+      # Soft delete: the row survives and is recoverable.
+      expect(JournalEntry.with_discarded.find(entry.id)).to be_discarded
     end
 
     it "rejects deletion on a non-writable trip" do
