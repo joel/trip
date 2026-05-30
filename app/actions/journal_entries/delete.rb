@@ -13,7 +13,7 @@ module JournalEntries
     private
 
     def destroy(journal_entry)
-      journal_entry.destroy!
+      journal_entry.discard!
       Success()
     end
 

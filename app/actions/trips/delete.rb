@@ -13,7 +13,7 @@ module Trips
     private
 
     def destroy(trip)
-      trip.destroy!
+      trip.discard!
       Success()
     end
 
