@@ -9,7 +9,10 @@ class TripsController < ApplicationController
 
   def index
     base = current_user.role?(:superadmin) ? Trip.all : current_user.trips
-    @discarded = params[:discarded].present?
+    # Enforce the trash view in the controller, not just by hiding the link:
+    # restore is superadmin-only, so a non-restorer requesting ?discarded=1
+    # falls back to the kept list (no deletion metadata disclosure).
+    @discarded = params[:discarded].present? && allowed_to?(:restore?, Trip)
     # .with_discarded.discarded — a bare .discarded would self-contradict the
     # default kept scope (discarded_at IS NULL AND IS NOT NULL).
     @trips = @discarded ? base.with_discarded.discarded : base
