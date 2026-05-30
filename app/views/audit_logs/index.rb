@@ -5,10 +5,12 @@ module Views
     class Index < Views::Base
       include Phlex::Rails::Helpers::LinkTo
 
-      def initialize(trip:, audit_logs:, show_low_signal: false)
+      def initialize(trip:, audit_logs:, show_low_signal: false,
+                     restorable: {})
         @trip = trip
         @audit_logs = audit_logs
         @show_low_signal = show_low_signal
+        @restorable = restorable
       end
 
       def view_template
@@ -74,7 +76,9 @@ module Views
             p(class: "ha-overline mb-4 px-2") { plain date_label(date) }
             div(class: "space-y-6") do
               logs.each do |log|
-                render Components::AuditLogCard.new(audit_log: log)
+                render Components::AuditLogCard.new(
+                  audit_log: log, restorable: @restorable
+                )
               end
             end
           end
