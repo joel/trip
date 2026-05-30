@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_17_200000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_30_100000) do
   create_table "access_requests", id: uuid, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -127,10 +127,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_17_200000) do
   create_table "comments", id: uuid, force: :cascade do |t|
     t.text "body", null: false
     t.datetime "created_at", null: false
+    t.datetime "discarded_at"
     t.string "journal_entry_id", limit: 36, null: false
     t.string "telegram_message_id"
     t.datetime "updated_at", null: false
     t.string "user_id", limit: 36, null: false
+    t.index ["discarded_at"], name: "index_comments_on_discarded_at"
     t.index ["journal_entry_id", "created_at"], name: "index_comments_on_journal_entry_id_and_created_at"
     t.index ["journal_entry_id", "telegram_message_id"], name: "idx_comments_telegram_idempotency", unique: true, where: "telegram_message_id IS NOT NULL"
     t.index ["journal_entry_id"], name: "index_comments_on_journal_entry_id"
@@ -170,6 +172,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_17_200000) do
     t.string "author_id", limit: 36, null: false
     t.datetime "created_at", null: false
     t.text "description"
+    t.datetime "discarded_at"
     t.date "entry_date", null: false
     t.decimal "latitude", precision: 10, scale: 7
     t.string "location_name"
@@ -180,6 +183,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_17_200000) do
     t.string "trip_id", limit: 36, null: false
     t.datetime "updated_at", null: false
     t.index ["author_id"], name: "index_journal_entries_on_author_id"
+    t.index ["discarded_at"], name: "index_journal_entries_on_discarded_at"
     t.index ["telegram_message_id"], name: "index_journal_entries_on_telegram_message_id"
     t.index ["trip_id", "entry_date", "created_at", "id"], name: "idx_journal_entries_chronological"
     t.index ["trip_id", "telegram_message_id"], name: "idx_journal_entries_telegram_idempotency", unique: true, where: "telegram_message_id IS NOT NULL"
@@ -252,6 +256,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_17_200000) do
     t.datetime "created_at", null: false
     t.string "created_by_id", limit: 36, null: false
     t.text "description"
+    t.datetime "discarded_at"
     t.date "end_date"
     t.json "metadata", default: {}, null: false
     t.string "name", null: false
@@ -259,6 +264,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_17_200000) do
     t.integer "state", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["created_by_id"], name: "index_trips_on_created_by_id"
+    t.index ["discarded_at"], name: "index_trips_on_discarded_at"
   end
 
   create_table "user_email_auth_keys", id: uuid, force: :cascade do |t|
