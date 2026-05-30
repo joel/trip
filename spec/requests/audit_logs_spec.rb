@@ -122,4 +122,56 @@ RSpec.describe "/trips/:trip_id/activity" do
         .not_to include(restore_trip_journal_entry_path(trip, entry))
     end
   end
+
+  describe "revert controls on update rows" do
+    it "shows a Revert button on an update row with a diff" do
+      stub_current_user(admin)
+      entry = create(:journal_entry, trip: trip, name: "Bar")
+      log = create(:audit_log, trip: trip, action: "journal_entry.updated",
+                               auditable: entry,
+                               metadata: { "changes" => { "name" => %w[Foo Bar] } },
+                               summary: "Joel updated a journal entry")
+
+      get trip_audit_logs_path(trip)
+
+      expect(response.body).to include("Revert")
+      expect(response.body).to include(revert_trip_audit_log_path(trip, log))
+    end
+
+    it "reverts the change by re-applying the old values" do
+      stub_current_user(admin)
+      entry = create(:journal_entry, trip: trip, name: "Bar")
+      log = create(:audit_log, trip: trip, action: "journal_entry.updated",
+                               auditable: entry,
+                               metadata: { "changes" => { "name" => %w[Foo Bar] } },
+                               summary: "Joel updated a journal entry")
+
+      patch revert_trip_audit_log_path(trip, log)
+
+      expect(response).to redirect_to(trip_audit_logs_path(trip))
+      expect(entry.reload.name).to eq("Foo")
+    end
+
+    it "shows no Revert button on a non-update row" do
+      stub_current_user(admin)
+      entry = create(:journal_entry, trip: trip)
+      create(:audit_log, trip: trip, action: "journal_entry.created",
+                         auditable: entry, summary: "Joel created a journal entry")
+
+      get trip_audit_logs_path(trip)
+
+      expect(response.body).not_to include("Revert")
+    end
+
+    it "404s when the row is not revertable" do
+      stub_current_user(admin)
+      entry = create(:journal_entry, trip: trip)
+      log = create(:audit_log, trip: trip, action: "journal_entry.created",
+                               auditable: entry, summary: "Joel created an entry")
+
+      patch revert_trip_audit_log_path(trip, log)
+
+      expect(response).to have_http_status(:not_found)
+    end
+  end
 end

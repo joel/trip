@@ -6,11 +6,12 @@ module Views
       include Phlex::Rails::Helpers::LinkTo
 
       def initialize(trip:, audit_logs:, show_low_signal: false,
-                     restorable: {})
+                     restorable: {}, revertable: {})
         @trip = trip
         @audit_logs = audit_logs
         @show_low_signal = show_low_signal
         @restorable = restorable
+        @revertable = revertable
       end
 
       def view_template
@@ -77,7 +78,8 @@ module Views
             div(class: "space-y-6") do
               logs.each do |log|
                 render Components::AuditLogCard.new(
-                  audit_log: log, restorable: @restorable
+                  audit_log: log, restorable: @restorable,
+                  revertable: @revertable
                 )
               end
             end
