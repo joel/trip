@@ -90,3 +90,19 @@ Append-only audit trail. Plan: `prompts/Phase 25 Improve Persistance.md`.
   Request specs added (shows for restorable own; hidden once restored; hidden to
   a contributor on another's entry). Verified live: feed Restore button →
   "Entry restored." → entry back in the kept scope.
+- `e8ddc58` — fix: gate the feed Restore button on the row's own `.deleted`
+  action (it keyed on auditable_id, so every event for a discarded entry showed
+  Restore). Regression spec asserts exactly one button across deleted+updated+
+  restored.
+
+## Step 9b — Review feedback (revert edits from the feed)
+- User expected to restore content edits too. Chose "revert from feed rows".
+- `991eed7` — each `*.updated` row carries its diff `{ field => [old, new] }`;
+  a Revert button re-applies the old values via the record's Update action (a
+  forward audit + version event). Controller batch-loads kept auditables for
+  update rows, authorises with `update?`, keys the revert map by audit_log id
+  (per-row). PATCH `:revert` route + turbo-confirm button. Covers column fields
+  (title/description/location/dates) and comment body; journal-entry rich-text
+  body is not a column so it never appears in the feed diff (agreed out of
+  scope). Request specs (shows/reverts/no-button/404). Verified live: feed
+  Revert on a "Name: Foo → Bar" row restored the name to "Foo".
