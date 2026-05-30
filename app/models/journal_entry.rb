@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class JournalEntry < ApplicationRecord
+  include Discard::Model
+
   belongs_to :trip
   belongs_to :author, class_name: "User"
 
@@ -17,6 +19,11 @@ class JournalEntry < ApplicationRecord
 
   validates :name, presence: true
   validates :entry_date, presence: true
+
+  default_scope -> { kept }
+
+  # Cascade discard down to comments. Restore is parent-only by design.
+  after_discard { comments.kept.find_each(&:discard) }
 
   scope :chronological, lambda {
     order(entry_date: :asc, created_at: :asc, id: :asc)
