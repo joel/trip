@@ -34,6 +34,11 @@ class TripPolicy < ApplicationPolicy
     superadmin?
   end
 
+  # Mirrors destroy? — whoever may soft-delete may restore.
+  def restore?
+    superadmin?
+  end
+
   def transition?
     superadmin?
   end

@@ -25,6 +25,11 @@ class JournalEntryPolicy < ApplicationPolicy
     (superadmin? || (contributor? && own_entry?)) && record.trip.writable?
   end
 
+  # Mirrors destroy? — whoever may soft-delete may restore.
+  def restore?
+    (superadmin? || (contributor? && own_entry?)) && record.trip.writable?
+  end
+
   private
 
   def trip_membership
