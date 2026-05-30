@@ -190,8 +190,12 @@ Events follow the pattern `entity.action`:
 | `checklist.created` | Checklists::Create | `{ checklist_id, trip_id }` |
 | `checklist.updated` | Checklists::Update | `{ checklist_id, trip_id, changes }` |
 | `checklist.deleted` | Checklists::Delete | `{ checklist_id, trip_id }` |
-| `checklist_item.created` | ChecklistItems::Create | `{ checklist_item_id, checklist_id }` |
-| `checklist_item.toggled` | ChecklistItems::Toggle | `{ checklist_item_id, checklist_id }` |
+| `checklist_item.created` | Checklists::Items::Create | `{ checklist_item_id, checklist_id }` |
+| `checklist_item.toggled` | Checklists::Items::Toggle | `{ checklist_item_id, checklist_id }` |
+
+> Checklist actions live in the **Checklists pack**
+> (`packs/checklists/app/actions/checklists/…`). See
+> `packs/checklists/README.md`.
 
 ## Adding a New Action
 
@@ -213,13 +217,6 @@ app/actions/
     approve.rb
     reject.rb
     submit.rb
-  checklist_items/
-    create.rb
-    toggle.rb
-  checklists/
-    create.rb
-    delete.rb
-    update.rb
   comments/
     create.rb
     delete.rb
@@ -243,4 +240,11 @@ app/actions/
     delete.rb
     transition_state.rb
     update.rb
+
+# Checklist actions live in the Checklists pack:
+packs/checklists/app/actions/
+  checklists/
+    create.rb delete.rb update.rb        # Checklists::Create, ::Delete, ::Update
+    items/
+      create.rb toggle.rb                # Checklists::Items::Create, ::Toggle
 ```

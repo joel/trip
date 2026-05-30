@@ -29,6 +29,7 @@ Trip Journal is a **private, invite-only** collaborative trip journal. A small g
 | Events | **Rails.event** structured subscribers | subscribers respond to `#emit(event)`, not `#call` |
 | Actions | **Dry::Monads** `Success`/`Failure` | see `app/actions/CLAUDE.md` for the pattern |
 | MCP | `mcp` gem at `POST /mcp`, 23 tools, API key via `MCP_API_KEY` | attributed to the resolved agent |
+| Modularity | **Packwerk** + `packs-rails` | first domain pack: `packs/checklists/` (`Checklists::`, deps enforced); see `packs/checklists/README.md` |
 
 ---
 
