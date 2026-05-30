@@ -11,13 +11,18 @@ module Components
   class AuditLogCard < Components::Base
     include Phlex::Rails::Helpers::DOMID
     include Phlex::Rails::Helpers::TimeAgoInWords
+    include Phlex::Rails::Helpers::ButtonTo
 
     SOURCE_BADGES = {
       "mcp" => "Agent", "telegram" => "Telegram", "system" => "System"
     }.freeze
 
-    def initialize(audit_log:)
+    # restorable maps auditable_id => the currently-discarded record the viewer
+    # may restore (computed + authorised in the controller). Defaults to {} so
+    # the live-stream render path (RecordAuditLogJob) is unaffected.
+    def initialize(audit_log:, restorable: {})
       @log = audit_log
+      @restorable = restorable
     end
 
     def view_template
@@ -28,11 +33,39 @@ module Components
           render_changes if changes.present?
           render_state_change if state_change?
           render_meta
+          render_restore if restorable_record
         end
       end
     end
 
     private
+
+    def restorable_record
+      @restorable[@log.auditable_id]
+    end
+
+    def render_restore
+      button_to(
+        "Restore",
+        restore_path(restorable_record),
+        method: :patch,
+        class: "mt-3 ha-button ha-button-secondary text-xs",
+        form: { class: "inline-flex" }
+      )
+    end
+
+    def restore_path(record)
+      case record
+      when Trip
+        view_context.restore_trip_path(record)
+      when JournalEntry
+        view_context.restore_trip_journal_entry_path(record.trip_id, record)
+      when Comment
+        view_context.restore_trip_journal_entry_comment_path(
+          @log.trip_id, record.journal_entry_id, record
+        )
+      end
+    end
 
     def row_css
       base = "relative flex gap-4 group"

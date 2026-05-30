@@ -67,4 +67,43 @@ RSpec.describe "/trips/:trip_id/activity" do
     expect(response.body).to include("Old row")
     expect(response.body).not_to include("Recent row")
   end
+
+  describe "restore controls on deletion rows" do
+    it "shows a Restore button for a discarded entry the user may restore" do
+      stub_current_user(admin)
+      entry = create(:journal_entry, :discarded, trip: trip)
+      create(:audit_log, trip: trip, action: "journal_entry.deleted",
+                         auditable: entry, summary: "Joel deleted a journal entry")
+
+      get trip_audit_logs_path(trip)
+
+      expect(response.body).to include("Restore")
+      expect(response.body)
+        .to include(restore_trip_journal_entry_path(trip, entry))
+    end
+
+    it "shows no Restore button once the record is no longer discarded" do
+      stub_current_user(admin)
+      entry = create(:journal_entry, trip: trip)
+      create(:audit_log, trip: trip, action: "journal_entry.deleted",
+                         auditable: entry, summary: "Joel deleted a journal entry")
+
+      get trip_audit_logs_path(trip)
+
+      expect(response.body)
+        .not_to include(restore_trip_journal_entry_path(trip, entry))
+    end
+
+    it "shows no Restore button to a contributor on someone else's entry" do
+      stub_current_user(contributor_user)
+      entry = create(:journal_entry, :discarded, trip: trip, author: admin)
+      create(:audit_log, trip: trip, action: "journal_entry.deleted",
+                         auditable: entry, summary: "Joel deleted a journal entry")
+
+      get trip_audit_logs_path(trip)
+
+      expect(response.body)
+        .not_to include(restore_trip_journal_entry_path(trip, entry))
+    end
+  end
 end
