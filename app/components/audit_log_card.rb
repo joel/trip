@@ -40,7 +40,12 @@ module Components
 
     private
 
+    # Only a deletion row offers restore. Without this gate every row sharing
+    # this auditable_id (created/updated/restored/…) would show the button,
+    # because @restorable is keyed by auditable_id, not by event.
     def restorable_record
+      return nil unless @log.action.to_s.end_with?(".deleted")
+
       @restorable[@log.auditable_id]
     end
 
