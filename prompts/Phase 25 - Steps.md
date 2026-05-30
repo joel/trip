@@ -106,3 +106,19 @@ Append-only audit trail. Plan: `prompts/Phase 25 Improve Persistance.md`.
   body is not a column so it never appears in the feed diff (agreed out of
   scope). Request specs (shows/reverts/no-button/404). Verified live: feed
   Revert on a "Name: Foo → Bar" row restored the name to "Foo".
+
+## Step 9c — Review feedback (PR #193 Codex bot)
+- One P2: trips `?discarded=1` trash view was gated only in the view, not the
+  controller — a non-restorer could list discarded trip names/dates. Fixed
+  `52df38d`: `@discarded = params[:discarded].present? && allowed_to?(:restore?,
+  Trip)`; specs cover both paths. Replied + thread resolved.
+
+## Step 9d — Documentation
+- `0b9bbfe` — added "Persistence safety (Phase 25)" section to `AGENTS.md`
+  (parallel to Audit Journal) and `docs/persistence-safety.md` (Mermaid
+  lifecycle + delete/restore sequence + revert flow + file map); linked both from
+  `README.md`. Authored via the documentation-manager agent, then hardened the
+  Mermaid (newlines → single-line/`<br/>`, removed a pipe from a flowchart label
+  that would confuse the parser).
+- `2a1efcd` — corrected a stale "Text + YAML" comment in the object_changes
+  migration (serializer is JSON).
