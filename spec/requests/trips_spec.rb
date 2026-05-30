@@ -13,6 +13,25 @@ RSpec.describe "/trips" do
       get trips_path
       expect(response).to be_successful
     end
+
+    it "shows the trash view (?discarded=1) to a superadmin" do
+      gone = create(:trip, :discarded, name: "Gone Trip", created_by: admin)
+      get trips_path(discarded: 1)
+      expect(response.body).to include("Gone Trip")
+      expect(response.body).to include(restore_trip_path(gone))
+    end
+
+    it "hides discarded trips from a non-restorer requesting ?discarded=1" do
+      member = create(:user)
+      trip = create(:trip, :discarded, name: "Secret Gone", created_by: admin)
+      create(:trip_membership, trip: trip, user: member, role: :contributor)
+      stub_current_user(member)
+
+      get trips_path(discarded: 1)
+
+      expect(response).to be_successful
+      expect(response.body).not_to include("Secret Gone")
+    end
   end
 
   describe "GET /trips/:id" do
