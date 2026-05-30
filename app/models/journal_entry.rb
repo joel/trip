@@ -17,6 +17,12 @@ class JournalEntry < ApplicationRecord
   has_many :subscribers, through: :journal_entry_subscriptions,
                          source: :user
 
+  # Version the title. `only: [:name]` already excludes discarded_at, so a
+  # discard never creates a title version. The rich-text *content* (body) is a
+  # separate ActionText::RichText record, versioned via the paper_trail
+  # initializer (config/initializers/paper_trail_action_text.rb).
+  has_paper_trail only: %i[name], on: %i[create update]
+
   validates :name, presence: true
   validates :entry_date, presence: true
 

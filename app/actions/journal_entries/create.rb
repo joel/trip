@@ -12,9 +12,9 @@ module JournalEntries
     private
 
     def persist(params, trip, user)
-      entry = trip.journal_entries.create!(
-        params.merge(author: user)
-      )
+      entry = PaperTrail.request(whodunnit: Current.actor&.id) do
+        trip.journal_entries.create!(params.merge(author: user))
+      end
       Success(entry)
     rescue ActiveRecord::RecordInvalid => e
       Failure(e.record.errors)
