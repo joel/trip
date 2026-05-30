@@ -6,6 +6,10 @@ sections, items), namespaced under `Checklists::` and enforced by
 extracted from the layered `app/` tree — treat it as a **pre-Rails-Engine**
 unit: everything the domain needs lives here, and its boundary is machine-checked.
 
+> 📊 **Visual guide:** [`ARCHITECTURE.md`](ARCHITECTURE.md) has Mermaid diagrams
+> of the setup, isolation, request/event flow, and the recipe for the next pack
+> (plus an editable [Excalidraw scene](../../designs/phase-24-checklists-pack.excalidraw)).
+
 ## Layout
 
 ```
