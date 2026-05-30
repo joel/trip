@@ -7,6 +7,7 @@ class CommentsController < ApplicationController
   before_action :set_trip
   before_action :set_journal_entry
   before_action :set_comment, only: %i[update destroy]
+  before_action :set_discarded_comment, only: %i[restore]
   before_action :authorize_comment!
 
   def create
@@ -56,6 +57,12 @@ class CommentsController < ApplicationController
     end
   end
 
+  def restore
+    Comments::Restore.new.call(comment: @comment)
+    redirect_to trip_path(@trip, anchor: dom_id(@journal_entry)),
+                notice: "Comment restored."
+  end
+
   private
 
   def set_trip
@@ -70,6 +77,11 @@ class CommentsController < ApplicationController
 
   def set_comment
     @comment = @journal_entry.comments.find(params[:id])
+  end
+
+  # Restore targets a soft-deleted comment, hidden by the default kept scope.
+  def set_discarded_comment
+    @comment = @journal_entry.comments.with_discarded.find(params[:id])
   end
 
   def authorize_comment!

@@ -6,6 +6,7 @@ class JournalEntriesController < ApplicationController
   before_action :require_authenticated_user!
   before_action :set_trip
   before_action :set_journal_entry, only: %i[edit update destroy]
+  before_action :set_discarded_journal_entry, only: %i[restore]
   before_action :authorize_journal_entry!
 
   def new
@@ -63,6 +64,12 @@ class JournalEntriesController < ApplicationController
     redirect_to @trip, notice: "Entry deleted.", status: :see_other
   end
 
+  def restore
+    JournalEntries::Restore.new.call(journal_entry: @journal_entry)
+    redirect_to trip_path(@trip, anchor: dom_id(@journal_entry)),
+                notice: "Entry restored."
+  end
+
   private
 
   def set_trip
@@ -71,6 +78,11 @@ class JournalEntriesController < ApplicationController
 
   def set_journal_entry
     @journal_entry = @trip.journal_entries.find(params[:id])
+  end
+
+  # Restore targets a soft-deleted entry, hidden by the default kept scope.
+  def set_discarded_journal_entry
+    @journal_entry = @trip.journal_entries.with_discarded.find(params[:id])
   end
 
   def authorize_journal_entry!

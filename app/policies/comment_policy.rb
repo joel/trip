@@ -17,6 +17,11 @@ class CommentPolicy < ApplicationPolicy
     (superadmin? || own_comment?) && trip.commentable?
   end
 
+  # Mirrors destroy? — whoever may soft-delete may restore.
+  def restore?
+    (superadmin? || own_comment?) && trip.commentable?
+  end
+
   private
 
   def trip

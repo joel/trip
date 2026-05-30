@@ -27,10 +27,17 @@ Rails.application.routes.draw do
   # Core domain
   resources :trips do
     resources :journal_entries, except: %i[index show] do
+      member do
+        patch :restore
+      end
       resource :subscription,
                only: %i[create destroy],
                controller: "journal_entry_subscriptions"
-      resources :comments, only: %i[create update destroy]
+      resources :comments, only: %i[create update destroy] do
+        member do
+          patch :restore
+        end
+      end
       resources :reactions, only: %i[create destroy]
     end
     # Checklist controllers live in the Checklists pack (Checklists:: module).
@@ -55,6 +62,7 @@ Rails.application.routes.draw do
     resources :audit_logs, only: [:index], path: "activity"
     member do
       patch :transition
+      patch :restore
       get :gallery
     end
   end

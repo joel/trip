@@ -4,16 +4,17 @@ class TripsController < ApplicationController
   before_action :require_authenticated_user!
   before_action :set_trip,
                 only: %i[show edit update destroy transition gallery]
+  before_action :set_discarded_trip, only: %i[restore]
   before_action :authorize_trip!
 
   def index
-    @trips = if current_user.role?(:superadmin)
-               Trip.all
-             else
-               current_user.trips
-             end
+    base = current_user.role?(:superadmin) ? Trip.all : current_user.trips
+    @discarded = params[:discarded].present?
+    # .with_discarded.discarded — a bare .discarded would self-contradict the
+    # default kept scope (discarded_at IS NULL AND IS NOT NULL).
+    @trips = @discarded ? base.with_discarded.discarded : base
     render Views::Trips::Index.new(
-      trips: @trips.order(created_at: :desc)
+      trips: @trips.order(created_at: :desc), discarded: @discarded
     )
   end
 
@@ -92,6 +93,11 @@ class TripsController < ApplicationController
                             status: :see_other
   end
 
+  def restore
+    Trips::Restore.new.call(trip: @trip)
+    redirect_to trip_path(@trip), notice: "Trip restored."
+  end
+
   def transition
     result = Trips::TransitionState.new.call(
       trip: @trip, new_state: params[:state]
@@ -111,6 +117,11 @@ class TripsController < ApplicationController
 
   def set_trip
     @trip = Trip.find(params[:id])
+  end
+
+  # Restore targets a soft-deleted trip, hidden by the default kept scope.
+  def set_discarded_trip
+    @trip = Trip.with_discarded.find(params[:id])
   end
 
   def authorize_trip!
