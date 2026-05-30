@@ -13,7 +13,7 @@ class AuditLog
       "videos_added" => "added videos to",
       "toggled" => "toggled an item in", "submitted" => "submitted",
       "approved" => "approved", "rejected" => "rejected",
-      "sent" => "sent", "accepted" => "accepted"
+      "sent" => "sent", "accepted" => "accepted", "restored" => "restored"
     }.freeze
 
     # Namespaced models (extracted into packs) need an explicit mapping so the
@@ -58,7 +58,9 @@ class AuditLog
     # --- per-entity subjects -------------------------------------------
 
     def trip_subject
-      trip = Trip.find_by(id: @payload[:trip_id])
+      # with_discarded: delete events fire after the record is soft-deleted, so
+      # the default `kept` scope would hide it and lose the summary.
+      trip = Trip.with_discarded.find_by(id: @payload[:trip_id])
       name = trip&.name || @payload[:trip_name]
       base(@payload[:trip_id], trip_id: @payload[:trip_id],
                                record: trip, owner: trip&.created_by,
@@ -66,19 +68,19 @@ class AuditLog
     end
 
     def journal_entry_subject
-      entry = JournalEntry.find_by(id: @payload[:journal_entry_id])
+      entry = JournalEntry.with_discarded.find_by(id: @payload[:journal_entry_id])
       base(@payload[:journal_entry_id],
            trip_id: @payload[:trip_id], record: entry,
            owner: entry&.author,
            target: entry ? %(journal entry "#{entry.name}") : "a journal entry")
     end
 
-    # Resolve trip via the (surviving) journal entry, not the comment:
-    # comment.deleted is emitted after destroy!, so the comment row is
-    # gone and only journal_entry_id is in the payload.
+    # Resolve trip via the journal entry (its id is always in the payload).
+    # with_discarded: a comment/entry may be soft-deleted by the time the event
+    # is built, and the default `kept` scope would hide it.
     def comment_subject
-      comment = Comment.find_by(id: @payload[:comment_id])
-      entry = JournalEntry.find_by(id: @payload[:journal_entry_id])
+      comment = Comment.with_discarded.find_by(id: @payload[:comment_id])
+      entry = JournalEntry.with_discarded.find_by(id: @payload[:journal_entry_id])
       base(@payload[:comment_id], trip_id: entry&.trip_id, record: comment,
                                   owner: comment&.user, target: "a comment")
     end
@@ -98,9 +100,9 @@ class AuditLog
       when "Trip"
         @payload[:reactable_id]
       when "JournalEntry"
-        JournalEntry.find_by(id: @payload[:reactable_id])&.trip_id
+        JournalEntry.with_discarded.find_by(id: @payload[:reactable_id])&.trip_id
       when "Comment"
-        Comment.find_by(id: @payload[:reactable_id])
+        Comment.with_discarded.find_by(id: @payload[:reactable_id])
                &.journal_entry&.trip_id
       end
     end
