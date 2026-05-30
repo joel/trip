@@ -94,6 +94,22 @@ RSpec.describe "/trips/:trip_id/activity" do
         .not_to include(restore_trip_journal_entry_path(trip, entry))
     end
 
+    it "attaches Restore only to deletion rows, not other events" do
+      stub_current_user(admin)
+      entry = create(:journal_entry, :discarded, trip: trip)
+      create(:audit_log, trip: trip, action: "journal_entry.deleted",
+                         auditable: entry, summary: "Joel deleted a journal entry")
+      create(:audit_log, trip: trip, action: "journal_entry.updated",
+                         auditable: entry, summary: "Joel updated a journal entry")
+      create(:audit_log, trip: trip, action: "journal_entry.restored",
+                         auditable: entry, summary: "Joel restored a journal entry")
+
+      get trip_audit_logs_path(trip)
+
+      # One Restore button for the single deletion row, not one per event.
+      expect(response.body.scan("Restore").size).to eq(1)
+    end
+
     it "shows no Restore button to a contributor on someone else's entry" do
       stub_current_user(contributor_user)
       entry = create(:journal_entry, :discarded, trip: trip, author: admin)
