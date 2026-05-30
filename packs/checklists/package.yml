@@ -2,9 +2,8 @@
 # domain (checklists, sections, items) under the `Checklists::` namespace.
 # Treated as a pre-Rails-Engine extraction.
 #
-# enforce_dependencies is turned on in a follow-up step once the baseline is
-# green. Privacy enforcement (packwerk-extensions) is deferred to a later phase.
-enforce_dependencies: false
+# Privacy enforcement (packwerk-extensions) is deferred to a later phase.
+enforce_dependencies: true
 
 # The root package holds shared foundations this pack builds on:
 # ApplicationRecord, ApplicationPolicy, ApplicationController, BaseAction,
