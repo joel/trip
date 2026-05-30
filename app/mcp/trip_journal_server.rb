@@ -9,8 +9,8 @@ class TripJournalServer
     Tools::AddReaction,
     Tools::UpdateTrip,
     Tools::TransitionTrip,
-    Tools::ToggleChecklistItem,
-    Tools::ListChecklists,
+    Checklists::Tools::ToggleItem,
+    Checklists::Tools::List,
     Tools::GetTripStatus,
     Tools::AddJournalImages,
     Tools::UploadJournalImages,
@@ -25,10 +25,10 @@ class TripJournalServer
     Tools::DeleteJournalEntry,
     Tools::UpdateComment,
     Tools::DeleteComment,
-    Tools::CreateChecklist,
-    Tools::UpdateChecklist,
-    Tools::DeleteChecklist,
-    Tools::CreateChecklistItem
+    Checklists::Tools::Create,
+    Checklists::Tools::Update,
+    Checklists::Tools::Delete,
+    Checklists::Tools::CreateItem
   ].freeze
 
   def self.build(server_context: {})

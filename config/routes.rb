@@ -33,11 +33,15 @@ Rails.application.routes.draw do
       resources :comments, only: %i[create update destroy]
       resources :reactions, only: %i[create destroy]
     end
-    resources :checklists do
-      resources :checklist_sections, only: %i[create destroy]
-      resources :checklist_items, only: %i[create destroy] do
-        member do
-          patch :toggle
+    # Checklist controllers live in the Checklists pack (Checklists:: module).
+    # scope module: keeps the URLs/route helpers un-namespaced.
+    scope module: :checklists do
+      resources :checklists do
+        resources :checklist_sections, only: %i[create destroy]
+        resources :checklist_items, only: %i[create destroy] do
+          member do
+            patch :toggle
+          end
         end
       end
     end

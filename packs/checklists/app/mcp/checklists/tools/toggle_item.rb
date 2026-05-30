@@ -1,0 +1,45 @@
+# frozen_string_literal: true
+
+module Checklists
+  module Tools
+    class ToggleItem < ::Tools::BaseTool
+      tool_name "toggle_checklist_item"
+      description "Toggle a checklist item's completion status"
+
+      input_schema(
+        properties: {
+          checklist_item_id: {
+            type: "string",
+            description: "Checklist item UUID"
+          }
+        },
+        required: %w[checklist_item_id]
+      )
+
+      def self.call(checklist_item_id:, _server_context: {})
+        item = Checklists::Item.find(checklist_item_id)
+        require_writable!(item.checklist_section.checklist.trip)
+
+        result = Checklists::Items::Toggle.new.call(
+          checklist_item: item
+        )
+
+        case result
+        in Dry::Monads::Success(toggled)
+          success_response(
+            id: toggled.id, content: toggled.content,
+            completed: toggled.completed
+          )
+        in Dry::Monads::Failure(errors)
+          error_response(errors)
+        end
+      rescue ToolError => e
+        error_response(e.message)
+      rescue ActiveRecord::RecordNotFound
+        error_response(
+          "Checklist item not found: #{checklist_item_id}"
+        )
+      end
+    end
+  end
+end

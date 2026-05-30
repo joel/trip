@@ -11,7 +11,7 @@ Rails.application.config.after_initialize do
   Rails.event.subscribe(TripMembershipSubscriber.new) { |e| e[:name].start_with?("trip_membership.") }
   Rails.event.subscribe(CommentSubscriber.new) { |e| e[:name].start_with?("comment.") }
   Rails.event.subscribe(ReactionSubscriber.new) { |e| e[:name].start_with?("reaction.") }
-  Rails.event.subscribe(ChecklistSubscriber.new) { |e| e[:name].start_with?("checklist") }
+  Rails.event.subscribe(Checklists::Subscriber.new) { |e| e[:name].start_with?("checklist") }
   Rails.event.subscribe(ExportSubscriber.new) { |e| e[:name].start_with?("export.") }
   Rails.event.subscribe(NotificationSubscriber.new) do |e|
     e[:name].in?(%w[journal_entry.created comment.created])

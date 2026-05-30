@@ -1,0 +1,17 @@
+# The Checklists pack — a self-contained vertical slice for the checklist
+# domain (checklists, sections, items) under the `Checklists::` namespace.
+# Treated as a pre-Rails-Engine extraction.
+#
+# enforce_dependencies is turned on in a follow-up step once the baseline is
+# green. Privacy enforcement (packwerk-extensions) is deferred to a later phase.
+enforce_dependencies: false
+
+# The root package holds shared foundations this pack builds on:
+# ApplicationRecord, ApplicationPolicy, ApplicationController, BaseAction,
+# Components::Base, Views::Base, Trip, User, Tools::BaseTool.
+dependencies:
+  - "."
+
+metadata:
+  owner: trip-journal
+  namespace: Checklists

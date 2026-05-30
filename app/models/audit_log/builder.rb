@@ -16,6 +16,13 @@ class AuditLog
       "sent" => "sent", "accepted" => "accepted"
     }.freeze
 
+    # Namespaced models (extracted into packs) need an explicit mapping so the
+    # stored polymorphic auditable_type resolves back to a real constant.
+    AUDITABLE_TYPE_OVERRIDES = {
+      "checklist" => "Checklists::Checklist",
+      "checklist_item" => "Checklists::Item"
+    }.freeze
+
     def initialize(event)
       @name = event[:name].to_s
       @payload = event[:payload] || {}
@@ -99,7 +106,7 @@ class AuditLog
     end
 
     def checklist_subject
-      list = Checklist.find_by(id: @payload[:checklist_id])
+      list = Checklists::Checklist.find_by(id: @payload[:checklist_id])
       name = list&.name
       base(@payload[:checklist_id], trip_id: @payload[:trip_id],
                                     record: list,
@@ -107,7 +114,7 @@ class AuditLog
     end
 
     def checklist_item_subject
-      list = Checklist.find_by(id: @payload[:checklist_id])
+      list = Checklists::Checklist.find_by(id: @payload[:checklist_id])
       base(@payload[:checklist_item_id], trip_id: list&.trip_id,
                                          record: list,
                                          target: list ? %(checklist "#{list.name}") : "a checklist")
@@ -136,9 +143,11 @@ class AuditLog
                                           target: "#{member&.name || "a member"} from the trip")
     end
 
-    # auditable_type is the entity class name (trip_membership -> TripMembership)
+    # auditable_type is the entity class name (trip_membership -> TripMembership),
+    # with AUDITABLE_TYPE_OVERRIDES applied for namespaced (packed) models.
     def base(id, trip_id:, target:, record: nil, owner: nil)
-      { auditable_type: @entity.classify, auditable_id: id,
+      type = AUDITABLE_TYPE_OVERRIDES.fetch(@entity, @entity.classify)
+      { auditable_type: type, auditable_id: id,
         trip_id: trip_id, auditable: record, owner: owner, target: target }
     end
 
