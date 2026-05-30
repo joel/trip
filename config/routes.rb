@@ -59,7 +59,11 @@ Rails.application.routes.draw do
         get :download
       end
     end
-    resources :audit_logs, only: [:index], path: "activity"
+    resources :audit_logs, only: [:index], path: "activity" do
+      member do
+        patch :revert
+      end
+    end
     member do
       patch :transition
       patch :restore

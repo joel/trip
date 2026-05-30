@@ -18,11 +18,14 @@ module Components
     }.freeze
 
     # restorable maps auditable_id => the currently-discarded record the viewer
-    # may restore (computed + authorised in the controller). Defaults to {} so
-    # the live-stream render path (RecordAuditLogJob) is unaffected.
-    def initialize(audit_log:, restorable: {})
+    # may restore; revertable maps audit_log_id => the kept record whose update
+    # this row may revert (both computed + authorised in the controller).
+    # Default to {} so the live-stream render path (RecordAuditLogJob) is
+    # unaffected.
+    def initialize(audit_log:, restorable: {}, revertable: {})
       @log = audit_log
       @restorable = restorable
+      @revertable = revertable
     end
 
     def view_template
@@ -34,11 +37,30 @@ module Components
           render_state_change if state_change?
           render_meta
           render_restore if restorable_record
+          render_revert if revertable_record
         end
       end
     end
 
     private
+
+    # Keyed by log id (not auditable_id): each update row reverts its own diff.
+    def revertable_record
+      @revertable[@log.id]
+    end
+
+    def render_revert
+      button_to(
+        "Revert",
+        view_context.revert_trip_audit_log_path(@log.trip_id, @log.id),
+        method: :patch,
+        class: "mt-3 ha-button ha-button-secondary text-xs",
+        form: {
+          class: "inline-flex",
+          data: { turbo_confirm: "Revert this change?" }
+        }
+      )
+    end
 
     # Only a deletion row offers restore. Without this gate every row sharing
     # this auditable_id (created/updated/restored/…) would show the button,
