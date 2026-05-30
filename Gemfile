@@ -118,9 +118,6 @@ group :development do
 
   gem "overcommit", require: false
 
-  # Renders the pack dependency graph (bundle exec graphwerk update)
-  gem "graphwerk", require: false
-
   gem "bundle-audit", require: false
   gem "erb_lint", require: false
   gem "rubocop", require: false
