@@ -347,4 +347,6 @@ config/
 docs/
   architecture.excalidraw       # App architecture diagram
   mcp-architecture.excalidraw   # MCP server diagram
+  notification-center.md        # Notifications feature guide
+  persistence-safety.md         # Soft delete + versioning + restore/revert (Phase 25)
 ```
