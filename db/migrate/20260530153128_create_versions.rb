@@ -3,8 +3,9 @@
 # Creates the paper_trail `versions` table. UUID-corrected for this app:
 # the table itself uses a UUID PK and `item_id` is a UUID (all app PKs are
 # UUID, stored via the sqlite_crypto fork — mirrors db/audit_logs).
-# `object` / `object_changes` keep paper_trail's default text + YAML serializer
-# (most battle-tested for `reify`); SQLite ignores the byte limit.
+# `object` / `object_changes` are text columns holding JSON (the JSON serializer
+# is configured in config/initializers/paper_trail.rb so reify avoids Psych 4's
+# safe_load class restrictions); SQLite ignores the byte limit.
 class CreateVersions < ActiveRecord::Migration[8.1]
   TEXT_BYTES = 1_073_741_823
 
