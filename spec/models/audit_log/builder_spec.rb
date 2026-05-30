@@ -79,6 +79,17 @@ RSpec.describe AuditLog::Builder do
       expect(row[:summary]).to eq("Joel deleted a journal entry")
       expect(row[:trip_id]).to eq(trip.id)
     end
+
+    # Soft delete (Phase 25): deleted entries are discarded, not destroyed, so
+    # the builder resolves them via with_discarded and keeps the named summary.
+    it "journal_entry.deleted resolves the discarded entry by name" do
+      entry.discard!
+      Current.actor = actor
+      row = row_for("journal_entry.deleted",
+                    journal_entry_id: entry.id, trip_id: trip.id)
+      expect(row[:summary]).to eq('Joel deleted journal entry "Day 1"')
+      expect(row[:trip_id]).to eq(trip.id)
+    end
   end
 
   describe "comment events" do
@@ -104,6 +115,21 @@ RSpec.describe AuditLog::Builder do
 
       row = row_for("comment.deleted",
                     comment_id: comment_id, journal_entry_id: entry.id)
+
+      expect(row[:trip_id]).to eq(trip.id)
+      expect(row[:summary]).to eq("Joel deleted a comment")
+    end
+
+    # Soft delete (Phase 25): a discarded comment survives, so with_discarded
+    # still resolves trip scoping from the entry.
+    it "comment.deleted keeps trip scoping after the comment is discarded" do
+      entry = create(:journal_entry, trip: trip)
+      comment = create(:comment, journal_entry: entry)
+      comment.discard!
+      Current.actor = actor
+
+      row = row_for("comment.deleted",
+                    comment_id: comment.id, journal_entry_id: entry.id)
 
       expect(row[:trip_id]).to eq(trip.id)
       expect(row[:summary]).to eq("Joel deleted a comment")

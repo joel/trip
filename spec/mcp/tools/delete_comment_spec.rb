@@ -15,6 +15,8 @@ RSpec.describe Tools::DeleteComment do
       expect(data["deleted"]).to be(true)
       expect(data["id"]).to eq(comment.id)
       expect(Comment.exists?(comment.id)).to be(false)
+      # Soft delete: the row survives and is recoverable.
+      expect(Comment.with_discarded.find(comment.id)).to be_discarded
     end
 
     it "allows deletion on a finished (commentable) trip" do

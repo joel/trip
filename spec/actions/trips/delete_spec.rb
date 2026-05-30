@@ -3,10 +3,16 @@
 require "rails_helper"
 
 RSpec.describe Trips::Delete do
-  it "destroys the trip" do
+  it "soft-deletes the trip (removes it from the kept scope)" do
     trip = create(:trip)
     expect { described_class.new.call(trip: trip) }
       .to change(Trip, :count).by(-1)
+  end
+
+  it "keeps the row recoverable via with_discarded" do
+    trip = create(:trip)
+    described_class.new.call(trip: trip)
+    expect(Trip.with_discarded.find(trip.id)).to be_discarded
   end
 
   it "emits trip.deleted with the id and name captured before destroy" do
