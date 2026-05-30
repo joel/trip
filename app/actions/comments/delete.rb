@@ -13,7 +13,7 @@ module Comments
     private
 
     def destroy(comment)
-      comment.destroy!
+      comment.discard!
       Success()
     end
 
