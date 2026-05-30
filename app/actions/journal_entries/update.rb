@@ -11,7 +11,9 @@ module JournalEntries
     private
 
     def persist(journal_entry, params)
-      journal_entry.update!(params)
+      PaperTrail.request(whodunnit: Current.actor&.id) do
+        journal_entry.update!(params)
+      end
       Success()
     rescue ActiveRecord::RecordInvalid => e
       Failure(e.record.errors)
