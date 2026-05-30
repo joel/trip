@@ -26,20 +26,22 @@ end
 require "thor"
 
 namespace :project do
-  desc "Run non-system specs"
+  desc "Run non-system specs (root app + packs)"
   task tests: :environment do
-    sh %(bundle exec rspec spec --exclude-pattern "spec/system/**/*_spec.rb")
+    sh %(bundle exec rspec spec packs --exclude-pattern "**/system/**/*_spec.rb")
   end
 
-  desc "Run system specs"
+  desc "Run system specs (root app + packs)"
   task "system-tests" => :environment do
-    sh "bundle exec rspec spec/system"
+    pack_system_dirs = Dir.glob("packs/*/spec/system")
+    sh "bundle exec rspec spec/system #{pack_system_dirs.join(" ")}".strip
   end
 
-  desc "Run ErbLint and RuboCop lint checks"
+  desc "Run ErbLint, RuboCop and Packwerk boundary checks"
   task lint: :environment do
     sh "bin/erb_lint --lint-all"
     sh "bundle exec rubocop --lint --parallel --format simple"
+    sh "bundle exec packwerk check"
   end
 
   desc "Autocorrect ErbLint and RuboCop lint issues"
