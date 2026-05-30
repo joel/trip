@@ -171,12 +171,15 @@ Events follow the pattern `entity.action`:
 | `trip.updated` | Trips::Update | `{ trip_id, changes }` |
 | `trip.state_changed` | Trips::TransitionState | `{ trip_id, from_state, to_state }` |
 | `trip.deleted` | Trips::Delete | `{ trip_id, trip_name }` |
+| `trip.restored` | Trips::Restore | `{ trip_id, trip_name }` |
 | `journal_entry.created` | JournalEntries::Create | `{ journal_entry_id, trip_id, actor_id }` |
 | `journal_entry.updated` | JournalEntries::Update | `{ journal_entry_id, trip_id, changes }` |
 | `journal_entry.deleted` | JournalEntries::Delete | `{ journal_entry_id, trip_id }` |
+| `journal_entry.restored` | JournalEntries::Restore | `{ journal_entry_id, trip_id }` |
 | `comment.created` | Comments::Create | `{ comment_id, journal_entry_id, actor_id }` |
 | `comment.updated` | Comments::Update | `{ comment_id, journal_entry_id, changes }` |
 | `comment.deleted` | Comments::Delete | `{ comment_id, journal_entry_id }` |
+| `comment.restored` | Comments::Restore | `{ comment_id, journal_entry_id }` |
 | `reaction.created` | Reactions::Toggle | `{ reaction_id, reactable_type, reactable_id }` |
 | `reaction.removed` | Reactions::Toggle | `{ reaction_id, reactable_type, reactable_id }` |
 | `export.requested` | Exports::RequestExport | `{ export_id, trip_id, user_id, format }` |
