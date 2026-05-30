@@ -56,6 +56,11 @@ gem "rubyzip", require: "zip"
 # View components
 gem "phlex-rails", "~> 2.0"
 
+# Modularity — domain packs with enforced boundaries (Packwerk).
+# packs-rails registers each pack's autoload/eager-load paths at boot, so it
+# must load in every environment (not just dev/test).
+gem "packs-rails", "~> 0.1"
+
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
 
@@ -94,6 +99,9 @@ group :development, :test do
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "brakeman", require: false
 
+  # Static analysis for pack boundaries [https://github.com/Shopify/packwerk]
+  gem "packwerk", "~> 3.3", require: false
+
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
 
@@ -109,6 +117,9 @@ group :development do
   gem "web-console"
 
   gem "overcommit", require: false
+
+  # Renders the pack dependency graph (bundle exec graphwerk update)
+  gem "graphwerk", require: false
 
   gem "bundle-audit", require: false
   gem "erb_lint", require: false
