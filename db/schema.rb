@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_30_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_30_153129) do
   create_table "access_requests", id: uuid, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -314,6 +314,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_30_100000) do
     t.integer "status", default: 1, null: false
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
+  end
+
+  create_table "versions", id: uuid, force: :cascade do |t|
+    t.datetime "created_at"
+    t.string "event", null: false
+    t.string "item_id", limit: 36, null: false
+    t.string "item_type", null: false
+    t.text "object", limit: 1073741823
+    t.text "object_changes", limit: 1073741823
+    t.string "whodunnit"
+    t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
   end
 
   add_foreign_key "access_requests", "users", column: "reviewed_by_id"
