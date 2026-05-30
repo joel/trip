@@ -45,6 +45,10 @@ gem "action_policy"
 # Business logic
 gem "dry-monads", "~> 1.10"
 
+# Persistence safety — soft-delete (discard) + record versioning (paper_trail)
+gem "discard", "~> 2.0"
+gem "paper_trail", "~> 17.0"
+
 # MCP (Model Context Protocol) server
 gem "mcp", "~> 0.17"
 
