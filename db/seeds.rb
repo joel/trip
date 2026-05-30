@@ -10,7 +10,7 @@ require "open-uri"
 # ---------------------------------------------------------------------------
 
 def log(msg)
-  puts "  #{msg}"
+  Rails.logger.debug { "  #{msg}" }
 end
 
 def create_user(email:, name:, roles:)
@@ -65,7 +65,7 @@ end
 # 1. Users
 # ---------------------------------------------------------------------------
 
-puts "\n--- Users ---"
+Rails.logger.debug "\n--- Users ---"
 
 admin = create_user(
   email: ENV.fetch("ADMIN_EMAIL", "joel@acme.org"),
@@ -97,7 +97,7 @@ Agent.find_or_create_by!(slug: "maree") do |a|
   a.name = "Marée"
   a.user = maree
 end
-log "Agents: #{Agent.pluck(:slug).join(', ')}"
+log "Agents: #{Agent.pluck(:slug).join(", ")}"
 
 alice = create_user(
   email: "alice@acme.org",
@@ -125,7 +125,7 @@ log "Created #{User.count} users"
 # 2. Trips (one per state)
 # ---------------------------------------------------------------------------
 
-puts "\n--- Trips ---"
+Rails.logger.debug "\n--- Trips ---"
 
 japan = Trip.find_or_create_by!(name: "Japan Spring Tour") do |t|
   t.created_by = admin
@@ -172,7 +172,7 @@ log "#{patagonia.name} [#{patagonia.state}]"
 # 3. Trip Memberships
 # ---------------------------------------------------------------------------
 
-puts "\n--- Memberships ---"
+Rails.logger.debug "\n--- Memberships ---"
 
 memberships = {
   japan => { admin => :contributor, alice => :contributor,
@@ -199,7 +199,7 @@ log "Created #{TripMembership.count} memberships"
 # 4. Journal Entries (with rich text + images)
 # ---------------------------------------------------------------------------
 
-puts "\n--- Journal Entries ---"
+Rails.logger.debug "\n--- Journal Entries ---"
 
 # -- Japan Spring Tour --
 jp1 = seed_entry(
@@ -217,7 +217,7 @@ jp1 = seed_entry(
   image_seeds: %w[japan-tokyo-1 japan-tokyo-2]
 )
 
-jp2 = seed_entry(
+seed_entry(
   trip: japan, author: alice, name: "Shibuya and Harajuku",
   date: 28.days.ago.to_date,
   location: "Shibuya, Tokyo", lat: 35.6595, lng: 139.7005,
@@ -232,7 +232,7 @@ jp2 = seed_entry(
   image_seeds: %w[japan-shibuya-1 japan-harajuku-1]
 )
 
-jp3 = seed_entry(
+seed_entry(
   trip: japan, author: bob, name: "Day Trip to Kamakura",
   date: 25.days.ago.to_date,
   location: "Kamakura, Japan", lat: 35.3192, lng: 139.5467,
@@ -305,7 +305,7 @@ ic2 = seed_entry(
   image_seeds: %w[iceland-thingvellir-1 iceland-golden-1]
 )
 
-ic3 = seed_entry(
+seed_entry(
   trip: iceland, author: carol, name: "Glacier Lagoon",
   date: 3.days.ago.to_date,
   location: "Jokulsarlon, Iceland", lat: 64.0784, lng: -16.2306,
@@ -320,7 +320,7 @@ ic3 = seed_entry(
 )
 
 # -- Patagonia Trek --
-pt1 = seed_entry(
+seed_entry(
   trip: patagonia, author: carol, name: "Arriving in El Calafate",
   date: 90.days.ago.to_date,
   location: "El Calafate, Argentina", lat: -50.3382, lng: -72.2647,
@@ -369,7 +369,7 @@ log "Created #{JournalEntry.count} journal entries"
 # 5. Comments
 # ---------------------------------------------------------------------------
 
-puts "\n--- Comments ---"
+Rails.logger.debug "\n--- Comments ---"
 
 comments_data = [
   [jp1, alice, "Welcome to Japan! The cherry blossoms sound magical."],
@@ -397,7 +397,7 @@ log "Created #{Comment.count} comments"
 # 6. Reactions
 # ---------------------------------------------------------------------------
 
-puts "\n--- Reactions ---"
+Rails.logger.debug "\n--- Reactions ---"
 
 reactions_data = [
   # On trips
@@ -428,18 +428,18 @@ log "Created #{Reaction.count} reactions"
 # 7. Checklists
 # ---------------------------------------------------------------------------
 
-puts "\n--- Checklists ---"
+Rails.logger.debug "\n--- Checklists ---"
 
 def seed_checklist(trip:, name:, sections:)
-  checklist = Checklist.find_or_create_by!(trip: trip, name: name)
+  checklist = Checklists::Checklist.find_or_create_by!(trip: trip, name: name)
   sections.each_with_index do |(section_name, items), si|
-    section = ChecklistSection.find_or_create_by!(
+    section = Checklists::Section.find_or_create_by!(
       checklist: checklist, name: section_name
     ) do |s|
       s.position = si
     end
     items.each_with_index do |(content, done), ii|
-      item = ChecklistItem.find_or_create_by!(
+      item = Checklists::Item.find_or_create_by!(
         checklist_section: section, content: content
       ) do |ci|
         ci.position = ii
@@ -497,15 +497,16 @@ seed_checklist(
   }
 )
 
-log "Created #{Checklist.count} checklists, #{ChecklistItem.count} items"
+log "Created #{Checklists::Checklist.count} checklists, " \
+    "#{Checklists::Item.count} items"
 
 # ---------------------------------------------------------------------------
 # 8. Access Requests
 # ---------------------------------------------------------------------------
 
-puts "\n--- Access Requests ---"
+Rails.logger.debug "\n--- Access Requests ---"
 
-ar_pending = AccessRequest.find_or_create_by!(
+AccessRequest.find_or_create_by!(
   email: "pending-user@example.com"
 )
 
@@ -535,9 +536,9 @@ log "Created #{AccessRequest.count} access requests"
 # 9. Invitations
 # ---------------------------------------------------------------------------
 
-puts "\n--- Invitations ---"
+Rails.logger.debug "\n--- Invitations ---"
 
-inv_pending = Invitation.find_or_create_by!(
+Invitation.find_or_create_by!(
   email: "invited-new@example.com"
 ) do |inv|
   inv.inviter = admin
@@ -570,7 +571,7 @@ log "Created #{Invitation.count} invitations"
 # 10. Exports
 # ---------------------------------------------------------------------------
 
-puts "\n--- Exports ---"
+Rails.logger.debug "\n--- Exports ---"
 
 exp_completed = Export.find_or_create_by!(
   trip: japan, user: admin, format: :markdown
@@ -601,16 +602,18 @@ log "Created #{Export.count} exports"
 # Summary
 # ---------------------------------------------------------------------------
 
-puts "\n=== Seed Complete ==="
-puts "  Users: #{User.count}"
-puts "  Trips: #{Trip.count} " \
-     "(#{Trip.group(:state).count.map { |s, c| "#{s}: #{c}" }.join(', ')})"
-puts "  Memberships: #{TripMembership.count}"
-puts "  Journal Entries: #{JournalEntry.count}"
-puts "  Comments: #{Comment.count}"
-puts "  Reactions: #{Reaction.count}"
-puts "  Checklists: #{Checklist.count}"
-puts "  Access Requests: #{AccessRequest.count}"
-puts "  Invitations: #{Invitation.count}"
-puts "  Exports: #{Export.count}"
-puts ""
+Rails.logger.debug "\n=== Seed Complete ==="
+Rails.logger.debug { "  Users: #{User.count}" }
+Rails.logger.debug do
+  "  Trips: #{Trip.count} " \
+    "(#{Trip.group(:state).count.map { |s, c| "#{s}: #{c}" }.join(", ")})"
+end
+Rails.logger.debug { "  Memberships: #{TripMembership.count}" }
+Rails.logger.debug { "  Journal Entries: #{JournalEntry.count}" }
+Rails.logger.debug { "  Comments: #{Comment.count}" }
+Rails.logger.debug { "  Reactions: #{Reaction.count}" }
+Rails.logger.debug { "  Checklists: #{Checklists::Checklist.count}" }
+Rails.logger.debug { "  Access Requests: #{AccessRequest.count}" }
+Rails.logger.debug { "  Invitations: #{Invitation.count}" }
+Rails.logger.debug { "  Exports: #{Export.count}" }
+Rails.logger.debug ""

@@ -49,6 +49,14 @@ module Catalyst
       # Re-add with explicit namespace
       autoloader.push_dir(Rails.root.join("app/components"), namespace: Components)
       autoloader.push_dir(Rails.root.join("app/views"), namespace: Views)
+
+      # Pack views (packs/<pack>/app/views) carry their own namespace — e.g.
+      # Checklists::Index — so register them at the root namespace. Rails (and
+      # packs-rails) do not autoload app/views by default; pack components are
+      # already registered at the root namespace by packs-rails.
+      Rails.root.glob("packs/*/app/views").each do |dir|
+        autoloader.push_dir(dir)
+      end
     end
 
     # Don't generate system test files.

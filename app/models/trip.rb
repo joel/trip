@@ -19,7 +19,8 @@ class Trip < ApplicationRecord
   has_many :trip_memberships, dependent: :destroy
   has_many :members, through: :trip_memberships, source: :user
   has_many :journal_entries, dependent: :destroy
-  has_many :checklists, dependent: :destroy
+  has_many :checklists, class_name: "Checklists::Checklist",
+                        dependent: :destroy
   has_many :exports, dependent: :destroy
   has_many :reactions, as: :reactable, dependent: :destroy
 
