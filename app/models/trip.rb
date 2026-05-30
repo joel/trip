@@ -11,6 +11,8 @@ class Trip < ApplicationRecord
 
   class InvalidTransitionError < StandardError; end
 
+  include Discard::Model
+
   enum :state, {
     planning: 0, started: 1, cancelled: 2, finished: 3, archived: 4
   }
@@ -25,6 +27,12 @@ class Trip < ApplicationRecord
   has_many :reactions, as: :reactable, dependent: :destroy
 
   validates :name, presence: true
+
+  default_scope -> { kept }
+
+  # Cascade discard down to entries (which cascade to their comments). Restore
+  # is parent-only by design, so there is no after_undiscard counterpart.
+  after_discard { journal_entries.kept.find_each(&:discard) }
 
   def transition_to!(new_state)
     new_state = new_state.to_sym
