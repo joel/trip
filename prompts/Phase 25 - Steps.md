@@ -77,4 +77,16 @@ Append-only audit trail. Plan: `prompts/Phase 25 Improve Persistance.md`.
   - Dark-mode toggle works.
 
 ## Step 9 — PR
-- _pending push + PR_
+- PR [#193](https://github.com/joel/trip/pull/193); issue moved to In Review.
+
+## Step 9a — Review feedback (restore buttons in the Activity feed)
+- User reported no restore button in the Activity feed. The deferred
+  per-entry/comment restore UI is better placed there (it lists every deletion
+  with context), so added it instead of a separate trash view.
+- `7cf2dee` — `AuditLogsController` batch-loads the discarded auditable per
+  `*.deleted` row (no N+1), authorises with `restore?`, and only offers restore
+  when the parent chain is kept; `AuditLogCard` renders a Restore button_to from
+  denormalised columns (defaults keep the live-stream job render unaffected).
+  Request specs added (shows for restorable own; hidden once restored; hidden to
+  a contributor on another's entry). Verified live: feed Restore button →
+  "Entry restored." → entry back in the kept scope.
