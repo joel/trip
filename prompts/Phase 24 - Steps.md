@@ -61,10 +61,22 @@ Notes (pre-existing, not caused by this change):
   run; each passes in isolation). CI runs with `TEST_BROWSER=rack_test`, which
   is green (93 examples, 0 failures).
 
-## 11. PR review
+## 9–10. PR
 
-_pending_
+- PR [#189](https://github.com/joel/trip/pull/189) — rebase-and-merged to `main`.
+- Recovery note: the two docs commits originally carried `[skip ci]`, which
+  suppressed CI on the PR (violates the project no-`[skip ci]` rule and would
+  have skipped main CI/Deploy after merge). Re-committed without the marker and
+  force-pushed; CI then ran green.
+
+## 13. Release
+
+- Tag/release: **`phase-24`** — <https://github.com/joel/trip/releases/tag/phase-24>
+- Main CI green (run 26684280282) and Deploy green (run 26684280292) for the
+  merge commit before publishing.
 
 ## 12/14. Final summary
 
-_pending_
+| Issue | PR | Release | Status |
+|-------|----|---------|--------|
+| [#188](https://github.com/joel/trip/issues/188) | [#189](https://github.com/joel/trip/pull/189) (merged) | [`phase-24`](https://github.com/joel/trip/releases/tag/phase-24) | **Done** |
