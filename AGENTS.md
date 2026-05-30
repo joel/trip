@@ -156,6 +156,20 @@ Every `Rails.event` domain event is persisted as an append-only `AuditLog` row b
 
 ---
 
+## Persistence safety (Phase 25)
+
+Three complementary safety nets on the user-authored models (`Trip`, `JournalEntry`, `Comment`): **soft delete** (`discard`), **versioning** (`paper_trail`), and the **AuditLog feed** (Phase 21) which surfaces Restore/Revert. Full write-up + diagrams in [`docs/persistence-safety.md`](docs/persistence-safety.md).
+
+- **Delete means discard, not destroy.** The three `*::Delete` actions (`app/actions/{trips,journal_entries,comments}/delete.rb`) call `record.discard!`, never `destroy!`. A real `destroy` no longer fires for these models, so their `dependent: :destroy` associations (memberships, reactions, attachments) only run on an actual hard destroy — which the app no longer triggers. That is *why* restore recovers the whole graph: discard skips validations and `dependent: :destroy`, leaving the children intact.
+- **`default_scope -> { kept }` is the safety guarantee.** Each model includes `Discard::Model` and scopes to `kept`, so discarded rows never leak into any read path — views, MCP `list_*`, exports, counts, and even Rails 8.1 `left_joins` ON-clauses. **Use `with_discarded` on every restore/admin/builder path** that must see deleted rows. `discarded_at` (datetime + index) was added by `db/migrate/*_add_discarded_at_to_critical_models.rb`.
+- **`with_discarded.discarded`, never bare `.discarded`.** A bare `.discarded` self-contradicts the default scope (`discarded_at IS NULL AND IS NOT NULL` → empty). The trips trash view (`?discarded=1`) and `AuditLog::Builder` subject finders both go through `with_discarded` for exactly this reason.
+- **Cascade is down-only.** `Trip after_discard { journal_entries.kept.find_each(&:discard) }`; `JournalEntry after_discard { comments.kept.find_each(&:discard) }`. There is **no `after_undiscard`** — restore is **parent-only** by design (`*::Restore` actions call `undiscard!` and emit `*.restored`).
+- **Versioning lives in two places.** `JournalEntry` has `has_paper_trail only: %i[name]` (the **title**). The rich-text **body** is a separate `ActionText::RichText` row, versioned via `config/initializers/paper_trail_action_text.rb` — **not** a `journal_entries` column, so body edits never appear as Activity-feed column diffs (out of scope, intentional). Writes are wrapped in `PaperTrail.request(whodunnit: Current.actor&.id)` in `JournalEntries::Create`/`Update`.
+- **JSON serializer is mandatory for `reify`.** `config/initializers/paper_trail.rb` sets `PaperTrail.serializer = PaperTrail::Serializers::JSON` — Psych 4 `safe_load` rejects `ActiveSupport::TimeWithZone` on reify (`Psych::DisallowedClass`). The `versions` table is UUID-corrected (`id: :uuid`, `t.uuid :item_id`) to match the app's UUID PKs.
+- **Feed Restore vs Revert.** `AuditLogsController` computes two maps: `build_restorable` (keyed by `auditable_id`) puts a **Restore** button on `*.deleted` rows whose auditable is still discarded and whose parent chain is kept and `restore?` allows it; `build_revertable` (keyed by **audit_log id**, per-row) puts a **Revert** button on `*.updated` rows, re-applying `metadata["changes"]` olds through the record's Update action (a forward audit + version event). `restore?` was added to `Trip`/`JournalEntry`/`Comment` policies mirroring `destroy?`. Routes: `PATCH /trips/:id/{restore, activity/:id/revert}` and the nested entry/comment `restore`.
+
+---
+
 ## 5. Runtime Test Workflow (Mandatory)
 
 After all code changes are committed and tests pass, you **must** perform a live runtime verification before pushing the branch or creating a PR.
