@@ -13,6 +13,7 @@ module AppCLI
       def list
         say("app")
         say("db")
+        say("storage")
       end
 
       desc "status [ENV]", "Check status of services"
@@ -20,6 +21,7 @@ module AppCLI
         manager = manager(env)
         {
           "#{Services::APP_NAME} Db" => manager.db.status,
+          "#{Services::APP_NAME} Storage" => manager.storage.status,
           "#{Services::APP_NAME} App" => manager.app.status
         }.each do |label, service_status|
           say(runner.format_status(label, service_status))
