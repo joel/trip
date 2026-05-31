@@ -244,14 +244,16 @@ module AppCLI
 
       def network_flags
         flags = ["--network #{env_config.network_name}"]
-        # Active Storage signs presigned URLs for the public storage
-        # host; the browser reaches it via Traefik on the host. The app
+        # Active Storage signs presigned URLs for the storage host; the
+        # browser reaches it via Traefik on the host, and the app
         # container must reach the *same* host (presign binds it) for
-        # server-side blob ops — route it to the Docker host where
-        # Traefik :443 lives. Dev only; prod resolves it for real (#44).
-        if env_config.short == "dev"
-          flags << "--add-host=storage.workeverywhere.docker:host-gateway"
-        end
+        # server-side blob ops. Locally there is no real DNS, so point
+        # both the S3 API host and the bucket host at the Docker host
+        # where Traefik :443 terminates. bin/cli only ever runs locally
+        # (real prod uses Kamal), so this applies to dev and the local
+        # production-mode stack alike.
+        flags << "--add-host=storage.workeverywhere.docker:host-gateway"
+        flags << "--add-host=bucket.workeverywhere.docker:host-gateway"
         flags
       end
 
