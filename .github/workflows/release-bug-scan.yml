@@ -40,8 +40,13 @@ jobs:
           if [ -n "${previous}" ]; then
             range="${previous}..${current}"
           else
-            # First release: scan the whole tree.
-            range="${current}"
+            # First release: diff the whole tree against the empty tree so the
+            # scan sees every file as an addition. A bare "${current}" would diff
+            # the tag against the (identical) checked-out working tree — i.e.
+            # nothing. git hash-object derives the empty-tree hash portably
+            # (works for SHA-256 repos too).
+            empty_tree="$(git hash-object -t tree /dev/null)"
+            range="${empty_tree}..${current}"
           fi
           echo "current=${current}"   >> "$GITHUB_OUTPUT"
           echo "previous=${previous}" >> "$GITHUB_OUTPUT"
