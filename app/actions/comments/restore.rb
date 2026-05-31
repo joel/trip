@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 module Comments
+  # Restores a soft-deleted comment: undiscards it into the kept scope and emits
+  # "comment.restored". Resolve the comment via `with_discarded` first (the
+  # default kept scope hides it); its parent entry must be kept for the comment
+  # to be visible once restored. Returns Failure(message) if it is not discarded.
   class Restore < BaseAction
     def call(comment:)
       yield restore(comment)
