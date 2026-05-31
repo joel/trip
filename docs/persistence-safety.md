@@ -117,6 +117,17 @@ dates and comment body. The journal-entry **rich-text body is not a column**, so
 it never appears in the feed diff and is intentionally out of scope for Revert
 (its history lives in `paper_trail` on `ActionText::RichText` instead).
 
+### Where users reach these
+
+- **Restore a deleted trip:** the trips index trash view — `/trips?discarded=1`
+  ("Recently deleted"), superadmin-only, with a per-trip Restore button.
+- **Restore a deleted entry/comment, or revert an edit:** the trip **Activity
+  feed** (`/trips/:id/activity`) — a Restore button on `*.deleted` rows and a
+  Revert button on `*.updated` rows, each shown only to users the policy allows.
+
+Every button is authorised server-side (`restore?` / `update?`), not merely
+hidden in the view.
+
 ---
 
 ## 3. Gotchas / rules

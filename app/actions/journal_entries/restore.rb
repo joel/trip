@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 module JournalEntries
+  # Restores a soft-deleted journal entry: undiscards it into the kept scope and
+  # emits "journal_entry.restored". Parent-only — restoring an entry does not
+  # auto-restore comments that were discarded with it. Load the entry via
+  # `with_discarded` first (the default kept scope hides it). Returns
+  # Failure(message) if it is not discarded.
   class Restore < BaseAction
     def call(journal_entry:)
       yield restore(journal_entry)
