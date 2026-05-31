@@ -17,12 +17,32 @@ module AppCLI
       STORAGE_ROUTER = "catalyst-seaweedfs".freeze
       STORAGE_VOLUME = "catalyst-seaweedfs-data".freeze
       STORAGE_BUCKET = "catalyst".freeze
+      # Virtual-host bucket access: bucket.workeverywhere.docker/<key>
+      # resolves to the catalyst bucket via a Traefik addPrefix
+      # middleware. Both routers share the single S3 gateway on :8333.
+      BUCKET_HOST = "bucket.workeverywhere.docker".freeze
+      BUCKET_ROUTER = "catalyst-bucket".freeze
+      BUCKET_MIDDLEWARE = "catalyst-bucket-prefix".freeze
       # App origin allowed to direct-upload (dev). Prod origin is #44.
       APP_ORIGIN_HOST = "catalyst.workeverywhere.docker".freeze
 
       def initialize(shell:)
         @runner = CommandRunner.new(shell: shell)
         @shell = shell
+      end
+
+      def setup
+        runner.ensure_network(Services::NETWORK_NAME)
+        runner.ensure_volume(STORAGE_VOLUME)
+      end
+
+      def build
+        if runner.image_exists?(STORAGE_IMAGE)
+          shell.say("Storage image #{STORAGE_IMAGE} already present, skipping pull.")
+        else
+          shell.say("Pulling #{STORAGE_IMAGE} image")
+          runner.run("docker pull #{STORAGE_IMAGE}")
+        end
       end
 
       def start
@@ -55,6 +75,15 @@ module AppCLI
           runner.run("docker stop #{STORAGE_CONTAINER}")
         else
           shell.say("Storage service not running, skipping stop.")
+        end
+      end
+
+      def teardown
+        stop
+        if runner.volume_exists?(STORAGE_VOLUME)
+          runner.remove_volume(STORAGE_VOLUME)
+        else
+          shell.say("Docker volume '#{STORAGE_VOLUME}' not found, skipping removal.")
         end
       end
 
@@ -176,10 +205,24 @@ module AppCLI
           "--network #{Services::NETWORK_NAME}",
           "--volume #{STORAGE_VOLUME}:/data",
           "--label traefik.enable=true",
+          # S3 API host (path-style) — the endpoint the app signs and
+          # reads/writes through.
           "--label 'traefik.http.routers.#{STORAGE_ROUTER}.rule=" \
           "Host(`#{STORAGE_HOST}`)'",
           "--label traefik.http.routers.#{STORAGE_ROUTER}.entrypoints=websecure",
           "--label traefik.http.routers.#{STORAGE_ROUTER}.tls=true",
+          "--label traefik.http.routers.#{STORAGE_ROUTER}.service=#{STORAGE_ROUTER}",
+          # Bucket host — bucket.workeverywhere.docker/<key> maps to the
+          # catalyst bucket by prefixing the path before it reaches the
+          # (path-style) S3 gateway; shares the one backend service.
+          "--label 'traefik.http.routers.#{BUCKET_ROUTER}.rule=" \
+          "Host(`#{BUCKET_HOST}`)'",
+          "--label traefik.http.routers.#{BUCKET_ROUTER}.entrypoints=websecure",
+          "--label traefik.http.routers.#{BUCKET_ROUTER}.tls=true",
+          "--label traefik.http.routers.#{BUCKET_ROUTER}.service=#{STORAGE_ROUTER}",
+          "--label traefik.http.routers.#{BUCKET_ROUTER}.middlewares=#{BUCKET_MIDDLEWARE}",
+          "--label traefik.http.middlewares.#{BUCKET_MIDDLEWARE}." \
+          "addprefix.prefix=/#{STORAGE_BUCKET}",
           "--label traefik.http.services.#{STORAGE_ROUTER}." \
           "loadbalancer.server.port=8333",
           "--label traefik.docker.network=#{Services::NETWORK_NAME}",
