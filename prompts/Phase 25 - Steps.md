@@ -122,3 +122,20 @@ Append-only audit trail. Plan: `prompts/Phase 25 Improve Persistance.md`.
   that would confuse the parser).
 - `2a1efcd` — corrected a stale "Text + YAML" comment in the object_changes
   migration (serializer is JSON).
+
+## Step 12/13 — Merge, deploy, release (audit trail)
+
+| Item | Value |
+|------|-------|
+| PR #193 | rebase-merged to `main` (tip `160abb0`) |
+| CI/Deploy on #193 merge | **skipped** — intermediate `[skip ci]` commits skipped the whole `main` push (the documented footgun); nothing deployed |
+| Re-trigger | PR #195 (`docs/phase-25-restore-actions`, issue #194) — added `*::Restore` docstrings + a docs note, touching `.rb` so CI is not path-ignored |
+| #195 merge | `main` tip `cdfb371`; **CI + Deploy both green** → Phase 25 deployed |
+| Release | **`phase-25`** — <https://github.com/joel/trip/releases/tag/phase-25> (`--generate-notes`, covers PR #193 + #195) |
+| Issues → Done | #192 (Phase 25), #194 (re-trigger) |
+| Follow-ups opened | #196 (Phase 26 — re-attachable attachments), #197 (dev: RecordAuditLogJob not processed locally) |
+
+**Lesson:** never use `[skip ci]` — it skips CI *and* deploy on `main` after a
+rebase-merge. For a `main` change that genuinely should not deploy (docs/no-op),
+use `[skip deploy]` instead (gated by `deploy.yml`'s
+`if: !contains(head_commit.message, '[skip deploy]')`).
