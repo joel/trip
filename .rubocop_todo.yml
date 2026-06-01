@@ -26,6 +26,8 @@ Rails/StrongParametersExpect:
     - 'app/controllers/exports_controller.rb'
     - 'app/controllers/journal_entries_controller.rb'
     - 'app/controllers/journal_entry_subscriptions_controller.rb'
+    - 'app/controllers/journal_entry_videos_controller.rb'
+    - 'app/controllers/journal_entry_images_controller.rb'
     - 'app/controllers/notifications_controller.rb'
     - 'app/controllers/reactions_controller.rb'
     - 'app/controllers/test_sessions_controller.rb'
@@ -109,6 +111,8 @@ Rails/I18nLocaleTexts:
     - 'app/controllers/exports_controller.rb'
     - 'app/controllers/notifications_controller.rb'
     - 'app/controllers/journal_entry_subscriptions_controller.rb'
+    - 'app/controllers/journal_entry_videos_controller.rb'
+    - 'app/controllers/journal_entry_images_controller.rb'
     - 'app/mailers/invitation_mailer.rb'
 
 # Offense count: 1

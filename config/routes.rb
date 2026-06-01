@@ -38,6 +38,19 @@ Rails.application.routes.draw do
           patch :restore
         end
       end
+      # Per-item media soft-delete + restore (Phase 26). For images the :id is
+      # the blob signed_id on destroy and the DetachedAttachment id on restore;
+      # for videos it is the JournalEntryVideo id.
+      resources :images, only: %i[destroy], controller: "journal_entry_images" do
+        member do
+          patch :restore
+        end
+      end
+      resources :videos, only: %i[destroy], controller: "journal_entry_videos" do
+        member do
+          patch :restore
+        end
+      end
       resources :reactions, only: %i[create destroy]
     end
     # Checklist controllers live in the Checklists pack (Checklists:: module).
