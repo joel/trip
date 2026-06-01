@@ -13,6 +13,19 @@ RSpec.describe JournalEntries::RemoveImage do
     expect(ActiveStorage::Blob.exists?(blob.id)).to be(true)
   end
 
+  # Regression: has_many_attached defaults to dependent: :purge_later, so a plain
+  # attachment.destroy would purge the blob once the job runs. Prove the blob
+  # survives even when jobs run inline (i.e. production).
+  it "retains the blob even when purge jobs run inline" do
+    adapter = ActiveJob::Base.queue_adapter
+    ActiveJob::Base.queue_adapter = :inline
+    described_class.new.call(journal_entry: entry, signed_id: signed_id)
+    expect(ActiveStorage::Blob.exists?(blob.id)).to be(true)
+    expect(ActiveStorage::Attachment.exists?(blob_id: blob.id)).to be(false)
+  ensure
+    ActiveJob::Base.queue_adapter = adapter
+  end
+
   it "records the removal in a DetachedAttachment" do
     actor = entry.author
     expect { described_class.new.call(journal_entry: entry, signed_id: signed_id, actor: actor) }
