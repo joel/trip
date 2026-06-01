@@ -28,6 +28,11 @@ class OrphanBlobsCleanupJob < ApplicationJob
             .left_joins(:attachments)
             .where(active_storage_attachments: { id: nil })
             .where(active_storage_blobs: { created_at: ...cutoff_time })
+            # Phase 26: a soft-removed image is detached (no attachment row)
+            # but its blob is deliberately retained for restore, recorded in a
+            # DetachedAttachment. Never sweep those — this is the single
+            # load-bearing data-safety guarantee (plan §5.3).
+            .where.not(id: DetachedAttachment.select(:blob_id))
 
     purged = 0
     scope.find_each do |blob|
