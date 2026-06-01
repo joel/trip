@@ -37,6 +37,17 @@ Rails.application.configure do
       class_name: "ActiveStorage::Attachment",
       association: :record
     )
+    # The trip show page eager-loads each video's web/poster renditions so ready
+    # videos render without an N+1. A pending/failed video has neither yet, so on
+    # a page that mixes them Bullet flags the eager-load as unused — false
+    # positive (whether they're used depends on per-row status). Phase 26.
+    %i[web_attachment poster_attachment].each do |assoc|
+      Bullet.add_safelist(
+        type: :unused_eager_loading,
+        class_name: "JournalEntryVideo",
+        association: assoc
+      )
+    end
   end
 
   # Settings specified here will take precedence over those in config/application.rb.
