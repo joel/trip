@@ -264,6 +264,65 @@ RSpec.describe AuditLog::Builder do
     end
   end
 
+  describe "media removal/restore events (Phase 26)" do
+    let(:entry) { create(:journal_entry, trip: trip, author: actor, name: "Day 1") }
+
+    it "journal_entry_video.removed keys the video as auditable after discard" do
+      Current.actor = actor
+      video = create(:journal_entry_video, journal_entry: entry)
+      row = row_for("journal_entry_video.removed",
+                    journal_entry_video_id: video.id,
+                    journal_entry_id: entry.id, trip_id: trip.id)
+      video.discard!
+      expect(row).to include(
+        action: "journal_entry_video.removed", trip_id: trip.id,
+        auditable_type: "JournalEntryVideo", auditable_id: video.id
+      )
+      expect(row[:summary]).to eq('Joel removed a video from journal entry "Day 1"')
+    end
+
+    it "journal_entry_video.restored reads naturally" do
+      Current.actor = actor
+      video = create(:journal_entry_video, journal_entry: entry)
+      row = row_for("journal_entry_video.restored",
+                    journal_entry_video_id: video.id,
+                    journal_entry_id: entry.id, trip_id: trip.id)
+      expect(row[:summary]).to eq('Joel restored a video to journal entry "Day 1"')
+    end
+
+    it "detached_attachment.removed keys the DetachedAttachment as auditable" do
+      Current.actor = actor
+      entry_with_image = create(:journal_entry, :with_images, trip: trip,
+                                                              author: actor, name: "Day 1")
+      blob = entry_with_image.images.first.blob
+      detached = DetachedAttachment.create!(
+        journal_entry: entry_with_image, blob_id: blob.id,
+        filename: "x.jpg", content_type: "image/jpeg", byte_size: blob.byte_size
+      )
+      row = row_for("detached_attachment.removed",
+                    detached_attachment_id: detached.id,
+                    journal_entry_id: entry_with_image.id, trip_id: trip.id,
+                    filename: "x.jpg")
+      expect(row).to include(
+        action: "detached_attachment.removed", trip_id: trip.id,
+        auditable_type: "DetachedAttachment", auditable_id: detached.id
+      )
+      expect(row[:summary]).to eq('Joel removed an image from journal entry "Day 1"')
+    end
+
+    it "detached_attachment.restored resolves from payload after the record is gone" do
+      Current.actor = actor
+      # The DetachedAttachment is destroyed on restore; the row must still
+      # build from payload sibling IDs.
+      row = row_for("detached_attachment.restored",
+                    detached_attachment_id: SecureRandom.uuid,
+                    journal_entry_id: entry.id, trip_id: trip.id,
+                    filename: "x.jpg")
+      expect(row[:trip_id]).to eq(trip.id)
+      expect(row[:summary]).to eq('Joel restored an image to journal entry "Day 1"')
+    end
+  end
+
   it "returns nil for an unknown entity" do
     expect(row_for("widget.frobnicated", {})).to be_nil
   end

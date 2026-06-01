@@ -85,6 +85,40 @@ class AuditLog
                                   owner: comment&.user, target: "a comment")
     end
 
+    # Phase 26 media removal/restore. trip_id and journal_entry_id ride in the
+    # payload so the subject resolves even after the video is discarded; the
+    # video row survives discard so with_discarded finds it as the auditable.
+    def journal_entry_video_subject
+      video = JournalEntryVideo.with_discarded.find_by(id: @payload[:journal_entry_video_id])
+      base(@payload[:journal_entry_video_id], trip_id: @payload[:trip_id],
+                                              record: video, owner: media_owner,
+                                              target: "a video #{media_prep} #{media_where}")
+    end
+
+    # The image auditable is the DetachedAttachment (the per-item identity the
+    # feed Restore keys on). It is destroyed on restore, so resolve trip/entry
+    # from payload sibling IDs, never by finding it.
+    def detached_attachment_subject
+      detached = DetachedAttachment.find_by(id: @payload[:detached_attachment_id])
+      base(@payload[:detached_attachment_id], trip_id: @payload[:trip_id],
+                                              record: detached, owner: media_owner,
+                                              target: "an image #{media_prep} #{media_where}")
+    end
+
+    def media_entry
+      return @media_entry if defined?(@media_entry)
+
+      @media_entry = JournalEntry.with_discarded.find_by(id: @payload[:journal_entry_id])
+    end
+
+    def media_owner = media_entry&.author
+
+    def media_where
+      media_entry ? %(journal entry "#{media_entry.name}") : "a journal entry"
+    end
+
+    def media_prep = @verb == "restored" ? "to" : "from"
+
     # Resolve trip from the reactable in the payload, not the reaction:
     # reaction.removed is emitted after destroy!, so the reaction row is
     # gone. Mirrors Reaction#trip.
