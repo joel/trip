@@ -62,3 +62,22 @@ regression locked in with an inline-adapter spec.
 
 **Validation:** `project:lint` clean; `project:tests` **888 ex, 0 failures**
 (2 pre-existing pending) on a reset test DB.
+
+## Validation — two bugs caught by the test layers
+
+1. **Blob purge on image removal (critical, caught by the :js system spec).**
+   `has_many_attached` defaults to `dependent: :purge_later`, so
+   `attachment.destroy` purges the blob (deletes the file) once the job runs.
+   The action spec missed it (the `:test` adapter never runs the purge job); the
+   system spec's `:inline` adapter exposed it. Fix: `attachment.delete`. Locked
+   in with an inline-adapter regression spec.
+2. **N+1 on the trip show page (caught by a server-side render check).** The card
+   renders each entry's videos, but `TripsController#show` did not eager-load
+   `:videos` → Bullet raised in test → the page 500'd → no entries rendered →
+   `journal_entries_spec`/`audit_logs_spec` failed. Fix: eager-load
+   `videos: [web/poster blobs]` on show (mirrors the gallery query + plan §11).
+
+**System specs (each green individually):** journal_entries 6/0,
+journal_entry_videos 3/3, journal_entry_media_removal 2/0, audit_logs 5/0,
+trip_gallery 4/4. The full rake suite thrashes Chrome locally (env limit, not a
+code failure — same as Phase 25's local run); CI is the authoritative gate.
