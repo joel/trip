@@ -44,4 +44,33 @@ RSpec.describe OrphanBlobsCleanupJob do
     expect { described_class.new.perform }
       .not_to have_enqueued_job(ActiveStorage::PurgeJob).with(attached)
   end
+
+  # Phase 26 (load-bearing): a soft-removed image is detached (no attachment
+  # row) but its blob is retained for restore via a DetachedAttachment. The
+  # sweep must never purge it, even old + unattached — otherwise removed
+  # photos vanish 24h later.
+  it "does not enqueue purge for a blob retained by a DetachedAttachment" do
+    entry = create(:journal_entry)
+    retained = make_blob(created_at: 25.hours.ago)
+    DetachedAttachment.create!(
+      journal_entry: entry, blob_id: retained.id,
+      filename: "x.jpg", content_type: "image/jpeg", byte_size: retained.byte_size
+    )
+
+    expect { described_class.new.perform }
+      .not_to have_enqueued_job(ActiveStorage::PurgeJob).with(retained)
+  end
+
+  it "still purges a genuine orphan while a retained blob coexists" do
+    entry = create(:journal_entry)
+    retained = make_blob(created_at: 25.hours.ago)
+    DetachedAttachment.create!(
+      journal_entry: entry, blob_id: retained.id,
+      filename: "x.jpg", content_type: "image/jpeg", byte_size: retained.byte_size
+    )
+    orphan = make_blob(created_at: 25.hours.ago)
+
+    expect { described_class.new.perform }
+      .to have_enqueued_job(ActiveStorage::PurgeJob).with(orphan)
+  end
 end
