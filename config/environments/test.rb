@@ -28,6 +28,15 @@ Rails.application.configure do
       class_name: "ActiveStorage::Attachment",
       association: :blob
     )
+    # Generating image variants (the representations redirect) makes Active
+    # Storage eager-load the attachment's polymorphic :record internally; no
+    # app query includes it. Bullet flags it as unused — false positive,
+    # surfaced by the in-body photo grid + variant generation (Phase 26).
+    Bullet.add_safelist(
+      type: :unused_eager_loading,
+      class_name: "ActiveStorage::Attachment",
+      association: :record
+    )
   end
 
   # Settings specified here will take precedence over those in config/application.rb.
