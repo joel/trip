@@ -62,11 +62,12 @@ module Components
       )
     end
 
-    # Only a deletion row offers restore. Without this gate every row sharing
-    # this auditable_id (created/updated/restored/…) would show the button,
-    # because @restorable is keyed by auditable_id, not by event.
+    # Only a deletion/removal row offers restore. Without this gate every row
+    # sharing this auditable_id (created/updated/restored/…) would show the
+    # button, because @restorable is keyed by auditable_id, not by event.
+    # ".removed" covers Phase 26 per-item media removal.
     def restorable_record
-      return nil unless @log.action.to_s.end_with?(".deleted")
+      return nil unless @log.action.to_s.end_with?(".deleted", ".removed")
 
       @restorable[@log.auditable_id]
     end
@@ -89,6 +90,14 @@ module Components
         view_context.restore_trip_journal_entry_path(record.trip_id, record)
       when Comment
         view_context.restore_trip_journal_entry_comment_path(
+          @log.trip_id, record.journal_entry_id, record
+        )
+      when JournalEntryVideo
+        view_context.restore_trip_journal_entry_video_path(
+          @log.trip_id, record.journal_entry_id, record
+        )
+      when DetachedAttachment
+        view_context.restore_trip_journal_entry_image_path(
           @log.trip_id, record.journal_entry_id, record
         )
       end

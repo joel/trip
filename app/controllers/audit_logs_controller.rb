@@ -8,6 +8,13 @@ class AuditLogsController < ApplicationController
     "Trip" => Trip, "JournalEntry" => JournalEntry, "Comment" => Comment
   }.freeze
 
+  # Discard-based auditables that offer a feed Restore. Superset of
+  # AUDITABLE_MODELS — adds JournalEntryVideo (Phase 26). DetachedAttachment is
+  # restorable too but is existence-based (no discarded_at), handled separately.
+  RESTORABLE_DISCARDABLE = AUDITABLE_MODELS.merge(
+    "JournalEntryVideo" => JournalEntryVideo
+  ).freeze
+
   UPDATE_ACTIONS = {
     "Trip" => ->(rec, params) { Trips::Update.new.call(trip: rec, params:) },
     "JournalEntry" => lambda { |rec, params|
@@ -68,19 +75,26 @@ class AuditLogsController < ApplicationController
     scope.where(occurred_at: ...(params[:before]))
   end
 
-  # Maps auditable_id => the currently-discarded record, for *.deleted feed
-  # rows the user may restore. Batch-loaded per type (no N+1 across the feed).
+  # Maps auditable_id => the restorable record, for deletion/removal feed rows
+  # the user may restore. Batch-loaded per type (no N+1). Covers Phase 25
+  # discards (*.deleted) and Phase 26 media removals (*.removed): discard-based
+  # records (incl. JournalEntryVideo) plus existence-based DetachedAttachments.
   def build_restorable(logs)
-    ids_by_type = deletion_ids_by_type(logs)
-    AUDITABLE_MODELS.each_with_object({}) do |(type, klass), acc|
-      discarded_records(klass, ids_by_type[type]).find_each do |record|
+    by_type = removal_ids_by_type(logs)
+    acc = {}
+    RESTORABLE_DISCARDABLE.each do |type, klass|
+      discarded_records(klass, by_type[type]).find_each do |record|
         acc[record.id] = record if restorable?(record)
       end
     end
+    detached_records(by_type["DetachedAttachment"]).find_each do |record|
+      acc[record.id] = record if detached_restorable?(record)
+    end
+    acc
   end
 
-  def deletion_ids_by_type(logs)
-    logs.select { |l| l.action.to_s.end_with?(".deleted") }
+  def removal_ids_by_type(logs)
+    logs.select { |l| l.action.to_s.end_with?(".deleted", ".removed") }
         .group_by(&:auditable_type)
   end
 
@@ -91,16 +105,32 @@ class AuditLogsController < ApplicationController
     klass.with_discarded.where(id: ids).where.not(discarded_at: nil)
   end
 
+  # A soft-removed image is restorable while its DetachedAttachment still exists
+  # (restore destroys it) — existence is the "removed" state, not a discard flag.
+  def detached_records(logs)
+    ids = logs&.map(&:auditable_id)
+    return DetachedAttachment.none if ids.blank?
+
+    DetachedAttachment.where(id: ids)
+  end
+
   # Offer restore only when the parent chain is kept (so the path and policy
   # resolve, and we don't surface a child buried under a discarded parent) and
   # the user is authorised.
   def restorable?(record)
     parent_kept = case record
                   when JournalEntry then record.trip.present?
-                  when Comment then record.journal_entry.present?
+                  when Comment, JournalEntryVideo then record.journal_entry.present?
                   else true
                   end
     parent_kept && allowed_to?(:restore?, record)
+  end
+
+  # Images have no per-item policy — authorise through the parent entry's
+  # restore? (plan §5.4), and only while that entry is kept.
+  def detached_restorable?(record)
+    record.journal_entry.present? &&
+      allowed_to?(:restore?, record.journal_entry)
   end
 
   # Maps audit_log_id => the kept record, for *.updated rows the user may

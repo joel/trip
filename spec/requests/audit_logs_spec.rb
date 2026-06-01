@@ -123,6 +123,65 @@ RSpec.describe "/trips/:trip_id/activity" do
     end
   end
 
+  describe "restore controls on media removal rows (Phase 26)" do
+    let(:entry) { create(:journal_entry, trip: trip, author: admin) }
+
+    it "shows Restore for a removed (discarded) video" do
+      stub_current_user(admin)
+      video = create(:journal_entry_video, :discarded, journal_entry: entry)
+      create(:audit_log, trip: trip, action: "journal_entry_video.removed",
+                         auditable: video, summary: "Joel removed a video")
+
+      get trip_audit_logs_path(trip)
+
+      expect(response.body).to include("Restore")
+      expect(response.body)
+        .to include(restore_trip_journal_entry_video_path(trip, entry, video))
+    end
+
+    it "hides Restore once the video is no longer discarded" do
+      stub_current_user(admin)
+      video = create(:journal_entry_video, journal_entry: entry)
+      create(:audit_log, trip: trip, action: "journal_entry_video.removed",
+                         auditable: video, summary: "Joel removed a video")
+
+      get trip_audit_logs_path(trip)
+
+      expect(response.body)
+        .not_to include(restore_trip_journal_entry_video_path(trip, entry, video))
+    end
+
+    it "shows Restore for a removed image while the DetachedAttachment exists" do
+      stub_current_user(admin)
+      with_images = create(:journal_entry, :with_images, trip: trip, author: admin)
+      blob = with_images.images.first.blob
+      detached = DetachedAttachment.create!(
+        journal_entry: with_images, blob_id: blob.id,
+        filename: "x.jpg", content_type: "image/jpeg", byte_size: blob.byte_size
+      )
+      create(:audit_log, trip: trip, action: "detached_attachment.removed",
+                         auditable: detached, summary: "Joel removed an image")
+
+      get trip_audit_logs_path(trip)
+
+      expect(response.body).to include("Restore")
+      expect(response.body)
+        .to include(restore_trip_journal_entry_image_path(trip, with_images, detached))
+    end
+
+    it "hides Restore for a removed video to a contributor on another's entry" do
+      stub_current_user(contributor_user)
+      video = create(:journal_entry_video, :discarded, journal_entry: entry)
+      create(:audit_log, trip: trip, action: "journal_entry_video.removed",
+                         auditable: video, summary: "Joel removed a video")
+
+      get trip_audit_logs_path(trip)
+
+      expect(response.body)
+        .not_to include(restore_trip_journal_entry_video_path(trip, entry, video))
+    end
+  end
+
   describe "revert controls on update rows" do
     it "shows a Revert button on an update row with a diff" do
       stub_current_user(admin)
