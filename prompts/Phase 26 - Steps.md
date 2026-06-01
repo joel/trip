@@ -81,3 +81,14 @@ regression locked in with an inline-adapter spec.
 journal_entry_videos 3/3, journal_entry_media_removal 2/0, audit_logs 5/0,
 trip_gallery 4/4. The full rake suite thrashes Chrome locally (env limit, not a
 code failure — same as Phase 25's local run); CI is the authoritative gate.
+
+## Step 9 — PR
+
+- Branch rewritten to strip stray `[skip ci]` markers from docs commits
+  (project rule: docs/prompts are already `paths-ignore`-exempt; a trailing
+  `[skip ci]` would skip CI on the PR and on `main` after rebase-merge).
+- PR [#205](https://github.com/joel/trip/pull/205) — "Phase 26 — Re-attachable
+  media". Closes #196. Issue → In Review.
+- Live agent-browser walk deferred: dev SeaweedFS storage down + port 8080
+  conflict (dev-infra, not the feature). The `:js` Selenium journey is the
+  real-browser verification for this feature.
