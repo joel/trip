@@ -30,6 +30,13 @@ class TripsController < ApplicationController
                               :reactions,
                               :journal_entry_subscriptions,
                               { images_attachments: :blob },
+                              # The card renders each entry's videos (player +
+                              # remove control), so eager-load them and their
+                              # rendition/poster blobs to avoid an N+1 (Phase 26).
+                              { videos: [
+                                { web_attachment: :blob },
+                                { poster_attachment: :blob }
+                              ] },
                               comments: :user
                             )
     render Views::Trips::Show.new(
