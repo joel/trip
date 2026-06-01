@@ -40,3 +40,25 @@ the per-item record, not the entry — the feed Restore can key on it. Reused th
 existing `removed`/`restored` verb phrases (no new ones). Verified each step in
 the test env (local-disk storage): blob retained on image remove, discard
 cascade, builder summaries read naturally.
+
+## Steps 7–12 — policies, controllers, UI, feed, tests, docs
+
+| commit | what |
+|--------|------|
+| test(actions) | action specs for the 4 media actions + :discarded video factory trait |
+| feat(policy) | JournalEntryVideoPolicy destroy?/restore? (entry author/superadmin, trip writable) + spec |
+| feat(controllers) | JournalEntryVideosController + JournalEntryImagesController (destroy/restore) + nested routes + JournalEntry has_many :detached_attachments + request specs (happy + non-member 403) |
+| feat(ui) | Activity-feed Restore for *.removed media (build_restorable handles discard-based video + existence-based DetachedAttachment; AuditLogCard restore_path) + request specs |
+| feat(ui) | per-item Remove buttons on image/video tiles (MediaRemoval module) |
+| fix(actions) | **critical**: RemoveImage uses attachment.delete not destroy — has_many_attached dependent: :purge_later would purge the blob (file loss) when the job runs inline (production). Inline-adapter regression spec added. |
+| fix(ui) | remove overlay always-visible (a11y) + overflow-hidden wraps only the image (was clipping the overlay); video destroy → redirect-with-flash |
+| test(system) | :js media remove→feed→restore journey (2 ex); Bullet safelist for AS attachment :record false-positive |
+| docs | AGENTS.md + persistence-safety.md + actions event inventory |
+
+**The system spec earned its keep:** it caught the `attachment.destroy` →
+`purge_later` → blob-purge bug that the action spec (under the :test queue
+adapter, which never runs the purge job) could not. Fix = `attachment.delete`;
+regression locked in with an inline-adapter spec.
+
+**Validation:** `project:lint` clean; `project:tests` **888 ex, 0 failures**
+(2 pre-existing pending) on a reset test DB.
