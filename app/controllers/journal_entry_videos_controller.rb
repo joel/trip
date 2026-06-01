@@ -21,12 +21,19 @@ class JournalEntryVideosController < ApplicationController
   end
 
   def restore
-    JournalEntryVideos::Restore.new.call(video: @video)
+    result = JournalEntryVideos::Restore.new.call(video: @video)
     redirect_to trip_path(@trip, anchor: dom_id(@journal_entry)),
-                notice: "Video restored."
+                **flash_for(result, "Video restored.")
   end
 
   private
+
+  # Success → notice; Failure → alert (the action's failure message).
+  def flash_for(result, success_message)
+    return { notice: success_message } if result.success?
+
+    { alert: result.failure.presence || "Could not restore that video." }
+  end
 
   def set_trip
     @trip = Trip.find(params[:trip_id])

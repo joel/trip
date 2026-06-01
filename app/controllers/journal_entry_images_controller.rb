@@ -25,9 +25,9 @@ class JournalEntryImagesController < ApplicationController
   # :id is the DetachedAttachment id (the retention record).
   def restore
     detached = @journal_entry.detached_attachments.find(params[:id])
-    JournalEntries::RestoreImage.new.call(detached_attachment: detached)
+    result = JournalEntries::RestoreImage.new.call(detached_attachment: detached)
     redirect_to trip_path(@trip, anchor: dom_id(@journal_entry)),
-                notice: "Image restored."
+                **flash_for(result, "Image restored.")
   end
 
   private

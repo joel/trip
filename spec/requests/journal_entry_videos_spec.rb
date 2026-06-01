@@ -34,5 +34,14 @@ RSpec.describe "/trips/:trip_id/journal_entries/:id/videos" do
       patch restore_trip_journal_entry_video_path(trip, entry, video)
       expect(JournalEntryVideo.exists?(video.id)).to be(true)
     end
+
+    # release-scan #3: a restore that fails must not flash success.
+    it "flashes an alert when the video is not discarded" do
+      stub_current_user(admin)
+      video = create(:journal_entry_video, journal_entry: entry) # already kept
+      patch restore_trip_journal_entry_video_path(trip, entry, video)
+      expect(flash[:alert]).to be_present
+      expect(flash[:notice]).to be_blank
+    end
   end
 end
