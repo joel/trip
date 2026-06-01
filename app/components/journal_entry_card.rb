@@ -7,6 +7,7 @@ module Components
     include Phlex::Rails::Helpers::DOMID
     include Phlex::Rails::Helpers::TurboStreamFrom
     include ImageLightbox
+    include MediaRemoval
 
     def initialize(trip:, journal_entry:)
       @trip = trip
@@ -148,7 +149,12 @@ module Components
         # only receives updates for its own videos.
         turbo_stream_from @entry, :videos if @entry.videos.any?
         @entry.videos.each do |video|
-          render Components::VideoPlayer.new(video: video)
+          # The VideoPlayer keeps its own dom_id(video) root for the #177
+          # broadcast; the wrapper only hosts the remove overlay.
+          div(class: "group/video relative") do
+            render Components::VideoPlayer.new(video: video)
+            render_remove_video(video)
+          end
         end
       end
     end

@@ -78,29 +78,36 @@ module Components
         end
       end
 
+      # A button_to (a <form>) can't nest inside the lightbox <button>, so the
+      # tile is a relative wrapper holding the trigger button + the remove
+      # overlay as siblings (Phase 26).
       def render_image_tile(image, idx)
-        button(
-          type: "button",
-          aria_label: "View photo #{idx + 1} of " \
-                      "#{@entry.images.size} — #{@entry.name}",
-          class: "group/photo block aspect-[4/3] " \
-                 "cursor-zoom-in overflow-hidden rounded-xl " \
-                 "focus:outline-none focus-visible:ring-2 " \
-                 "focus-visible:ring-[var(--ha-primary)]",
-          data: {
-            lightbox_target: "trigger",
-            lightbox_index_param: idx,
-            action: "lightbox#open"
-          }
-        ) do
-          img(
-            src: variant_url(image, [800, 800]),
-            class: "h-full w-full object-cover " \
-                   "transition-transform duration-500 " \
-                   "group-hover/photo:scale-110",
-            alt: "#{@entry.name} — photo #{idx + 1}",
-            loading: "lazy"
-          )
+        div(class: "group/photo relative aspect-[4/3] " \
+                   "overflow-hidden rounded-xl") do
+          button(
+            type: "button",
+            aria_label: "View photo #{idx + 1} of " \
+                        "#{@entry.images.size} — #{@entry.name}",
+            class: "block h-full w-full cursor-zoom-in " \
+                   "focus:outline-none focus-visible:ring-2 " \
+                   "focus-visible:ring-inset " \
+                   "focus-visible:ring-[var(--ha-primary)]",
+            data: {
+              lightbox_target: "trigger",
+              lightbox_index_param: idx,
+              action: "lightbox#open"
+            }
+          ) do
+            img(
+              src: variant_url(image, [800, 800]),
+              class: "h-full w-full object-cover " \
+                     "transition-transform duration-500 " \
+                     "group-hover/photo:scale-110",
+              alt: "#{@entry.name} — photo #{idx + 1}",
+              loading: "lazy"
+            )
+          end
+          render_remove_image(image)
         end
       end
     end
