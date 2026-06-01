@@ -92,3 +92,16 @@ code failure — same as Phase 25's local run); CI is the authoritative gate.
 - Live agent-browser walk deferred: dev SeaweedFS storage down + port 8080
   conflict (dev-infra, not the feature). The `:js` Selenium journey is the
   real-browser verification for this feature.
+
+## Step 12/13 — Merge, deploy, release, done
+
+| Item | Value |
+|------|-------|
+| CI fix on PR | `197f7cc` — safelist unused video-rendition eager-load (pending videos) → CI green |
+| PR #205 | **rebase-merged** to `main` (tip `90e3646`) at maintainer's instruction |
+| `main` CI + Deploy on `90e3646` | both **green** (verified before releasing, per Release Rules) |
+| Release | **`phase-26`** — <https://github.com/joel/trip/releases/tag/phase-26> (`--generate-notes`) |
+| Issue #196 | moved to **Done** |
+
+Codex deep review never landed (maintainer-triggered, not auto); merge
+authorised explicitly by the maintainer. Phase 26 complete.
