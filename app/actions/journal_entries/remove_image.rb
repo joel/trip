@@ -35,9 +35,16 @@ module JournalEntries
       Failure("Image is not attached to this entry")
     end
 
-    # Create the retention record, then destroy the join row WITHOUT purge so
+    # Create the retention record, then remove the join row WITHOUT purge so
     # the blob + file are retained for restore. One transaction so a failure
     # leaves neither a dangling record nor a detached-but-unrecorded blob.
+    #
+    # `attachment.delete` (not `destroy`) is deliberate: `has_many_attached`
+    # defaults to dependent: :purge_later, so `attachment.destroy` fires an
+    # after_destroy_commit that purges the blob (deleting the file) the moment
+    # the job runs — exactly what Phase 26 must avoid. `delete` skips callbacks,
+    # leaving the blob intact. (The :test queue adapter hid this; an inline
+    # adapter — i.e. production — would lose the file.)
     def detach(journal_entry, blob, attachment, actor)
       detached = nil
       ActiveRecord::Base.transaction do
@@ -49,7 +56,7 @@ module JournalEntries
           content_type: blob.content_type,
           byte_size: blob.byte_size
         )
-        attachment.destroy!
+        attachment.delete
       end
       Success(detached)
     end
