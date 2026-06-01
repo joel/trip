@@ -179,10 +179,17 @@ Two rules carry the whole design:
    `DetachedAttachment.select(:blob_id)`. This is the single load-bearing
    data-safety line; its spec is a merge gate.
 
-Restore re-attaches the retained blob (image) or `undiscard!`s the row (video);
-both are parent-only, and both surface as a **Restore** button on the `*.removed`
-feed row. Image events use the `detached_attachment` entity so the feed auditable
-is the per-item record, not the entry.
+Per-item restore re-attaches the retained blob (image) or `undiscard!`s the row
+(video), surfaced as a **Restore** button on the `*.removed` feed row. Image
+events use the `detached_attachment` entity so the feed auditable is the per-item
+record, not the entry.
+
+**Entry restore cascade-restores its videos** (issue #206). The entry cascade
+discards videos with a raw `discard` (no event), so a parent-only entry restore
+would strand them with no feed button. `JournalEntries::Restore` captures the
+entry's `discarded_at` before `undiscard!` and re-restores the videos with
+`discarded_at >= cutoff` (the cascade cohort) — videos removed individually
+*earlier* keep a smaller timestamp and stay removed. Comments remain parent-only.
 
 ## 4. Where it lives
 
