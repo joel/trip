@@ -12,6 +12,8 @@ class JournalEntry < ApplicationRecord
            class_name: "JournalEntryVideo",
            inverse_of: :journal_entry, dependent: :destroy
   has_many :comments, dependent: :destroy
+  # Phase 26: retention records for soft-removed images (see DetachedAttachment).
+  has_many :detached_attachments, dependent: :destroy
   has_many :reactions, as: :reactable, dependent: :destroy
   has_many :journal_entry_subscriptions, dependent: :destroy
   has_many :subscribers, through: :journal_entry_subscriptions,
