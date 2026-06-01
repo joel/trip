@@ -19,6 +19,7 @@ Rails.application.config.after_initialize do
   Rails.event.subscribe(AuditLogSubscriber.new) do |e|
     e[:name].start_with?(
       "trip.", "trip_membership.", "journal_entry.", "comment.",
+      "journal_entry_video.", "detached_attachment.",
       "reaction.", "checklist", "export.", "access_request.",
       "invitation."
     )
