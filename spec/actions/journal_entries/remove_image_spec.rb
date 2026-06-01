@@ -13,6 +13,23 @@ RSpec.describe JournalEntries::RemoveImage do
     expect(ActiveStorage::Blob.exists?(blob.id)).to be(true)
   end
 
+  # release-scan #2: the unique index makes a concurrent double-removal safe.
+  it "does not create a duplicate retention row when one already exists" do
+    # A retention row already present for this blob (a concurrent removal that
+    # committed first) while the attachment is still attached.
+    DetachedAttachment.create!(
+      journal_entry: entry, blob_id: blob.id,
+      filename: "x.jpg", content_type: "image/jpeg", byte_size: blob.byte_size
+    )
+
+    result = nil
+    expect { result = described_class.new.call(journal_entry: entry, signed_id: signed_id) }
+      .not_to change(DetachedAttachment, :count)
+    expect(result).to be_failure
+    # Our transaction rolled back: the attachment is untouched.
+    expect(entry.reload.images.count).to eq(1)
+  end
+
   # Regression: has_many_attached defaults to dependent: :purge_later, so a plain
   # attachment.destroy would purge the blob once the job runs. Prove the blob
   # survives even when jobs run inline (i.e. production).

@@ -59,6 +59,11 @@ module JournalEntries
         attachment.delete
       end
       Success(detached)
+    rescue ActiveRecord::RecordNotUnique
+      # A concurrent removal already detached this blob (unique index on
+      # journal_entry_id + blob_id). Roll back ours and report it idempotently
+      # rather than creating a duplicate retention row (#206).
+      Failure("This image is already being removed.")
     end
 
     def emit_event(journal_entry, detached, blob)
