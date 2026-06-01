@@ -5,7 +5,7 @@
 # Restore button. Authorised by JournalEntryVideoPolicy (entry author or
 # superadmin, trip writable).
 class JournalEntryVideosController < ApplicationController
-  include TurboStreamable
+  include ActionView::RecordIdentifier
 
   before_action :require_authenticated_user!
   before_action :set_trip
@@ -15,16 +15,9 @@ class JournalEntryVideosController < ApplicationController
   before_action :authorize_video!
 
   def destroy
-    video_dom_id = dom_id(@video)
     JournalEntryVideos::Delete.new.call(video: @video)
-
-    respond_to do |format|
-      format.turbo_stream { render turbo_stream: stream_remove(video_dom_id) }
-      format.html do
-        redirect_to trip_path(@trip, anchor: dom_id(@journal_entry)),
-                    notice: "Video removed.", status: :see_other
-      end
-    end
+    redirect_to trip_path(@trip, anchor: dom_id(@journal_entry)),
+                notice: "Video removed.", status: :see_other
   end
 
   def restore

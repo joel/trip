@@ -7,31 +7,33 @@ module Components
     # item; it is restorable from the Activity feed. Gated on the entry's
     # destroy? permission, mirroring the entry Delete affordance.
     module MediaRemoval
+      # Always visible (no hover-only control — a11y + touch + testability),
+      # subdued until hover/focus.
+      OVERLAY_CLASS = "absolute top-2 right-2 z-10 opacity-80 " \
+                      "hover:opacity-100 focus-within:opacity-100 " \
+                      "motion-safe:transition-opacity"
+
       private
 
       def render_remove_video(video)
         return unless can_remove_media?
 
-        # group-hover/video kept literal so Tailwind JIT compiles it.
         remove_overlay_button(
           view_context.trip_journal_entry_video_path(@trip, @entry, video),
           "Remove this video? You can restore it from Activity.",
-          "absolute top-2 right-2 z-10 opacity-0 focus-within:opacity-100 " \
-          "group-hover/video:opacity-100 motion-safe:transition-opacity"
+          OVERLAY_CLASS
         )
       end
 
       def render_remove_image(image)
         return unless can_remove_media?
 
-        # group-hover/photo kept literal so Tailwind JIT compiles it.
         remove_overlay_button(
           view_context.trip_journal_entry_image_path(
             @trip, @entry, image.blob.signed_id
           ),
           "Remove this photo? You can restore it from Activity.",
-          "absolute top-2 right-2 z-10 opacity-0 focus-within:opacity-100 " \
-          "group-hover/photo:opacity-100 motion-safe:transition-opacity"
+          OVERLAY_CLASS
         )
       end
 
