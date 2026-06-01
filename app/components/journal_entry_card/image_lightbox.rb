@@ -80,10 +80,17 @@ module Components
 
       # A button_to (a <form>) can't nest inside the lightbox <button>, so the
       # tile is a relative wrapper holding the trigger button + the remove
-      # overlay as siblings (Phase 26).
+      # overlay as siblings (Phase 26). overflow-hidden wraps only the image
+      # so the remove overlay is not clipped.
       def render_image_tile(image, idx)
-        div(class: "group/photo relative aspect-[4/3] " \
-                   "overflow-hidden rounded-xl") do
+        div(class: "group/photo relative") do
+          render_image_trigger(image, idx)
+          render_remove_image(image)
+        end
+      end
+
+      def render_image_trigger(image, idx)
+        div(class: "aspect-[4/3] overflow-hidden rounded-xl") do
           button(
             type: "button",
             aria_label: "View photo #{idx + 1} of " \
@@ -107,7 +114,6 @@ module Components
               loading: "lazy"
             )
           end
-          render_remove_image(image)
         end
       end
     end
