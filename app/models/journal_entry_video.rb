@@ -5,6 +5,8 @@
 # web-friendly `web` rendition + a `poster` frame and records
 # duration/dimensions, gating playback on `status`.
 class JournalEntryVideo < ApplicationRecord
+  include Discard::Model
+
   belongs_to :journal_entry
 
   has_one_attached :source
@@ -14,6 +16,13 @@ class JournalEntryVideo < ApplicationRecord
   enum :status,
        { pending: 0, processing: 1, ready: 2, failed: 3 },
        default: :pending
+
+  # Discarded videos never leak into any read path (cards, gallery, lightbox,
+  # `ready`). Discard keeps the row — so its source/web/poster attachments stay,
+  # the blobs are never orphaned, and OrphanBlobsCleanupJob ignores them.
+  # Restore is parent-only by design (Phase 26, mirroring Phase 25). Use
+  # `with_discarded` on restore/feed paths. See prompts/Phase 26 §5.1.
+  default_scope -> { kept }
 
   scope :ready, -> { where(status: :ready) }
 

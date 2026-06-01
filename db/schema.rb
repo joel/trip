@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_30_153129) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_01_100001) do
   create_table "access_requests", id: uuid, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -140,6 +140,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_30_153129) do
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
+  create_table "detached_attachments", id: uuid, force: :cascade do |t|
+    t.string "actor_id", limit: 36
+    t.string "blob_id", limit: 36, null: false
+    t.bigint "byte_size"
+    t.string "content_type"
+    t.datetime "created_at", null: false
+    t.string "filename"
+    t.string "journal_entry_id", limit: 36, null: false
+    t.datetime "updated_at", null: false
+    t.index ["blob_id"], name: "index_detached_attachments_on_blob_id"
+    t.index ["journal_entry_id"], name: "index_detached_attachments_on_journal_entry_id"
+  end
+
   create_table "exports", id: uuid, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "format", null: false
@@ -201,6 +214,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_30_153129) do
 
   create_table "journal_entry_videos", id: uuid, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.datetime "discarded_at"
     t.float "duration"
     t.text "error_message"
     t.integer "height"
@@ -209,6 +223,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_30_153129) do
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false
     t.integer "width"
+    t.index ["discarded_at"], name: "index_journal_entry_videos_on_discarded_at"
     t.index ["journal_entry_id", "position"], name: "idx_journal_entry_videos_ordering"
     t.index ["journal_entry_id"], name: "index_journal_entry_videos_on_journal_entry_id"
   end
@@ -337,6 +352,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_30_153129) do
   add_foreign_key "checklists", "trips"
   add_foreign_key "comments", "journal_entries"
   add_foreign_key "comments", "users"
+  add_foreign_key "detached_attachments", "journal_entries"
   add_foreign_key "exports", "trips"
   add_foreign_key "exports", "users"
   add_foreign_key "invitations", "users", column: "inviter_id"

@@ -28,8 +28,14 @@ class JournalEntry < ApplicationRecord
 
   default_scope -> { kept }
 
-  # Cascade discard down to comments. Restore is parent-only by design.
-  after_discard { comments.kept.find_each(&:discard) }
+  # Cascade discard down to comments and videos. Restore is parent-only by
+  # design — restoring the entry brings back the entry + its images, but
+  # comments/videos discarded by this cascade are restored individually from
+  # the Activity feed (Phase 26, mirroring Phase 25).
+  after_discard do
+    comments.kept.find_each(&:discard)
+    videos.kept.find_each(&:discard)
+  end
 
   scope :chronological, lambda {
     order(entry_date: :asc, created_at: :asc, id: :asc)
