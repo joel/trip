@@ -180,6 +180,10 @@ Events follow the pattern `entity.action`:
 | `comment.updated` | Comments::Update | `{ comment_id, journal_entry_id, changes }` |
 | `comment.deleted` | Comments::Delete | `{ comment_id, journal_entry_id }` |
 | `comment.restored` | Comments::Restore | `{ comment_id, journal_entry_id }` |
+| `journal_entry_video.removed` | JournalEntryVideos::Delete | `{ journal_entry_video_id, journal_entry_id, trip_id }` |
+| `journal_entry_video.restored` | JournalEntryVideos::Restore | `{ journal_entry_video_id, journal_entry_id, trip_id }` |
+| `detached_attachment.removed` | JournalEntries::RemoveImage | `{ detached_attachment_id, journal_entry_id, trip_id, blob_id, filename }` |
+| `detached_attachment.restored` | JournalEntries::RestoreImage | `{ detached_attachment_id, journal_entry_id, trip_id, filename }` |
 | `reaction.created` | Reactions::Toggle | `{ reaction_id, reactable_type, reactable_id }` |
 | `reaction.removed` | Reactions::Toggle | `{ reaction_id, reactable_type, reactable_id }` |
 | `export.requested` | Exports::RequestExport | `{ export_id, trip_id, user_id, format }` |

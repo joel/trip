@@ -157,6 +157,33 @@ hidden in the view.
 
 ---
 
+## 3b. Media soft-delete + restore (Phase 26)
+
+Phase 26 extends the same Delete → feed → Restore loop to **per-item media** —
+one image or one video removed from an entry — with two retention mechanisms,
+because the two kinds differ in shape.
+
+| Media | Mechanism | Why |
+|-------|-----------|-----|
+| **Video** | Discard the `JournalEntryVideo` row (`Discard::Model` + `default_scope { kept }`) | It is already a model. The row survives discard, so its `source`/`web`/`poster` attachments stay and the blobs are never orphaned. Identical to Phase 25. |
+| **Image** | Detach the `ActiveStorage::Attachment` **without purge** into a `DetachedAttachment` retention record | Active Storage has no soft-delete and images have no per-item model. The record holds the blob + denormalised metadata and *is* the "removed" state; it doubles as the feed auditable. |
+
+Two rules carry the whole design:
+
+1. **`attachment.delete`, never `attachment.destroy`.** `has_many_attached` defaults
+   to `dependent: :purge_later`, so `destroy` fires an `after_destroy_commit` that
+   **purges the blob** — deleting the stored file the instant the job runs (i.e. in
+   production). `delete` skips callbacks, keeping the blob for restore.
+2. **`OrphanBlobsCleanupJob` excludes retained blobs.** A detached image blob has
+   zero attachments, so the 24h orphan sweep would purge it. The job excludes
+   `DetachedAttachment.select(:blob_id)`. This is the single load-bearing
+   data-safety line; its spec is a merge gate.
+
+Restore re-attaches the retained blob (image) or `undiscard!`s the row (video);
+both are parent-only, and both surface as a **Restore** button on the `*.removed`
+feed row. Image events use the `detached_attachment` entity so the feed auditable
+is the per-item record, not the entry.
+
 ## 4. Where it lives
 
 ```
@@ -174,6 +201,16 @@ Actions
   app/actions/comments/restore.rb          # undiscard! + comment.restored
   app/actions/journal_entries/create.rb    # PaperTrail.request(whodunnit:)
   app/actions/journal_entries/update.rb    # PaperTrail.request(whodunnit:)
+
+Media soft-delete (Phase 26)
+  app/models/journal_entry_video.rb        # Discard::Model + default_scope { kept }
+  app/models/detached_attachment.rb        # image retention record + feed auditable
+  app/actions/journal_entry_videos/{delete,restore}.rb  # discard!/undiscard! + events
+  app/actions/journal_entries/remove_image.rb           # attachment.delete (no purge)
+  app/actions/journal_entries/restore_image.rb          # re-attach + destroy record
+  app/jobs/orphan_blobs_cleanup_job.rb     # excludes DetachedAttachment blobs (load-bearing)
+  app/policies/journal_entry_video_policy.rb            # destroy?/restore?
+  app/controllers/journal_entry_{videos,images}_controller.rb
 
 Initializers
   config/initializers/paper_trail.rb              # JSON serializer (Psych 4 reify)
