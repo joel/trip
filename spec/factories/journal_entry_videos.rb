@@ -15,6 +15,10 @@ FactoryBot.define do
       )
     end
 
+    trait :discarded do
+      after(:create, &:discard!)
+    end
+
     trait :ready do
       status { :ready }
       duration { 1.0 }
