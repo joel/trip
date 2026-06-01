@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_01_100001) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_01_100002) do
   create_table "access_requests", id: uuid, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -150,6 +150,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_01_100001) do
     t.string "journal_entry_id", limit: 36, null: false
     t.datetime "updated_at", null: false
     t.index ["blob_id"], name: "index_detached_attachments_on_blob_id"
+    t.index ["journal_entry_id", "blob_id"], name: "idx_detached_attachments_unique_entry_blob", unique: true
     t.index ["journal_entry_id"], name: "index_detached_attachments_on_journal_entry_id"
   end
 
