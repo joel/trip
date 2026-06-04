@@ -346,7 +346,7 @@ GEM
     openssl-signature_algorithm (1.3.0)
       openssl (> 2.0)
     ostruct (0.6.3)
-    overcommit (0.69.0)
+    overcommit (0.70.0)
       childprocess (>= 0.6.3, < 6)
       iniparse (~> 1.4)
       rexml (>= 3.3.9)
@@ -750,7 +750,6 @@ DEPENDENCIES
   web-console
   webauthn
 
-CHECKSUMS
   action_policy (0.7.6) sha256=a80156671e6b7784a2f1fa3a5f347da27c7e13abe7b1c9aab81772839794002d
   action_text-trix (2.1.18) sha256=3fdb83f8bff4145d098be283cdd47ac41caf5110bfa6df4695ed7127d7fb3642
   actioncable (8.1.3) sha256=e5bc7f75e44e6a22de29c4f43176927c3a9ce4824464b74ed18d8226e75a80f0
@@ -876,7 +875,7 @@ CHECKSUMS
   openssl (4.0.1) sha256=e27974136b7b02894a1bce46c5397ee889afafe704a839446b54dc81cb9c5f7d
   openssl-signature_algorithm (1.3.0) sha256=a3b40b5e8276162d4a6e50c7c97cdaf1446f9b2c3946a6fa2c14628e0c957e80
   ostruct (0.6.3) sha256=95a2ed4a4bd1d190784e666b47b2d3f078e4a9efda2fccf18f84ddc6538ed912
-  overcommit (0.69.0) sha256=1509042558eb04cb780a3e15943e2b7770298f93f55e5a286b4afeb57f4f8697
+  overcommit (0.70.0) sha256=81fa3a37678848a6818a4d6b84f80f65d8708c3fa66bcc1555fefea1f4bf91f5
   packs (0.3.0) sha256=ae79f14aae007e3fcb4bfdba1c0587ad54586830f6b60d948dc3b27a9f26b8d0
   packs-rails (0.1.0) sha256=46c8b0292ea7fb0582557e7c84cdc43c9f7aaa6eeb3bc547dea029ccbd1a058b
   packs-specification (0.0.11) sha256=2b6ba6e0dd79af599796d4c8203234ce9a626bca42cb36fcceeac3d95731c86d
