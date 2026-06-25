@@ -285,7 +285,7 @@ GEM
       net-smtp
     marcel (1.1.0)
     matrix (0.4.3)
-    mcp (0.20.0)
+    mcp (0.21.0)
       json_schemer (>= 2.4)
     memory_profiler (1.1.0)
     mini_mime (1.1.5)
@@ -709,7 +709,7 @@ DEPENDENCIES
   image_processing (~> 2.0)
   importmap-rails
   kamal
-  mcp (~> 0.20)
+  mcp (~> 0.21)
   memory_profiler
   omniauth-google-oauth2
   overcommit
