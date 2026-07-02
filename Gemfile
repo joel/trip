@@ -50,7 +50,7 @@ gem "discard", "~> 2.0"
 gem "paper_trail", "~> 17.0"
 
 # MCP (Model Context Protocol) server
-gem "mcp", "~> 0.21"
+gem "mcp", "~> 0.22"
 
 # Export
 gem "gepub", "~> 2.0"
