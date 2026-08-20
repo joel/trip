@@ -484,9 +484,9 @@ GEM
     reverse_markdown (3.0.2)
       nokogiri
     rexml (3.4.4)
-    roda (3.106.0)
+    roda (3.107.0)
       rack
-    rodauth (2.45.0)
+    rodauth (2.46.0)
       roda (>= 2.6.0)
       sequel (>= 4)
     rodauth-model (0.5.0)
@@ -494,7 +494,7 @@ GEM
     rodauth-omniauth (0.6.2)
       omniauth (~> 2.0)
       rodauth (~> 2.36)
-    rodauth-rails (2.2.1)
+    rodauth-rails (2.2.2)
       railties (>= 5.2)
       roda (~> 3.76)
       rodauth (~> 2.36)
