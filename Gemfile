@@ -43,7 +43,7 @@ gem "webauthn"
 gem "action_policy"
 
 # Business logic
-gem "dry-monads", "~> 1.10"
+gem "dry-monads", "~> 1.11"
 
 # Persistence safety — soft-delete (discard) + record versioning (paper_trail)
 gem "discard", "~> 2.0"
