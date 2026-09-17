@@ -193,7 +193,7 @@ GEM
       concurrent-ruby (~> 1.0)
       logger
       zeitwerk (~> 2.6)
-    dry-monads (1.10.0)
+    dry-monads (1.11.0)
       concurrent-ruby (~> 1.0)
       dry-core (~> 1.1)
       zeitwerk (~> 2.6)
@@ -706,7 +706,7 @@ DEPENDENCIES
   debug
   discard (~> 2.0)
   dotenv-rails
-  dry-monads (~> 1.10)
+  dry-monads (~> 1.11)
   erb_lint
   factory_bot_rails
   ffaker
